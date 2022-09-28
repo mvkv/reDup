@@ -1,15 +1,11 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import { useEffect, useState } from 'react';
-import { getHelloWorld } from '../apiCalls/HelloWorld';
+import Image from 'next/image';
+import LandingPageMain from '../public/images/landing_page_main.svg';
+import GoogleButton from 'react-google-button';
+import { RedirectToGoogleAuth } from '../utils/GoogleAuthRedirect';
 
 const Home: NextPage = () => {
-  const [response, setResponse] = useState<string>('');
-
-  const getHelloWorldFromApi = async () => {
-    setResponse(await getHelloWorld());
-  };
-
   return (
     <div>
       <Head>
@@ -17,18 +13,18 @@ const Home: NextPage = () => {
         <meta name="description" content="ReDup" />
       </Head>
 
-      <main className="min-h-screen flex justify-center items-center flex-col gap-8">
-        <h1 className="text-2xl">Welcome to ReDup</h1>
-
-        <p> Click here to test connectivity</p>
-        <button
-          className="py-2 px-4 bg-blue-500 hover:bg-blue-400 color-white rounded-md"
-          onClick={getHelloWorldFromApi}
-        >
-          Click
-        </button>
-
-        <p>{response}</p>
+      <main className="min-h-screen min-w-full flex justify-center items-center flex-col gap-8 px-[200px]">
+        <div className="grid grid-cols-8">
+          <div className='col-span-5 flex flex-col gap-5'>
+            <h1 className='text-5xl font-bold text-main-text'>Remove duplicates from</h1>
+            <h1  className='text-5xl font-bold text-main'>Google Drive</h1>
+            <p className='text-xl text-main-text'>With just one click, for <span className='font-bold'>FREE</span></p>
+            <GoogleButton onClick={RedirectToGoogleAuth}/>
+          </div>
+          <div className='col-span-3'>
+            <Image src={LandingPageMain} alt="Landing page main image" />
+          </div>
+        </div>
       </main>
     </div>
   );
