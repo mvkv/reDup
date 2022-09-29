@@ -3,7 +3,7 @@ import Head from 'next/head';
 import Image from 'next/image';
 import LandingPageMain from '../public/images/landing_page_main.svg';
 import GoogleButton from 'react-google-button';
-import { RedirectToGoogleAuth } from '../utils/GoogleAuthRedirect';
+import { redirectToGoogleAuth } from '../utils/GoogleAuthRedirect';
 
 const Home: NextPage = () => {
   return (
@@ -23,7 +23,7 @@ const Home: NextPage = () => {
             <p className="text-xl text-main-text">
               With just one click, for <span className="font-bold">FREE</span>
             </p>
-            <GoogleButton onClick={RedirectToGoogleAuth} />
+            <GoogleButton onClick={redirectToGoogleAuth} />
           </div>
           <div className="col-span-3">
             <Image src={LandingPageMain} alt="Landing page main image" />

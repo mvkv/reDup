@@ -1,6 +1,6 @@
 import config from '../config.json';
 
-export const RedirectToGoogleAuth = () => {
+export const redirectToGoogleAuth = () => {
   const scope = config.googleScopes.join(' ');
 
   const params = {
