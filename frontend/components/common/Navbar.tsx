@@ -9,15 +9,26 @@ type NavbarProps = {
 };
 
 const Navbar = ({ googleLoginCallback }: NavbarProps) => {
+  const linkClass =
+    'cursor-pointer transition duration-150 border-b border-transparent hover:border-main';
+
   return (
     <div className="flex justify-between items-center px-[200px] py-1 shadow-md">
-      <div className='flex gap-8'>
-        <Image src={Logo} alt="Logo" />
-       <div className="flex items-center gap-8 text-main-text">
-       <Link href="/dashboard">Remove duplicates</Link>
-        <Link href="/about">About us</Link>
-        <Link href="/donate">Donate</Link>
-       </div>
+      <div className="flex gap-8">
+        <Link href="/">
+          <Image src={Logo} alt="Logo" className="cursor-pointer" />
+        </Link>
+        <div className="flex items-center gap-8 text-main-text">
+          <Link href="/dashboard">
+            <span className={linkClass}>Remove duplicates</span>
+          </Link>
+          <Link href="/about">
+            <span className={linkClass}>About us</span>
+          </Link>
+          <Link href="/donate">
+            <span className={linkClass}>Donate</span>
+          </Link>
+        </div>
       </div>
       <GoogleButton onClick={googleLoginCallback} />
     </div>

@@ -1,8 +1,8 @@
 import { ResponseMessage } from '../types/ResponseMessage';
-import config from "../config.json";
+import config from '../config.json';
 
 export const getHelloWorld = async () => {
-  const url = `${config.backendAddress}/api/helloworld`
+  const url = `${config.backendAddress}/api/helloworld`;
   try {
     const response = await fetch(url);
     const responseData: ResponseMessage = await response.json();

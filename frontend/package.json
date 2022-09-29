@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "formatting": "npx prettier --write .",
+    "formatting-check": "npx prettier --check ."
   },
   "dependencies": {
     "next": "12.2.5",
