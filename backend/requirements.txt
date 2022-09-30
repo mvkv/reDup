@@ -5,3 +5,5 @@ pyjwt
 dotenv
 logging
 requests
+
+google-cloud-firestore
