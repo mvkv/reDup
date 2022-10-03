@@ -3,7 +3,7 @@ import Head from 'next/head';
 import Image from 'next/image';
 import LandingPageMain from '../public/images/landing_page_main.svg';
 import GoogleButton from 'react-google-button';
-import { redirectToGoogleAuth } from '../utils/GoogleAuthRedirect';
+import { redirectToGoogleAuth } from '../utils/google_auth_redirect';
 
 const Home: NextPage = () => {
   return (

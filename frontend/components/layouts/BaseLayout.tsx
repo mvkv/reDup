@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import Navbar from '../common/Navbar';
-import { redirectToGoogleAuth } from '../../utils/GoogleAuthRedirect';
+import { redirectToGoogleAuth } from '../../utils/google_auth_redirect';
 
 type BaseLayoutProps = {
   children: ReactNode;
