@@ -9,13 +9,32 @@
 ## Startup
 
 ### Run backend
+
+First install the required dependencies with 
+
 ```
-cd backend && uvicorn server:app --reload
+cd backend &&  pip3 install -r requirements.txt
+```
+
+then 
+
+```
+uvicorn server:app --reload
 ```
 
 ### Run frontend
+
+
+First install the required dependencies with 
+
 ```
-cd frontend && npm run dev
+cd frontend && npm install
+```
+
+then 
+
+```
+npm run dev
 ```
 
 ## Addresses

@@ -38,6 +38,8 @@
 **/*.tsbuildinfo
 **/next-env.d.ts
 
+# python
+*.pyc
+
 **/.env
 **/secrets
-
