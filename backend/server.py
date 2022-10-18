@@ -1,9 +1,7 @@
-from typing import Union
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 import auth.google_auth_services as g_auth
-import requests
 import os
 import dotenv
 import db_handler
@@ -39,7 +37,8 @@ def login(code=None, scope=None, error=None):
             token_data = g_auth.get_token_from_code(code)
             user_info = g_auth.get_email_and_hash_from_id_token(
                 token_data["id_token"])
-            db_handler.create_new_user(user_info['email'], token_data['access_token'], token_data['refresh_token'], user_info['at_hash'])
+            db_handler.create_new_user(
+                user_info['email'], token_data['access_token'], token_data['refresh_token'], user_info['at_hash'])
             return RedirectResponse(f"http://localhost:3000/dashboard?user={user_info['email']}&token={user_info['at_hash']}")
         except Exception as e:
             print(e)

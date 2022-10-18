@@ -2,8 +2,7 @@ fastapi
 uvicorn[standard]
 
 pyjwt
-dotenv
-logging
+python-dotenv
 requests
 
 google-cloud-firestore

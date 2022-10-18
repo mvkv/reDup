@@ -1,6 +1,5 @@
 from google.oauth2.service_account import Credentials
 from google.cloud import firestore
-import dotenv
 import os
 
 credentials = Credentials.from_service_account_file(
