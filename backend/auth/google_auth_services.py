@@ -26,5 +26,10 @@ def get_token_from_code(code):
     return res.json()
 
 
-def get_email_from_id_token(id_token):
-    return jwt.decode(id_token)["email"]
+def get_email_and_hash_from_id_token(id_token):
+    id_token_decoded = jwt.decode(id_token, options={"verify_signature": False})
+    return {
+        "email": id_token_decoded["email"],
+        "at_hash": id_token_decoded["at_hash"]
+    }
+
