@@ -4,18 +4,41 @@
 
 **Frontend:** Typescript, NextJs, Tailwind
 
-**Backend:** Python, FastAPI
+**Backend:** Python3, FastAPI
 
 ## Startup
 
 ### Run backend
+
+First install the required dependencies with
+
 ```
-cd backend && uvicorn server:app --reload
+cd backend &&  pip3 install -r requirements.txt
 ```
 
-### Run frontend
+then
+
 ```
-cd frontend && npm run dev
+uvicorn server:app --reload
+```
+
+You will need to create a secrets/ directory under backend with :
+
+1. an `.env` file that will contain settings / hardcoded variables.
+2. `google_application_credentials.json` that will be used to authenticate with Google APIs.
+
+### Run frontend
+
+First install the required dependencies with
+
+```
+cd frontend && npm install
+```
+
+then
+
+```
+npm run dev
 ```
 
 ## Addresses

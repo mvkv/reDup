@@ -1,8 +1,6 @@
 from dotenv import load_dotenv
-import logging
 import os
 import requests
-import json
 import jwt
 
 load_dotenv()
@@ -27,9 +25,9 @@ def get_token_from_code(code):
 
 
 def get_email_and_hash_from_id_token(id_token):
-    id_token_decoded = jwt.decode(id_token, options={"verify_signature": False})
+    id_token_decoded = jwt.decode(
+        id_token, options={"verify_signature": False})
     return {
         "email": id_token_decoded["email"],
         "at_hash": id_token_decoded["at_hash"]
     }
-
