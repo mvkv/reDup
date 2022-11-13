@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { doLogin } from '../apiCalls/Auth';
+import { doLogin, doLogout } from '../apiCalls/Auth';
 import { Action, ActionType, AuthState, Service } from '../types/auth';
 
 const DEFAULT_AUTH_STATE: AuthState = {
@@ -23,6 +23,8 @@ function AuthProvider({ children }: any) {
   const [authState, setAuthState] = useState(DEFAULT_AUTH_STATE);
   const [lastCommand, setLastCommand] = useState(DEFAULT_ACTION);
 
+  // TODO: Login the user on first page load if they have the cookie.
+
   useEffect(() => {
     async function processCommand() {
       switch (lastCommand.type) {
@@ -33,11 +35,17 @@ function AuthProvider({ children }: any) {
           } else {
             setAuthState({ isLoggedIn: false, errorMsg: 'Error', email: '' });
           }
+          break;
         }
         case ActionType.LOGOUT: {
-          // TODO Implement LOGOUT.
+          const body = await doLogout();
+          if (body.ok) {
+            setAuthState({ isLoggedIn: false, errorMsg: 'Error', email: '' });
+          }
+          break;
         }
         default: {
+          break;
           // Do nothing.
         }
       }
