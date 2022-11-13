@@ -28,6 +28,7 @@ def get_email_and_hash_from_id_token(id_token):
     id_token_decoded = jwt.decode(
         id_token, options={"verify_signature": False})
     return {
+        # TODO: Add scope + decoding for "name"
         "email": id_token_decoded["email"],
         "at_hash": id_token_decoded["at_hash"]
     }

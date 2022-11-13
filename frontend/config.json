@@ -1,7 +1,7 @@
 {
   "backendAddress": "http://127.0.0.1:8000",
   "googleClientId": "373123076402-dd5ler5f6nbnbccv4jmhr29tdl7nnffa.apps.googleusercontent.com",
-  "authRedirectUri": "http://127.0.0.1:8000/api/login",
+  "authRedirectUri": "http://127.0.0.1:3000/auth/google",
   "googleAuthUrl": "https://accounts.google.com/o/oauth2/v2/auth",
   "googleScopes": [
     "https://www.googleapis.com/auth/drive",
