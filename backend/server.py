@@ -50,3 +50,13 @@ def logout(session_id: Optional[str] = Cookie(None)):
     response = JSONResponse(content={'ok': True})
     response.delete_cookie(SESSION_ID)
     return response
+
+
+@app.get("/api/auth/cookie")
+def logout(session_id: Optional[str] = Cookie(None)):
+    if session_id:
+        print("User was logged in")
+        # TODO: Obviously unsecure. Add validation.
+        return JSONResponse(content={'ok': True, 'email': 'todo_email'})
+    else:
+        return JSONResponse(content={'ok': False, 'email': ''})

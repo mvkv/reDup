@@ -1,5 +1,11 @@
-import { createContext, useContext, useEffect, useState } from 'react';
-import { doLogin, doLogout } from '../apiCalls/Auth';
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
+import { doGoogleLogin, doLogout, doCookieLogin } from '../apiCalls/Auth';
 import { Action, ActionType, AuthState, Service } from '../types/auth';
 
 const DEFAULT_AUTH_STATE: AuthState = {
@@ -8,7 +14,7 @@ const DEFAULT_AUTH_STATE: AuthState = {
   email: '',
 };
 
-const DEFAULT_ACTION = {
+const DEFAULT_ACTION: Action = {
   type: ActionType.UNDEFINED,
   service: Service.UNDEFINED,
   token: '',
@@ -19,17 +25,30 @@ const AuthContext = createContext<
   { authState: AuthState; setLastCommand: Dispatch } | undefined
 >(undefined);
 
-function AuthProvider({ children }: any) {
+function AuthProvider({ children }: { children: ReactNode }) {
   const [authState, setAuthState] = useState(DEFAULT_AUTH_STATE);
   const [lastCommand, setLastCommand] = useState(DEFAULT_ACTION);
 
   // TODO: Login the user on first page load if they have the cookie.
 
   useEffect(() => {
+    async function onLoadLogin() {
+      const body = await doCookieLogin();
+      if (body.ok) {
+        setAuthState({ isLoggedIn: true, errorMsg: '', email: body.email });
+      } else {
+        // The user might not have the cookie set.
+        // TODO: Use local storage to prevent firing unecessary request.
+      }
+    }
+    onLoadLogin();
+  }, []);
+
+  useEffect(() => {
     async function processCommand() {
       switch (lastCommand.type) {
         case ActionType.LOGIN: {
-          const body = await doLogin(lastCommand.token);
+          const body = await doGoogleLogin(lastCommand.token);
           if (body.ok) {
             setAuthState({ isLoggedIn: true, errorMsg: '', email: body.email });
           } else {
