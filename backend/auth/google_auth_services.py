@@ -1,9 +1,7 @@
-from dotenv import load_dotenv
 import os
 import requests
 import jwt
 
-load_dotenv()
 
 GOOGLE_ACCESS_TOKEN_OBTAIN_URL = "https://oauth2.googleapis.com/token"
 
@@ -26,7 +24,7 @@ def get_token_from_code(code):
 
 def get_email_and_hash_from_id_token(id_token):
     id_token_decoded = jwt.decode(
-        id_token, options={"verify_signature": False})
+        id_token, options={"verify_signature": False}, audience=os.environ.get("GOOGLE_CLIENT_ID"))
     return {
         # TODO: Add scope + decoding for "name"
         "email": id_token_decoded["email"],
