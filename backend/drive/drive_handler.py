@@ -19,7 +19,7 @@ class DriveHandler:
             done = False
             while done is False:
                 status, done = downloader.next_chunk()
-                print(F'Download {int(status.progress() * 100)}%')
+                print(F'Downloading image: {int(status.progress() * 100)}%')
 
         except HttpError as error:
             print(F'An error occurred: {error}')
@@ -61,7 +61,12 @@ class DriveHandler:
         images_ids = []
         images = []
         for folder_id in folders_ids:
-            images_ids += [images.append(self.__get_image_from_id(image["id"])) for image in self.get_folders_or_images_from_parent(
+            images_ids += [images.append(
+                {
+                    "id": image["id"],
+                    "name": image["name"],
+                    "media_bytes": self.__get_image_from_id(image["id"])
+                }) for image in self.get_folders_or_images_from_parent(
                 get_images=True, parent_id=folder_id)]
 
         return images

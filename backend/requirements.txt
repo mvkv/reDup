@@ -5,6 +5,9 @@ pyjwt
 python-dotenv
 requests
 
+PIL
+imagehash
+
 google-cloud-firestore
 google-api-python-client 
 google-auth-httplib2 
