@@ -55,7 +55,7 @@ def logout(request: Request):
 
 
 @app.get("/api/auth/cookie")
-def logout(request: Request):
+def cookie(request: Request):
     if request.state.user_email:
         return JSONResponse(content={'ok': True, 'email': request.state.user_email})
     return JSONResponse(content={'ok': False, 'email': ''})
@@ -66,6 +66,6 @@ def auth_middlewere(request: Request, call_next):
     session_id = request.cookies.get("session_id")
     user_email = None
     if session_id:
-        user_email, _ = db.auth_cookie_to_email(session_id)
+        user_email = db.auth_cookie_to_email(session_id)
     request.state.user_email = user_email
     return call_next(request)

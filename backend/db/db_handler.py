@@ -10,11 +10,11 @@ db = firestore.Client(project=os.environ.get(
 
 users = db.collection(u'users')
 # TODO Handle Cookie Expiration.
-cookie = db.collection(u'cookie')
+cookies = db.collection(u'cookies')
 
 
 def add_user_if_missing(email, access_token, refresh_token, at_hash):
-    user = find_user(email)
+    user = find_user_by_email(email)
     if user:
         return user[0].id
     new_user = users.document()
@@ -25,31 +25,26 @@ def add_user_if_missing(email, access_token, refresh_token, at_hash):
         u"at_hash": at_hash
     })
     auth_cookie = secrets.token_urlsafe(32)
-    cookie.document(auth_cookie).set({'uuid': new_user.id})
+    cookies.document(auth_cookie).set({'uuid': new_user.id})
     return new_user.id
 
 
 def get_user_auth(uuid):
-    auth = cookie.where(u'uuid', u'==', uuid).limit(1).get()
+    auth = cookies.where(u'uuid', u'==', uuid).limit(1).get()
     if auth:
         return auth[0].id
     return None
 
 
 def auth_cookie_to_email(auth_cookie):
-    user = cookie.document(auth_cookie).get()
-    if user.exists:
-        uuid = user.to_dict()['uuid']
+    user_id = cookies.document(auth_cookie).get()
+    if user_id.exists:
+        uuid = user_id.to_dict()['uuid']
         user2 = users.document(uuid).get()
         if user2.exists:
-            return [user2.to_dict()["email"], auth_cookie]
-    else:
-        return None
+            return user2.to_dict()["email"]
+    return None
 
 
-def find_user(email_to_find):
+def find_user_by_email(email_to_find):
     return users.where(u'email', u'==', email_to_find).limit(1).get()
-
-
-def delete_user(email):
-    users.document(email).delete()
