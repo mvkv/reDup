@@ -3,14 +3,15 @@ import Image from 'next/image';
 import React from 'react';
 import GoogleButton from 'react-google-button';
 import Logo from '../../public/images/logo.svg';
+import { useAuth } from '../../providers/auth-context';
+import { redirectToGoogleAuth } from '../../utils/GoogleAuthRedirect';
+import { ActionType, Service } from '../../types/auth';
 
-type NavbarProps = {
-  googleLoginCallback: () => void;
-};
-
-const Navbar = ({ googleLoginCallback }: NavbarProps) => {
+const Navbar = () => {
   const linkClass =
     'cursor-pointer transition duration-150 border-b border-transparent hover:border-main';
+
+  const { authState, setLastCommand } = useAuth();
 
   return (
     <div className="flex justify-between items-center px-[200px] py-1 shadow-md">
@@ -30,7 +31,26 @@ const Navbar = ({ googleLoginCallback }: NavbarProps) => {
           </Link>
         </div>
       </div>
-      <GoogleButton onClick={googleLoginCallback} />
+      {!authState.isLoggedIn && (
+        <GoogleButton onClick={() => redirectToGoogleAuth()} />
+      )}
+      {authState.isLoggedIn && (
+        <div>
+          <span>Hello {authState.email}! </span>
+          <button
+            className="px-2 py-1 border-2 border-blue-700 bg-blue-100"
+            onClick={() =>
+              setLastCommand({
+                type: ActionType.LOGOUT,
+                service: Service.UNDEFINED,
+                token: '',
+              })
+            }
+          >
+            Log Out
+          </button>
+        </div>
+      )}
     </div>
   );
 };

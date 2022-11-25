@@ -4,8 +4,12 @@ import Image from 'next/image';
 import LandingPageMain from '../public/images/landing_page_main.svg';
 import GoogleButton from 'react-google-button';
 import { redirectToGoogleAuth } from '../utils/GoogleAuthRedirect';
+import { useAuth } from '../providers/auth-context';
 
 const Home: NextPage = () => {
+  const { authState } = useAuth();
+  const isLoggedIn = authState.isLoggedIn;
+
   return (
     <>
       <Head>
@@ -23,7 +27,10 @@ const Home: NextPage = () => {
             <p className="text-xl text-main-text">
               With just one click, for <span className="font-bold">FREE</span>
             </p>
-            <GoogleButton onClick={redirectToGoogleAuth} />
+            {!isLoggedIn && (
+              <GoogleButton onClick={() => redirectToGoogleAuth()} />
+            )}
+            {isLoggedIn && <div>Logged in as {authState.email}! </div>}
           </div>
           <div className="col-span-3">
             <Image src={LandingPageMain} alt="Landing page main image" />
