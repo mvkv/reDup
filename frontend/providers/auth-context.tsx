@@ -1,3 +1,4 @@
+import Router from 'next/router';
 import {
   createContext,
   ReactNode,
@@ -6,6 +7,7 @@ import {
   useState,
 } from 'react';
 import { doGoogleLogin, doLogout, doCookieLogin } from '../apiCalls/Auth';
+import usePrevious from '../hooks/usePrevious';
 import { Action, ActionType, AuthState, Service } from '../types/auth';
 
 const DEFAULT_AUTH_STATE: AuthState = {
@@ -29,7 +31,8 @@ function AuthProvider({ children }: { children: ReactNode }) {
   const [authState, setAuthState] = useState(DEFAULT_AUTH_STATE);
   const [lastCommand, setLastCommand] = useState(DEFAULT_ACTION);
 
-  // TODO: Login the user on first page load if they have the cookie.
+  const isLoggedIn = authState.isLoggedIn;
+  const wasLoggedIn = usePrevious(isLoggedIn);
 
   useEffect(() => {
     async function onLoadLogin() {
@@ -71,6 +74,13 @@ function AuthProvider({ children }: { children: ReactNode }) {
     }
     processCommand();
   }, [lastCommand]);
+
+  useEffect(() => {
+    // If the user log-in and was previously logged-out redirect them to the dashboard page.
+    if (isLoggedIn && !wasLoggedIn) {
+      Router.push('/dashboard');
+    }
+  }, [isLoggedIn, wasLoggedIn]);
 
   return (
     <AuthContext.Provider value={{ authState, setLastCommand }}>

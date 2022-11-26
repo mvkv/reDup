@@ -5,6 +5,7 @@ import LandingPageMain from '../public/images/landing_page_main.svg';
 import GoogleButton from 'react-google-button';
 import { redirectToGoogleAuth } from '../utils/GoogleAuthRedirect';
 import { useAuth } from '../providers/auth-context';
+import Link from 'next/link';
 
 const Home: NextPage = () => {
   const { authState } = useAuth();
@@ -30,7 +31,16 @@ const Home: NextPage = () => {
             {!isLoggedIn && (
               <GoogleButton onClick={() => redirectToGoogleAuth()} />
             )}
-            {isLoggedIn && <div>Logged in as {authState.email}! </div>}
+            {isLoggedIn && (
+              <div>
+                Go to the{' '}
+                <Link href="/dashboard">
+                  <span className="text-3xl text-main font-bold uppercase underline">
+                    dashboard
+                  </span>
+                </Link>
+              </div>
+            )}
           </div>
           <div className="col-span-3">
             <Image src={LandingPageMain} alt="Landing page main image" />
