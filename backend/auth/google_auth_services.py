@@ -1,12 +1,13 @@
 import os
+from typing import Any, Dict
 import requests
 import jwt
-
+from collections import namedtuple
 
 GOOGLE_ACCESS_TOKEN_OBTAIN_URL = "https://oauth2.googleapis.com/token"
 
 
-def get_token_from_code(code):
+def get_token_from_code(code) -> Dict[str, Any]:
     data = {
         'code': code,
         'client_id': os.environ.get("GOOGLE_CLIENT_ID"),
@@ -22,11 +23,11 @@ def get_token_from_code(code):
     return res.json()
 
 
-def get_email_and_hash_from_id_token(id_token):
+# TODO: Add scope + decoding for "name"
+TokenData = namedtuple('TokenInfo', ['emil', 'at_hash'])
+
+
+def get_email_and_hash_from_id_token(id_token) -> TokenData:
     id_token_decoded = jwt.decode(
         id_token, options={"verify_signature": False}, audience=os.environ.get("GOOGLE_CLIENT_ID"))
-    return {
-        # TODO: Add scope + decoding for "name"
-        "email": id_token_decoded["email"],
-        "at_hash": id_token_decoded["at_hash"]
-    }
+    return TokenData(id_token_decoded["email"], id_token_decoded["at_hash"])
