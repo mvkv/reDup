@@ -23,12 +23,13 @@ const Navbar = () => {
           <Link href="/dashboard">
             <span className={linkClass}>Remove duplicates</span>
           </Link>
-          <Link href="/about">
+          {/* TODO: Add back once implemented. */}
+          {/* <Link href="/about">
             <span className={linkClass}>About us</span>
           </Link>
           <Link href="/donate">
             <span className={linkClass}>Donate</span>
-          </Link>
+          </Link> */}
         </div>
       </div>
       {!authState.isLoggedIn && (

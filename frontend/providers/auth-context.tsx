@@ -35,7 +35,7 @@ function AuthProvider({ children }: { children: ReactNode }) {
   const wasLoggedIn = usePrevious(isLoggedIn);
 
   useEffect(() => {
-    async function onLoadLogin() {
+    async function tryOnLoadLogin() {
       const body = await doCookieLogin();
       if (body.ok) {
         setAuthState({ isLoggedIn: true, errorMsg: '', email: body.email });
@@ -44,8 +44,10 @@ function AuthProvider({ children }: { children: ReactNode }) {
         // TODO: Use local storage to prevent firing unecessary request.
       }
     }
-    onLoadLogin();
-  }, []);
+    if (!isLoggedIn) {
+      tryOnLoadLogin();
+    }
+  }, [isLoggedIn]);
 
   useEffect(() => {
     async function processCommand() {
