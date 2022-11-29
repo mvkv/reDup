@@ -5,7 +5,7 @@ pyjwt
 python-dotenv
 requests
 
-PIL
+Pillow
 imagehash
 
 google-cloud-firestore
