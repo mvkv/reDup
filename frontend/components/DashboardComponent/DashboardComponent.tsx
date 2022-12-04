@@ -49,7 +49,7 @@ export default function DashboardComponent() {
   );
 }
 
-// TODO: Replace all of this.
+// TODO: Replace these helpers.
 const LoadingSpinner = () => <div>LOADING</div>;
 
 const fakeFetch = (): Promise<{ data: string[] }> => {
@@ -99,8 +99,7 @@ const FolderSelect = ({ state, dispatch }: StateDispatchArgs) => {
   return (
     <>
       {' '}
-      <p>Let's get started</p>
-      <p>Folders {state.foldersResults}</p>
+      <p>Select Folders {state.foldersResults}</p>
       <button
         onClick={() =>
           dispatch({
@@ -135,8 +134,7 @@ const FilesSelect = ({ state, dispatch }: StateDispatchArgs) => {
   return (
     <>
       {' '}
-      <p>Let's get started</p>
-      <p>Files {state.filesResults}</p>
+      <p>Select Files {state.filesResults}</p>
       <button
         onClick={() =>
           dispatch({ goTo: StateType.RESULT_FETCH, filesSelected: ['example'] })
@@ -168,7 +166,6 @@ const Final = ({ state, dispatch }: StateDispatchArgs) => {
   return (
     <>
       {' '}
-      <p>Finish</p>
       <p>Finish {state.finalSummary}</p>
     </>
   );

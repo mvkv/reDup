@@ -76,27 +76,47 @@ export function reducer(state: DahsboardState, action: Action) {
       if (!action.fetchedFolders?.length) {
         return errorSameState;
       }
-      return { ...validState, currState: StateType.FOLDER_SELECT };
+      return {
+        ...validState,
+        currState: StateType.FOLDER_SELECT,
+        foldersResults: action.fetchedFolders,
+      };
     case StateType.FILES_FETCH:
       if (!action.foldersSelected?.length) {
         return errorSameState;
       }
-      return { ...validState, currState: StateType.FILES_FETCH };
+      return {
+        ...validState,
+        currState: StateType.FILES_FETCH,
+        foldersSelected: action.foldersSelected,
+      };
     case StateType.FILES_SELECT:
       if (!action.fetchedFiles?.length) {
         return errorSameState;
       }
-      return { ...validState, currState: StateType.FILES_SELECT };
+      return {
+        ...validState,
+        currState: StateType.FILES_SELECT,
+        filesResults: action.fetchedFiles,
+      };
     case StateType.RESULT_FETCH:
       if (!action.filesSelected?.length) {
         return errorSameState;
       }
-      return { ...validState, currState: StateType.RESULT_FETCH };
+      return {
+        ...validState,
+        currState: StateType.RESULT_FETCH,
+        filesSelected: action.filesSelected,
+      };
     case StateType.FINAL:
       if (!action.fetchedSummary?.length) {
         return errorSameState;
       }
-      return { ...validState, currState: StateType.FINAL };
+      return {
+        ...validState,
+        currState: StateType.FINAL,
+        finalSummary: action.fetchedSummary,
+      };
     default:
       throw new Error();
   }
