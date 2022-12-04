@@ -4,7 +4,8 @@ from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaIoBaseDownload
 from googleapiclient.http import MediaIoBaseUpload
 from custom_types.Image import Image
-from enums.mime_types import MimeType
+from enums.mime_types import DriveMimeType
+from custom_types.File import File
 
 import io
 
@@ -14,7 +15,7 @@ class DriveHandler:
         # TODO: Implement refresh token
         self.drive = build('drive', 'v3', credentials=Credentials(token))
 
-    def _get_image_from_id(self, image_id: str) -> str:
+    def _get_image_from_id(self, image_id: str) -> str or None:
         try:
             request = self.drive.files().get_media(fileId=image_id)
             file = io.BytesIO()
@@ -32,9 +33,9 @@ class DriveHandler:
 
         return file
 
-    def _get_files_from_parent_id(self, parent_id: str, mime_type: str, page_size: int) -> list:
-        if 0 < page_size < 1000:
-            return Exception("Page size must be between 0 and 1000")
+    def _get_files_from_parent_id(self, parent_id: str, mime_type: str, page_size: int = 1000) -> list[File]:
+        if not 1 <= page_size <= 1000:
+            raise Exception("Page size must be between 0 and 1000")
 
         files = []
         try:
@@ -54,23 +55,18 @@ class DriveHandler:
                 else:
                     request_done = True
 
-                files += res["files"]
+                files += [File(**file) for file in res["files"]]
 
         except HttpError as e:
             print(f"An error occurred: {e}")
-            files = None
 
         return files
 
     def get_images_from_folder(self, folder_id: str) -> list:
-        images = []
-        for img in self._get_files_from_parent_id(folder_id, MimeType.IMAGE.value, 1000):
-            images.append(Image(img["id"], img["name"],
-                          self._get_image_from_id(img["id"])))
+        images = [Image(img.id, img.name, self._get_image_from_id(img.id))
+                  for img in self._get_files_from_parent_id(folder_id, DriveMimeType.IMAGE.value)]
         return images
 
     def get_images_from_folders_ids(self, folders_ids: list[dict]) -> list:
-        images = []
-        for folder_id in folders_ids:
-            images += self.get_images_from_folder(folder_id)
+        images = [image for list_of_images in (self.get_images_from_folder(folder_id) for folder_id in folders_ids) for image in list_of_images]
         return images

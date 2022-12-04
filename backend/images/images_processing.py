@@ -17,20 +17,21 @@ def compare_images_from_bytes(image1_bytes, image2_bytes):
     return image1_hash - image2_hash
 
 
-def cluster_images_from_bytes(images: list[Image]):
+def cluster_images_from_bytes(images: list[Image]) -> list[list[Image]]:
     clusters = []
     seen = set()
-    for image in images:
-        if image.id in seen:
+    for idx, image in enumerate(images):
+        if image.id in seen: 
             continue
-        seen.add(image.id)
+
         cluster = [image]
-        for other_image in images:
-            if other_image.id in seen or image.id == other_image.id:
-                continue
-            if compare_images_from_bytes(image.image_bytes, other_image.image_bytes) < TRESHOLD:
-                cluster.append(other_image)
-                seen.add(other_image.id)
+        seen.add(image.id)
+
+        for other_image_idx in range(idx + 1, len(images)):
+            if images[other_image_idx].id not in seen:
+                if compare_images_from_bytes(image.image_bytes, images[other_image_idx].image_bytes) < TRESHOLD:
+                    cluster.append(images[other_image_idx])
+                    seen.add(images[other_image_idx].id)
         clusters.append(cluster)
 
     return clusters
