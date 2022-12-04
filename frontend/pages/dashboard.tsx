@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { useAuth } from '../providers/auth-context';
 import { useEffect } from 'react';
 import Router from 'next/router';
+import DashboardComponent from '../components/DashboardComponent';
 
 const Dashboard: NextPage = () => {
   const { authState } = useAuth();
@@ -25,7 +26,7 @@ const Dashboard: NextPage = () => {
       <main className="h-full min-w-full flex justify-center items-center flex-col gap-8 px-[200px]">
         <div className="grid grid-cols-8">
           <div className="col-span-5 flex flex-col gap-5">
-            {isLoggedIn && <span>Welcome {authState.email}!</span>}
+            {isLoggedIn && <DashboardComponent />}
           </div>
         </div>
       </main>
