@@ -24,7 +24,7 @@ def get_token_from_code(code) -> Dict[str, Any]:
 
 
 # TODO: Add scope + decoding for "name"
-TokenData = namedtuple('TokenInfo', ['emil', 'at_hash'])
+TokenData = namedtuple('TokenInfo', ['email', 'at_hash'])
 
 
 def get_email_and_hash_from_id_token(id_token) -> TokenData:
