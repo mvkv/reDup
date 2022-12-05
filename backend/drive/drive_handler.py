@@ -34,7 +34,7 @@ class DriveHandler:
         return file
 
     def _get_files_from_parent_id(self, parent_id: str, mime_type: str, page_size: int = 1000) -> list[File]:
-        if not 1 <= page_size <= 1000:
+        if page_size < 1 or page_size > 1000:
             raise Exception("Page size must be between 0 and 1000")
 
         files = []
@@ -68,5 +68,6 @@ class DriveHandler:
         return images
 
     def get_images_from_folders_ids(self, folders_ids: list[dict]) -> list:
-        images = [image for list_of_images in (self.get_images_from_folder(folder_id) for folder_id in folders_ids) for image in list_of_images]
+        folders_image = [self.get_images_from_folder(folder_id) for folder_id in folders_ids]
+        images = [image for list_of_images in folders_image for image in list_of_images]
         return images

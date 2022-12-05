@@ -24,7 +24,8 @@ class TestClustering(unittest.TestCase):
 
     def test_clustering_images_from_bytes(self):
         images = self.import_images()
-        id_clusters = list(map(lambda cluster : sorted(map(lambda image : image.id, cluster)) , cluster_images_from_bytes(images)))
+        image_to_image_id = lambda image : image.id
+        id_clusters = list(map(lambda cluster : sorted(map(image_to_image_id, cluster)) , cluster_images_from_bytes(images)))
         self.assertCountEqual(id_clusters, EXPECTED_CLUSTERS)
 
 
