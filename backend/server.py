@@ -24,31 +24,36 @@ SESSION_ID = "session_id"
 
 @app.get("/api/auth/google")
 def login(code=None):
-    if code:
-        try:
-            token_data = g_auth.get_token_from_code(code)
-            user_info = g_auth.get_email_and_hash_from_id_token(
-                token_data["id_token"])
+    login_error_response = JSONResponse(content={'ok': False, 'email': ''})
+    if not code:
+        return login_error_response
+    try:
+        token_data = g_auth.get_token_from_code(code)
+        email, at_hash = g_auth.get_email_and_hash_from_id_token(
+            token_data["id_token"])
 
-            user_id = db.add_user_if_missing(
-                user_info['email'], token_data['access_token'], token_data['refresh_token'], user_info['at_hash'])
-            auth = db.get_user_auth(user_id)
+        user_id = db.add_user_and_get_uuid(
+            email, token_data['access_token'], token_data['refresh_token'], at_hash)
+        auth = db.get_session_id_from_uuid(user_id)
+        if not auth:
+            return login_error_response
 
-            response = JSONResponse(
-                content={'ok': True, 'email': user_info['email']})
-            response.set_cookie(
-                key=SESSION_ID, value=auth, httponly=True, max_age=60*60*24)  # TODO: Add Cookie expiration validation.
-            return response
-        except Exception as e:
-            print(e)
-            return JSONResponse(content={'ok': False, 'email': ''})
+        response = JSONResponse(
+            content={'ok': True, 'email': email})
+        response.set_cookie(
+            key=SESSION_ID, value=str(auth), httponly=True, max_age=60*60*24)  # TODO: Add Cookie expiration validation.
+        return response
+    except Exception as e:
+        print(e)
+        return login_error_response
 
 
 @app.get("/api/auth/logout")
 def logout(request: Request):
-    if request.state.user_email:
+    session_id = request.cookies.get("session_id")
+    if request.state.user_email and session_id:
         print("User was logged in")
-        # TODO: Unlink session_id to user_id
+        db.delete_session_id(session_id)
     response = JSONResponse(content={'ok': True})
     response.delete_cookie(SESSION_ID)
     return response
@@ -64,8 +69,7 @@ def cookie(request: Request):
 @app.middleware("http")
 def auth_middlewere(request: Request, call_next):
     session_id = request.cookies.get("session_id")
-    user_email = None
+    request.state.user_email = None
     if session_id:
-        user_email = db.auth_cookie_to_email(session_id)
-    request.state.user_email = user_email
+        request.state.user_email = db.get_email_from_session_id(session_id)
     return call_next(request)
