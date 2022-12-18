@@ -15,7 +15,7 @@ class DriveHandler:
         # TODO: Implement refresh token
         self.drive = build('drive', 'v3', credentials=Credentials(token))
 
-    def _get_image_from_id(self, image_id: str) -> str or None:
+    def get_image_from_id(self, image_id: str) -> str or None:
         try:
             request = self.drive.files().get_media(fileId=image_id)
             file = io.BytesIO()
@@ -63,27 +63,31 @@ class DriveHandler:
         return files
 
     def get_images_from_folder(self, folder_id: str) -> List[Image]:
-        images = [Image(img.id, img.name, self._get_image_from_id(img.id), img.thumbnailLink)
-                  for img in self.get_files_from_parent_id(folder_id, DriveMimeType.IMAGE.value)]
+        images = []
+        files = self.get_files_from_parent_id(folder_id, DriveMimeType.IMAGE.value)
+        for img in files:
+            images.append(Image(img.id, img.name, self.get_image_from_id(img.id), img.thumbnailLink))
         return images
 
     def get_images_from_folders_ids(self, folders_ids: List[dict]) -> List[Image]:
         folders_image = [self.get_images_from_folder(
             folder_id) for folder_id in folders_ids]
-        images = [
-            image for list_of_images in folders_image for image in list_of_images]
+        images = []
+        for folder_image in folders_image:
+            for image in folder_image:
+                images.append(image)
         return images
 
     def delete_file_from_id(self, file_id: str) -> bool:
         try:
-            self.drive.files().delete(fileId=file_id).execute()
+            self.drive.files().trash(fileId=file_id).execute()
         except HttpError:
             print("ERROR: File not found")
             return False
         return True
 
-    def delete_files_from_ids(self, files_ids: List[str]) -> bool:
+    def delete_files_from_ids(self, files_ids: List[str]) -> List:
+        deletion_status = {}
         for file_id in files_ids:
-            if not self.delete_file_from_id(file_id):
-                return False
-        return True
+            deletion_status[file_id] = self.delete_file_from_id(file_id)
+        return deletion_status

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Union
 
 
 @dataclass
@@ -7,4 +7,4 @@ class File:
     id: str
     name: str
     parents: List[str]
-    thumbnailLink: str = None
+    thumbnailLink: Union[str, None] = None

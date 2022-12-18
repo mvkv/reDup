@@ -18,7 +18,7 @@ class TestClustering(unittest.TestCase):
             img_path = os.path.join(SOURCE_DIR, image_name)
             with open(img_path, "rb") as img:
                 images.append(
-                    Image(image_name, image_name, img.read())
+                    Image(image_name, image_name, img.read(), "local")
                 )
         return images
 
