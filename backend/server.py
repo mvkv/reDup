@@ -25,28 +25,27 @@ SESSION_ID = "session_id"
 @app.get("/api/auth/google")
 def login(code=None):
     login_error_response = JSONResponse(content={'ok': False, 'email': ''})
-    if code:
-        try:
-            token_data = g_auth.get_token_from_code(code)
-            email, at_hash = g_auth.get_email_and_hash_from_id_token(
-                token_data["id_token"])
-
-            user_id = db.add_user_and_get_uuid(
-                email, token_data['access_token'], token_data['refresh_token'], at_hash)
-            auth = db.get_session_id_from_uuid(user_id)
-            if not auth:
-                return login_error_response
-
-            response = JSONResponse(
-                content={'ok': True, 'email': email})
-            response.set_cookie(
-                key=SESSION_ID, value=str(auth), httponly=True, max_age=60*60*24)  # TODO: Add Cookie expiration validation.
-            return response
-        except Exception as e:
-            print(e)
-            return login_error_response
-    else:
+    if not code:
         return login_error_response
+    try:
+        token_data = g_auth.get_token_from_code(code)
+        email, at_hash = g_auth.get_email_and_hash_from_id_token(
+            token_data["id_token"])
+
+        user_id = db.add_user_and_get_uuid(
+            email, token_data['access_token'], token_data['refresh_token'], at_hash)
+        auth = db.get_session_id_from_uuid(user_id)
+        if not auth:
+            return login_error_response
+
+        response = JSONResponse(
+            content={'ok': True, 'email': email})
+        response.set_cookie(
+            key=SESSION_ID, value=str(auth), httponly=True, max_age=60*60*24)  # TODO: Add Cookie expiration validation.
+        return response
+    except Exception as e:
+        print(e)
+    return login_error_response
 
 
 @app.get("/api/auth/logout")
