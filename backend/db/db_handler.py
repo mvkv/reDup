@@ -67,3 +67,11 @@ def find_user_uuid_by_email(email_to_find: str) -> Union[None, str]:
         return list(user)[0].id
     else:
         return None
+
+
+def get_token_from_email(email: str) -> str:
+    user = users.document(find_user_uuid_by_email(email)).get()
+    if user.exists:
+        return user.to_dict()["access_token"]
+    else:
+        return None

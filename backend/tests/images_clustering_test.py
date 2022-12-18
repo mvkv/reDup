@@ -1,7 +1,7 @@
 import unittest
 import os
 from custom_types.Image import Image
-from images.images_processing import cluster_images_from_bytes
+from images.images_processing import cluster_images
 import random
 
 SOURCE_DIR = "backend/tests/res/images"
@@ -22,10 +22,10 @@ class TestClustering(unittest.TestCase):
                 )
         return images
 
-    def test_clustering_images_from_bytes(self):
+    def test_clustering_images(self):
         images = self.import_images()
-        image_to_image_id = lambda image : image.id
-        id_clusters = list(map(lambda cluster : sorted(map(image_to_image_id, cluster)) , cluster_images_from_bytes(images)))
+        image_to_image_id = lambda image: image.id
+        id_clusters = list(map(lambda cluster: sorted(map(image_to_image_id, cluster)), cluster_images(images)))
         self.assertCountEqual(id_clusters, EXPECTED_CLUSTERS)
 
 
