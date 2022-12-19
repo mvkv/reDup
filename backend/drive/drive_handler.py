@@ -1,6 +1,6 @@
-from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+from google.auth.credentials import Credentials
 from googleapiclient.http import MediaIoBaseDownload
 from custom_types.Image import Image
 from enums.mime_types import DriveMimeType
@@ -11,9 +11,8 @@ import io
 
 
 class DriveHandler:
-    def __init__(self, token):
-        # TODO: Implement refresh token
-        self.drive = build('drive', 'v3', credentials=Credentials(token))
+    def __init__(self, credentials: Credentials):
+        self.drive = build('drive', 'v3', credentials=credentials)
 
     def get_image_from_id(self, image_id: str) -> str or None:
         try:
@@ -64,9 +63,11 @@ class DriveHandler:
 
     def get_images_from_folder(self, folder_id: str) -> List[Image]:
         images = []
-        files = self.get_files_from_parent_id(folder_id, DriveMimeType.IMAGE.value)
+        files = self.get_files_from_parent_id(
+            folder_id, DriveMimeType.IMAGE.value)
         for img in files:
-            images.append(Image(img.id, img.name, self.get_image_from_id(img.id), img.thumbnailLink))
+            images.append(
+                Image(img.id, img.name, self.get_image_from_id(img.id), img.thumbnailLink))
         return images
 
     def get_images_from_folders_ids(self, folders_ids: List[dict]) -> List[Image]:
