@@ -1,4 +1,5 @@
 import os
+from google.oauth2.credentials import Credentials
 from typing import Any, Dict
 import requests
 import jwt
@@ -31,3 +32,11 @@ def get_email_and_hash_from_id_token(id_token) -> TokenData:
     id_token_decoded = jwt.decode(
         id_token, options={"verify_signature": False}, audience=os.environ.get("GOOGLE_CLIENT_ID"))
     return TokenData(id_token_decoded["email"], id_token_decoded["at_hash"])
+
+
+def craft_credentials_from_tokens(access_token: str, refresh_token: str):
+    return Credentials(access_token,
+                       refresh_token=refresh_token,
+                       client_id=os.environ.get("GOOGLE_CLIENT_ID"),
+                       client_secret=os.environ.get("GOOGLE_CLIENT_SECRET"),
+                       token_uri=GOOGLE_ACCESS_TOKEN_OBTAIN_URL)

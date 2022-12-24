@@ -67,3 +67,15 @@ def find_user_uuid_by_email(email_to_find: str) -> Union[None, str]:
         return list(user)[0].id
     else:
         return None
+
+
+def get_access_and_refresh_token_from_email(email: str) -> str:
+    user = users.document(find_user_uuid_by_email(email)).get()
+    if user.exists:
+        user = user.to_dict()
+        return {
+            "access_token": user["access_token"],
+            "refresh_token": user["refresh_token"]
+        }
+    else:
+        return None

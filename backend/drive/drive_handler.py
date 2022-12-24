@@ -1,21 +1,20 @@
-from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+from google.auth.credentials import Credentials
 from googleapiclient.http import MediaIoBaseDownload
-from googleapiclient.http import MediaIoBaseUpload
 from custom_types.Image import Image
 from enums.mime_types import DriveMimeType
 from custom_types.File import File
+from typing import List
 
 import io
 
 
 class DriveHandler:
-    def __init__(self, token):
-        # TODO: Implement refresh token
-        self.drive = build('drive', 'v3', credentials=Credentials(token))
+    def __init__(self, credentials: Credentials):
+        self.drive = build('drive', 'v3', credentials=credentials)
 
-    def _get_image_from_id(self, image_id: str) -> str or None:
+    def get_image_from_id(self, image_id: str) -> str or None:
         try:
             request = self.drive.files().get_media(fileId=image_id)
             file = io.BytesIO()
@@ -33,7 +32,7 @@ class DriveHandler:
 
         return file
 
-    def _get_files_from_parent_id(self, parent_id: str, mime_type: str, page_size: int = 1000) -> list[File]:
+    def get_files_from_parent_id(self, parent_id: str = "root", mime_type: str = DriveMimeType.FOLDER.value, page_size: int = 1000) -> List[File]:
         if page_size < 1 or page_size > 1000:
             raise Exception("Page size must be between 0 and 1000")
 
@@ -46,7 +45,7 @@ class DriveHandler:
                     q=f"'{parent_id}' in parents and mimeType = '{mime_type}' and trashed = false",
                     pageSize=page_size,
                     corpora="user",
-                    fields="nextPageToken, files(id, name, parents)",
+                    fields=f"nextPageToken, files(id, name, parents {', thumbnailLink' if mime_type == DriveMimeType.IMAGE.value else ''})",
                     pageToken=page_token,
                 ).execute()
 
@@ -62,12 +61,34 @@ class DriveHandler:
 
         return files
 
-    def get_images_from_folder(self, folder_id: str) -> list:
-        images = [Image(img.id, img.name, self._get_image_from_id(img.id))
-                  for img in self._get_files_from_parent_id(folder_id, DriveMimeType.IMAGE.value)]
+    def get_images_from_folder(self, folder_id: str) -> List[Image]:
+        images = []
+        files = self.get_files_from_parent_id(
+            folder_id, DriveMimeType.IMAGE.value)
+        for img in files:
+            images.append(
+                Image(img.id, img.name, self.get_image_from_id(img.id), img.thumbnailLink))
         return images
 
-    def get_images_from_folders_ids(self, folders_ids: list[dict]) -> list:
-        folders_image = [self.get_images_from_folder(folder_id) for folder_id in folders_ids]
-        images = [image for list_of_images in folders_image for image in list_of_images]
+    def get_images_from_folders_ids(self, folders_ids: List[dict]) -> List[Image]:
+        folders_image = [self.get_images_from_folder(
+            folder_id) for folder_id in folders_ids]
+        images = []
+        for folder_image in folders_image:
+            for image in folder_image:
+                images.append(image)
         return images
+
+    def delete_file_from_id(self, file_id: str) -> bool:
+        try:
+            self.drive.files().trash(fileId=file_id).execute()
+        except HttpError:
+            print("ERROR: File not found")
+            return False
+        return True
+
+    def delete_files_from_ids(self, files_ids: List[str]) -> List:
+        deletion_status = {}
+        for file_id in files_ids:
+            deletion_status[file_id] = self.delete_file_from_id(file_id)
+        return deletion_status

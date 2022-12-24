@@ -41,6 +41,13 @@ then
 npm run dev
 ```
 
+## Test backend
+
+From repo root directory launch:
+```
+python -m unittest discover -s ./backend -p '*_test.py'
+```
+
 ## Addresses
 
 **Frontend:** http://127.0.0.1:3000
