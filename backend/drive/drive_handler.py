@@ -6,13 +6,16 @@ from custom_types.Image import Image
 from enums.mime_types import DriveMimeType
 from custom_types.File import File
 from typing import List
-
+import requests
 import io
 
 
 class DriveHandler:
     def __init__(self, credentials: Credentials):
         self.drive = build('drive', 'v3', credentials=credentials)
+
+    def get_image_bytes_from_url(self, image_url: str):
+        return requests.get(image_url).content
 
     def get_image_from_id(self, image_id: str) -> str or None:
         try:
@@ -61,17 +64,17 @@ class DriveHandler:
 
         return files
 
-    def get_images_from_folder(self, folder_id: str) -> List[Image]:
+    def get_images_from_folder_id(self, folder_id: str) -> List[Image]:
         images = []
         files = self.get_files_from_parent_id(
             folder_id, DriveMimeType.IMAGE.value)
         for img in files:
             images.append(
-                Image(img.id, img.name, self.get_image_from_id(img.id), img.thumbnailLink))
+                Image(img.id, img.name, self.get_image_bytes_from_url(img.thumbnailLink), img.thumbnailLink))
         return images
 
     def get_images_from_folders_ids(self, folders_ids: List[dict]) -> List[Image]:
-        folders_image = [self.get_images_from_folder(
+        folders_image = [self.get_images_from_folder_id(
             folder_id) for folder_id in folders_ids]
         images = []
         for folder_image in folders_image:
