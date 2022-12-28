@@ -1,16 +1,15 @@
 from dataclasses import dataclass, field
 from custom_types.Image import Image
 from typing import List
-from uuid import uuid4
 
 
 @dataclass
 class Cluster:
-    id: str = uuid4()
+    id: str
     images: List[Image] = field(default_factory=lambda: [])
 
-    def get_web_content(self):
+    def to_web_json(self):
         return {
             "id": self.id,
-            "images": [image.get_web_content() for image in self.images]
+            "images": [image.to_web_json() for image in self.images]
         }

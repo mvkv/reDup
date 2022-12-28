@@ -69,8 +69,9 @@ class DriveHandler:
         files = self.get_files_from_parent_id(
             folder_id, DriveMimeType.IMAGE.value)
         for img in files:
+            image_bytes = self.get_image_bytes_from_url(img.thumbnailLink)
             images.append(
-                Image(img.id, img.name, self.get_image_bytes_from_url(img.thumbnailLink), img.thumbnailLink))
+                Image(img.id, img.name, image_bytes, img.thumbnailLink))
         return images
 
     def get_images_from_folders_ids(self, folders_ids: List[dict]) -> List[Image]:

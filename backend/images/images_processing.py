@@ -4,6 +4,7 @@ from custom_types.Cluster import Cluster
 from PIL import Image as p_image
 import io
 from typing import List
+from uuid import uuid4
 
 TRESHOLD = 5
 
@@ -26,7 +27,7 @@ def cluster_images(images: List[Image]) -> List[Cluster]:
         if image.id in seen:
             continue
 
-        cluster = Cluster()
+        cluster = Cluster(uuid4().urn)
         cluster.images.append(image)
         seen.add(image.id)
 
@@ -41,4 +42,4 @@ def cluster_images(images: List[Image]) -> List[Cluster]:
 
 
 def get_web_content_from_clusters(clusters: List[Cluster]) -> List[dict]:
-    return [cluster.get_web_content() for cluster in clusters]
+    return [cluster.to_web_json() for cluster in clusters]
