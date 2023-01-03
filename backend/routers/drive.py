@@ -21,9 +21,8 @@ async def get_folders(request: Request, folder_id: str = None):
         **get_files_from_parent_id_args)
     return JSONResponse(content={
         "ok": True if folders else False,
-        "body": {
-            "folders": [jsonable_encoder(folder) for folder in folders]
-        }
+        "folders": [jsonable_encoder(folder) for folder in folders]
+
     })
 
 
@@ -37,9 +36,8 @@ async def get_images_from_folders(request: Request, folders_ids: List[str]):
         folders_ids)
     return JSONResponse(content={
         "ok": True if images else False,
-        "body": {
-            "clusters": get_web_content_from_clusters(cluster_images(images))
-        }
+        "clusters": get_web_content_from_clusters(cluster_images(images))
+
     })
 
 
@@ -52,7 +50,6 @@ def delete_images(request: Request, ids: List[str]):
     deletion_status = request.state.drive_handler.delete_files_from_ids(ids)
     return JSONResponse(content={
         "ok": True if deletion_status else False,
-        "body": {
-            "deleted_images": deletion_status
-        }
+        "deleted_images": deletion_status
+
     })
