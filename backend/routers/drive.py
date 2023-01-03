@@ -34,10 +34,15 @@ async def get_images_from_folders(request: Request, folders_ids: List[str]):
 
     images = request.state.drive_handler.get_images_from_folders_ids(
         folders_ids)
-    return JSONResponse(content={
-        "ok": True if images else False,
-        "clusters": get_web_content_from_clusters(cluster_images(images))
 
+    if not images:
+        return JSONResponse(content={
+            "ok": False,
+        })
+
+    return JSONResponse(content={
+        "ok": True,
+        "clusters": get_web_content_from_clusters(cluster_images(images))
     })
 
 

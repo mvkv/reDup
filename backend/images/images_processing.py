@@ -28,14 +28,16 @@ def cluster_images(images: List[Image]) -> List[Cluster]:
             continue
 
         cluster = Cluster(uuid4().urn)
-        cluster.images.append(image)
+        cluster.add_image(image)
         seen.add(image.id)
 
         for other_image_idx in range(idx + 1, len(images)):
-            if images[other_image_idx].id not in seen:
-                if compare_images_from_bytes(image.image_bytes, images[other_image_idx].image_bytes) < TRESHOLD:
-                    cluster.images.append(images[other_image_idx])
-                    seen.add(images[other_image_idx].id)
+            if images[other_image_idx].id in seen:
+                continue
+
+            if compare_images_from_bytes(image.image_bytes, images[other_image_idx].image_bytes) < TRESHOLD:
+                cluster.add_image(images[other_image_idx])
+                seen.add(images[other_image_idx].id)
         clusters.append(cluster)
 
     return clusters

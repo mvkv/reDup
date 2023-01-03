@@ -13,3 +13,6 @@ class Cluster:
             "id": self.id,
             "images": [image.to_web_json() for image in self.images]
         }
+
+    def add_image(self, image: Image):
+        self.images.append(image)
