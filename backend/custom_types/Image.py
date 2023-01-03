@@ -8,7 +8,7 @@ class Image:
     image_bytes: str
     image_url: str
 
-    def get_web_content(self):
+    def to_web_json(self):
         return {
             "id": self.id,
             "name": self.name,

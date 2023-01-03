@@ -1,8 +1,10 @@
 import imagehash
 from custom_types.Image import Image
+from custom_types.Cluster import Cluster
 from PIL import Image as p_image
 import io
 from typing import List
+from uuid import uuid4
 
 TRESHOLD = 5
 
@@ -18,31 +20,28 @@ def compare_images_from_bytes(image1_bytes, image2_bytes):
     return image1_hash - image2_hash
 
 
-def cluster_images(images: List[Image]) -> List[List[Image]]:
+def cluster_images(images: List[Image]) -> List[Cluster]:
     clusters = []
     seen = set()
     for idx, image in enumerate(images):
         if image.id in seen:
             continue
 
-        cluster = [image]
+        cluster = Cluster(uuid4().urn)
+        cluster.add_image(image)
         seen.add(image.id)
 
         for other_image_idx in range(idx + 1, len(images)):
-            if images[other_image_idx].id not in seen:
-                if compare_images_from_bytes(image.image_bytes, images[other_image_idx].image_bytes) < TRESHOLD:
-                    cluster.append(images[other_image_idx])
-                    seen.add(images[other_image_idx].id)
+            if images[other_image_idx].id in seen:
+                continue
+
+            if compare_images_from_bytes(image.image_bytes, images[other_image_idx].image_bytes) < TRESHOLD:
+                cluster.add_image(images[other_image_idx])
+                seen.add(images[other_image_idx].id)
         clusters.append(cluster)
 
     return clusters
 
 
-def get_web_content_from_clusters(clusters: List[List[Image]]) -> List[List[Image]]:
-    web_content_clusters = []
-    for cluster in clusters:
-        new_cluster = []
-        for img in cluster:
-            new_cluster.append(img.get_web_content())
-        web_content_clusters.append(new_cluster)
-    return web_content_clusters
+def get_web_content_from_clusters(clusters: List[Cluster]) -> List[dict]:
+    return [cluster.to_web_json() for cluster in clusters]
