@@ -1,3 +1,5 @@
+import { Cluster, DeletionStatus } from '../types/api';
+
 export enum StateType {
   INITIAL = 1,
   FOLDER_FETCH = 2,
@@ -18,6 +20,16 @@ export const STATE_TO_STEP_N = {
   [StateType.FINAL]: 3,
 };
 
+export const STATE_TO_LABEL = {
+  [StateType.INITIAL]: 'Welcome',
+  [StateType.FOLDER_FETCH]: 'Select Folder',
+  [StateType.FOLDER_SELECT]: 'Select Folder',
+  [StateType.FILES_FETCH]: 'Select Files',
+  [StateType.FILES_SELECT]: 'Select Files',
+  [StateType.RESULT_FETCH]: 'Summary',
+  [StateType.FINAL]: 'Summary',
+};
+
 export const LOADING_STEPS = new Set([
   StateType.FILES_FETCH,
   StateType.FOLDER_FETCH,
@@ -30,9 +42,9 @@ export type DahsboardState = {
   currState: StateType;
   foldersResults: string[];
   foldersSelected: string[];
-  filesResults: string[];
+  filesClusterResults: Cluster[];
   filesSelected: string[];
-  finalSummary: string[];
+  finalSummary: DeletionStatus[];
   error: string;
 };
 
@@ -40,7 +52,7 @@ export const DEFAULT_DAHSBOARD_STATE: DahsboardState = {
   currState: StateType.INITIAL,
   foldersResults: [],
   foldersSelected: [],
-  filesResults: [],
+  filesClusterResults: [],
   filesSelected: [],
   finalSummary: [],
   error: '',
@@ -50,17 +62,16 @@ export type Action = {
   goTo: StateType;
   fetchedFolders?: string[];
   foldersSelected?: string[];
-  fetchedFiles?: string[];
+  fetchedFilesCluster?: Cluster[];
   filesSelected?: string[];
-  fetchedSummary?: string[];
+  fetchedSummary?: DeletionStatus[];
 };
 
 function validateStateTransition(curr: StateType, goTo: StateType): boolean {
-  return curr !== StateType.FINAL && goTo - curr <= 1;
+  return goTo == StateType.INITIAL || goTo - curr <= 1;
 }
 
 export function reducer(state: DahsboardState, action: Action) {
-  console.log(state, action, 'doing');
   const errorSameState = {
     ...state,
     error: 'State unchanged, something might be wrong.', // TODO Implement more accurate error handling.
@@ -70,6 +81,8 @@ export function reducer(state: DahsboardState, action: Action) {
     return errorSameState;
   }
   switch (action.goTo) {
+    case StateType.INITIAL:
+      return DEFAULT_DAHSBOARD_STATE;
     case StateType.FOLDER_FETCH:
       return { ...validState, currState: StateType.FOLDER_FETCH };
     case StateType.FOLDER_SELECT:
@@ -91,13 +104,13 @@ export function reducer(state: DahsboardState, action: Action) {
         foldersSelected: action.foldersSelected,
       };
     case StateType.FILES_SELECT:
-      if (!action.fetchedFiles?.length) {
+      if (!action.fetchedFilesCluster?.length) {
         return errorSameState;
       }
       return {
         ...validState,
         currState: StateType.FILES_SELECT,
-        filesResults: action.fetchedFiles,
+        filesClusterResults: action.fetchedFilesCluster,
       };
     case StateType.RESULT_FETCH:
       if (!action.filesSelected?.length) {

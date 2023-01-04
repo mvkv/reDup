@@ -1,0 +1,21 @@
+.scrollbar {
+  /* Styled by tailwind*/
+}
+
+.scrollbar::-webkit-scrollbar {
+  background-color: transparent;
+  width: 0.375rem;
+}
+
+.scrollbar::-webkit-scrollbar-track {
+  width: 0.375rem;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  border-radius: 0.25rem;
+  background-color: lightblue;
+}
+
+.scrollbar::-webkit-scrollbar-thumb:hover {
+  background: transparent;
+}

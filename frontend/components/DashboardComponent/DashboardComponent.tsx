@@ -1,4 +1,10 @@
-import { Dispatch, useEffect, useReducer } from 'react';
+import {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useReducer,
+  useState,
+} from 'react';
 import { useAuth } from '../../providers/auth-context';
 import {
   DahsboardState,
@@ -8,10 +14,51 @@ import {
   StateType,
   STATE_TO_STEP_N,
   Action,
+  STATE_TO_LABEL,
 } from '../../store/dashboard';
-
+import InfiniteSpinner from '../common/InfiniteSpinner';
+import { DiscreteProgressBar } from './DiscreteProgressbar';
+import { Cluster } from '../../types/api';
+import css from './DashboardComponent.module.css';
+import {
+  fakeFetchFiles,
+  fakeFetchFolders,
+  fakeFetchResults,
+} from '../../apiCalls/Drive';
 type StateDispatchArgs = { state: DahsboardState; dispatch: Dispatch<Action> };
 type Email = { email: string };
+
+function StateWrapper({
+  state,
+  nextBtn,
+  children,
+}: {
+  state: DahsboardState;
+  nextBtn?: any;
+  children: any;
+}) {
+  return (
+    <>
+      <div className="flex flex-col justify-center flex-grow gap-y-4">
+        <div className="shadow-md bg-slate-200 p-8 rounded-md flex justify-between">
+          <div>
+            <DiscreteProgressBar
+              currStep={STATE_TO_STEP_N[state.currState] + 1}
+              maxStep={LAST_STEP_N + 1}
+              stepLabel={STATE_TO_LABEL[state.currState]}
+            ></DiscreteProgressBar>
+          </div>
+          {nextBtn && <div>{nextBtn}</div>}
+        </div>
+        <div
+          className={`shadow-md bg-slate-200 p-8 rounded-md grow grid place-items-center overflow-y-auto ${css.scrollbar}`}
+        >
+          {children}
+        </div>
+      </div>
+    </>
+  );
+}
 
 export default function DashboardComponent() {
   const {
@@ -40,42 +87,29 @@ export default function DashboardComponent() {
     }
   };
   return (
-    <div>
-      <div>
-        Step {STATE_TO_STEP_N[state.currState] + 1} of {LAST_STEP_N + 1}
-      </div>
+    <div className="shadow-md bg-slate-300 min-w-full min-h-full rounded-md p-8 flex">
       {renderCurrStep(state.currState)}
     </div>
   );
 }
-
-// TODO: Replace these helpers.
-const LoadingSpinner = () => <div>LOADING</div>;
-
-const fakeFetch = (): Promise<{ data: string[] }> => {
-  return new Promise((resolve, _) => {
-    setTimeout(
-      () =>
-        resolve({
-          data: ['resp'],
-        }),
-      1500 + Math.random() * 1000,
-    );
-  });
-};
 
 const InitialState = ({
   email,
   state,
   dispatch,
 }: Email & StateDispatchArgs) => {
+  const nextAction = () => dispatch({ goTo: StateType.FOLDER_FETCH });
   return (
     <>
-      <div className="my-4">Well hello there {email}!</div>
-      <p>Let's get started</p>
-      <button onClick={() => dispatch({ goTo: StateType.FOLDER_FETCH })}>
-        Next
-      </button>
+      <StateWrapper
+        state={state}
+        nextBtn={<button onClick={nextAction}>Next</button>}
+      >
+        <div className="flex flex-col items-center gap-y-4">
+          <div>Well hello there {email}!</div>
+          <button onClick={nextAction}>Let's get started</button>
+        </div>
+      </StateWrapper>
     </>
   );
 };
@@ -83,33 +117,71 @@ const InitialState = ({
 const FolderFetch = ({ state, dispatch }: StateDispatchArgs) => {
   useEffect(() => {
     async function foo() {
-      const resp = await fakeFetch();
-      dispatch({ goTo: StateType.FOLDER_SELECT, fetchedFolders: resp.data });
+      const resp = await fakeFetchFolders(10);
+      if (resp.ok) {
+        dispatch({
+          goTo: StateType.FOLDER_SELECT,
+          fetchedFolders: resp.folders,
+        });
+      }
     }
     foo();
   }, []);
   return (
     <>
-      <LoadingSpinner />
+      <StateWrapper state={state}>
+        <InfiniteSpinner label={'Fetching folders'} />
+      </StateWrapper>
     </>
   );
 };
 
 const FolderSelect = ({ state, dispatch }: StateDispatchArgs) => {
+  const [selected, setSelected] = useState('');
+
   return (
     <>
-      {' '}
-      <p>Select Folders {state.foldersResults}</p>
-      <button
-        onClick={() =>
-          dispatch({
-            goTo: StateType.FILES_FETCH,
-            foldersSelected: ['example'],
-          })
+      <StateWrapper
+        state={state}
+        nextBtn={
+          <button
+            disabled={selected == ''}
+            onClick={() =>
+              dispatch({
+                goTo: StateType.FILES_FETCH,
+                foldersSelected: [selected],
+              })
+            }
+          >
+            Next
+          </button>
         }
       >
-        Next
-      </button>
+        <div className="place-self-start flex flex-col gap-y-4 min-w-full">
+          <p className="text-2xl pb-4 border-b-2 border-blue-400">
+            {!selected ? 'Select a folder' : `${selected} selected`}
+          </p>
+
+          <ul className="flex flex-col overflow-y-auto">
+            {state.foldersResults.map((v, _) => {
+              const isSelected = v === selected;
+              return (
+                <li
+                  className={`px-2 py-4 ${
+                    isSelected
+                      ? 'bg-blue-200'
+                      : 'even:bg-gray-100 hover:bg-blue-100 '
+                  }`}
+                  key={v}
+                  onClick={() => setSelected(v)}
+                >
+                  {v}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </StateWrapper>
     </>
   );
 };
@@ -117,31 +189,107 @@ const FolderSelect = ({ state, dispatch }: StateDispatchArgs) => {
 const FilesFetch = ({ state, dispatch }: StateDispatchArgs) => {
   useEffect(() => {
     async function foo() {
-      const resp = await fakeFetch();
-      dispatch({ goTo: StateType.FILES_SELECT, fetchedFiles: resp.data });
+      const resp = await fakeFetchFiles(30);
+      if (resp.ok) {
+        dispatch({
+          goTo: StateType.FILES_SELECT,
+          fetchedFilesCluster: resp.clusters,
+        });
+      }
     }
     foo();
   }, []);
 
   return (
     <>
-      <LoadingSpinner />
+      <StateWrapper state={state}>
+        <InfiniteSpinner label={'Fetching files'} />
+      </StateWrapper>
     </>
   );
 };
 
+const FileCluster = ({
+  cluster,
+  selected,
+  setSelected,
+}: {
+  cluster: Cluster;
+  selected: string[];
+  setSelected: Dispatch<SetStateAction<string[]>>;
+}) => {
+  const clickOn = (imgId: string) => {
+    if (selected.includes(imgId)) {
+      setSelected([...selected.filter((id) => id != imgId)]);
+    } else {
+      setSelected([...selected, imgId]);
+    }
+  };
+
+  return (
+    <li className="flex gap-4">
+      {cluster.images.map((img, _) => {
+        const isSelected = selected.includes(img.id);
+
+        return (
+          <ul key={img.id}>
+            <div
+              className={`min-w-[8em] border-black border-solid border-2 rounded-md px-4 py-4 ${
+                isSelected
+                  ? 'bg-blue-200'
+                  : 'even:bg-gray-100 hover:bg-blue-100 '
+              }`}
+              key={img.id}
+              onClick={() => clickOn(img.id)}
+            >
+              {img.id}
+            </div>
+          </ul>
+        );
+      })}
+    </li>
+  );
+};
+
 const FilesSelect = ({ state, dispatch }: StateDispatchArgs) => {
+  const [selected, setSelected] = useState<string[]>([]);
+
   return (
     <>
-      {' '}
-      <p>Select Files {state.filesResults}</p>
-      <button
-        onClick={() =>
-          dispatch({ goTo: StateType.RESULT_FETCH, filesSelected: ['example'] })
+      <StateWrapper
+        state={state}
+        nextBtn={
+          <button
+            disabled={selected.length == 0}
+            onClick={() =>
+              dispatch({
+                goTo: StateType.RESULT_FETCH,
+                filesSelected: [...selected],
+              })
+            }
+          >
+            Next
+          </button>
         }
       >
-        Next
-      </button>
+        <div className="place-self-start flex flex-col gap-y-4 min-w-full">
+          <div className="text-2xl pb-4 border-b-2 border-blue-400 flex justify-between">
+            <p>Select files to delete</p>
+            {selected.length > 0 && <p>{`${selected.length} selected`}</p>}
+          </div>
+
+          <ul className="flex flex-col overflow-y-auto gap-y-4">
+            {state.filesClusterResults.map((cluster, _) => (
+              <FileCluster
+                key={cluster.id}
+                cluster={cluster}
+                selected={selected}
+                setSelected={setSelected}
+              />
+            ))}
+          </ul>
+        </div>
+      </StateWrapper>
     </>
   );
 };
@@ -149,15 +297,19 @@ const FilesSelect = ({ state, dispatch }: StateDispatchArgs) => {
 const ResultFetch = ({ state, dispatch }: StateDispatchArgs) => {
   useEffect(() => {
     async function foo() {
-      const resp = await fakeFetch();
-      dispatch({ goTo: StateType.FINAL, fetchedSummary: resp.data });
+      const resp = await fakeFetchResults();
+      if (resp.ok) {
+        dispatch({ goTo: StateType.FINAL, fetchedSummary: resp.deletedImages });
+      }
     }
     foo();
   }, []);
 
   return (
     <>
-      <LoadingSpinner />
+      <StateWrapper state={state}>
+        <InfiniteSpinner label={'Processing'} />
+      </StateWrapper>
     </>
   );
 };
@@ -165,8 +317,22 @@ const ResultFetch = ({ state, dispatch }: StateDispatchArgs) => {
 const Final = ({ state, dispatch }: StateDispatchArgs) => {
   return (
     <>
-      {' '}
-      <p>Finish {state.finalSummary}</p>
+      <StateWrapper
+        state={state}
+        nextBtn={
+          <button
+            onClick={() =>
+              dispatch({
+                goTo: StateType.INITIAL,
+              })
+            }
+          >
+            Reset
+          </button>
+        }
+      >
+        <p>Finish {state.finalSummary.length}</p>
+      </StateWrapper>
     </>
   );
 };
