@@ -38,7 +38,7 @@ export const LOADING_STEPS = new Set([
 
 export const LAST_STEP_N = Math.max(...Object.values(STATE_TO_STEP_N));
 
-export type DahsboardState = {
+export type DashboardState = {
   currState: StateType;
   folderPath: string[];
   foldersResults: string[];
@@ -49,7 +49,7 @@ export type DahsboardState = {
   error: string;
 };
 
-export const DEFAULT_DAHSBOARD_STATE: DahsboardState = {
+export const DEFAULT_DAHSBOARD_STATE: DashboardState = {
   currState: StateType.INITIAL,
   folderPath: [],
   foldersResults: [],
@@ -74,7 +74,7 @@ function validateStateTransition(curr: StateType, goTo: StateType): boolean {
   return goTo == StateType.INITIAL || goTo - curr <= 1;
 }
 
-export function reducer(state: DahsboardState, action: Action) {
+export function reducer(state: DashboardState, action: Action): DashboardState {
   const errorSameState = {
     ...state,
     error: 'State unchanged, something might be wrong.', // TODO Implement more accurate error handling.
@@ -101,7 +101,7 @@ export function reducer(state: DahsboardState, action: Action) {
       return {
         ...validState,
         currState: StateType.FOLDER_SELECT,
-        foldersResults: action.fetchedFolders,
+        foldersResults: action.fetchedFolders ?? [],
       };
     case StateType.FILES_FETCH:
       if (!action.foldersSelected?.length) {
