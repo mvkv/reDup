@@ -19,3 +19,11 @@
 .scrollbar::-webkit-scrollbar-thumb:hover {
   background: transparent;
 }
+
+.cluster {
+  border-bottom: 2px solid black;
+}
+
+.cluster:last-child {
+  border: none;
+}

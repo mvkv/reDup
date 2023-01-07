@@ -25,6 +25,7 @@ import {
   fakeFetchFolders,
   fakeFetchResults,
 } from '../../apiCalls/Drive';
+import Image from 'next/image';
 type StateDispatchArgs = { state: DahsboardState; dispatch: Dispatch<Action> };
 type Email = { email: string };
 
@@ -163,8 +164,8 @@ const FolderSelect = ({ state, dispatch }: StateDispatchArgs) => {
           </p>
 
           <ul className="flex flex-col overflow-y-auto">
-            {state.foldersResults.map((v, _) => {
-              const isSelected = v === selected;
+            {state.foldersResults.map((folder, _) => {
+              const isSelected = folder === selected;
               return (
                 <li
                   className={`px-2 py-4 ${
@@ -172,10 +173,10 @@ const FolderSelect = ({ state, dispatch }: StateDispatchArgs) => {
                       ? 'bg-blue-200'
                       : 'even:bg-gray-100 hover:bg-blue-100 '
                   }`}
-                  key={v}
-                  onClick={() => setSelected(v)}
+                  key={folder}
+                  onClick={() => setSelected(folder)}
                 >
-                  {v}
+                  {folder}
                 </li>
               );
             })}
@@ -227,22 +228,28 @@ const FileCluster = ({
   };
 
   return (
-    <li className="flex gap-4">
+    <li className={`flex gap-4 py-8 flex-wrap items-baseline ${css.cluster}`}>
       {cluster.images.map((img, _) => {
         const isSelected = selected.includes(img.id);
 
         return (
-          <ul key={img.id}>
+          <ul className="basis-1/5 max-w-[300px] cursor-pointer" key={img.id}>
             <div
-              className={`min-w-[8em] border-black border-solid border-2 rounded-md px-4 py-4 ${
+              className={`min-w-[8em] border-solid border-2 rounded-lg overflow-hidden select-none text-center ${
                 isSelected
-                  ? 'bg-blue-200'
-                  : 'even:bg-gray-100 hover:bg-blue-100 '
+                  ? 'bg-yellow-100 border-yellow-800 shadow-lg shadow-yellow-400/30'
+                  : 'hover:bg-blue-100 border-black'
               }`}
               key={img.id}
               onClick={() => clickOn(img.id)}
             >
-              {img.id}
+              <Image
+                src={img.image_url}
+                alt=""
+                width={300}
+                height={300}
+              ></Image>
+              <div className="m-1">{img.id}</div>
             </div>
           </ul>
         );
@@ -278,7 +285,7 @@ const FilesSelect = ({ state, dispatch }: StateDispatchArgs) => {
             {selected.length > 0 && <p>{`${selected.length} selected`}</p>}
           </div>
 
-          <ul className="flex flex-col overflow-y-auto gap-y-4">
+          <ul className="flex flex-col overflow-y-auto">
             {state.filesClusterResults.map((cluster, _) => (
               <FileCluster
                 key={cluster.id}
@@ -315,6 +322,7 @@ const ResultFetch = ({ state, dispatch }: StateDispatchArgs) => {
 };
 
 const Final = ({ state, dispatch }: StateDispatchArgs) => {
+  const deletedN = state.finalSummary.filter((e) => e.deleted).length;
   return (
     <>
       <StateWrapper
@@ -331,7 +339,7 @@ const Final = ({ state, dispatch }: StateDispatchArgs) => {
           </button>
         }
       >
-        <p>Finish {state.finalSummary.length}</p>
+        <p>Finish! Deleted {deletedN} media</p>
       </StateWrapper>
     </>
   );

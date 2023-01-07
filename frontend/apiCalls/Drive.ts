@@ -50,12 +50,13 @@ export const fakeFetchFolders = (
 };
 
 export const fakeFetchFiles = (n: number = 1): Promise<GetFilesResponse> => {
+  const randSize = () => [250, 300, 350, 400][Math.floor(Math.random() * 4)];
   const getRandomCluster = () => ({
     id: getRandomStr(),
-    images: Array.from(Array(Math.ceil(Math.random() * 4 + 2)), () => ({
+    images: Array.from(Array(Math.ceil(Math.random() * 8 + 2)), () => ({
       id: 'id_' + getRandomStr(),
       name: 'n_' + getRandomStr(),
-      image_url: 'https://cataas.com/cat',
+      image_url: `https://picsum.photos/${randSize()}/${randSize()}.jpg`,
     })),
   });
   return new Promise((resolve, _) => {
