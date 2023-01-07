@@ -28,7 +28,7 @@ import {
 import Image from 'next/image';
 type StateDispatchArgs = { state: DahsboardState; dispatch: Dispatch<Action> };
 type Email = { email: string };
-
+import { ArrowUp } from 'react-feather';
 function StateWrapper({
   state,
   nextBtn,
@@ -118,7 +118,7 @@ const InitialState = ({
 const FolderFetch = ({ state, dispatch }: StateDispatchArgs) => {
   useEffect(() => {
     async function foo() {
-      const resp = await fakeFetchFolders(10);
+      const resp = await fakeFetchFolders(state.folderPath, 10);
       if (resp.ok) {
         dispatch({
           goTo: StateType.FOLDER_SELECT,
@@ -140,6 +140,42 @@ const FolderFetch = ({ state, dispatch }: StateDispatchArgs) => {
 const FolderSelect = ({ state, dispatch }: StateDispatchArgs) => {
   const [selected, setSelected] = useState('');
 
+  const navigateToRoot = () => {
+    if (state.folderPath.length == 0) {
+      return;
+    }
+    dispatch({
+      goTo: StateType.FOLDER_FETCH,
+      folderPathSelected: [],
+    });
+  };
+
+  const navigateUp = () => {
+    if (state.folderPath.length == 0) {
+      return;
+    }
+    dispatch({
+      goTo: StateType.FOLDER_FETCH,
+      folderPathSelected: [...state.folderPath.slice(0, -1)],
+    });
+  };
+
+  const handleFolderClick = (
+    evt: React.MouseEvent<HTMLElement>,
+    folder: string,
+  ) => {
+    switch (evt.detail) {
+      case 1:
+        setSelected(folder);
+        break;
+      case 2:
+        dispatch({
+          goTo: StateType.FOLDER_FETCH,
+          folderPathSelected: [...state.folderPath, folder],
+        });
+        break;
+    }
+  };
   return (
     <>
       <StateWrapper
@@ -159,28 +195,52 @@ const FolderSelect = ({ state, dispatch }: StateDispatchArgs) => {
         }
       >
         <div className="place-self-start flex flex-col gap-y-4 min-w-full">
-          <p className="text-2xl pb-4 border-b-2 border-blue-400">
+          <div className="text-2xl pb-4 border-b-2 border-blue-400 flex justify-between">
             {!selected ? 'Select a folder' : `${selected} selected`}
-          </p>
-
-          <ul className="flex flex-col overflow-y-auto">
-            {state.foldersResults.map((folder, _) => {
-              const isSelected = folder === selected;
-              return (
-                <li
-                  className={`px-2 py-4 ${
-                    isSelected
-                      ? 'bg-blue-200'
-                      : 'even:bg-gray-100 hover:bg-blue-100 '
-                  }`}
-                  key={folder}
-                  onClick={() => setSelected(folder)}
+            {state.folderPath.length == 0 && <p>{`~/root`}</p>}
+            {state.folderPath.length > 0 && (
+              <div className="flex items-center gap-x-4">
+                <button onClick={() => navigateUp()}>
+                  <ArrowUp size={24} />
+                </button>
+                <p>{`~/${state.folderPath.join('/')}`}</p>
+              </div>
+            )}
+          </div>
+          {state.foldersResults.length == 0 && (
+            <div className="min-h-[200px] grid place-content-center text-2xl">
+              No folders at this level
+              {state.folderPath.length > 0 && (
+                <button
+                  onClick={() => {
+                    navigateToRoot();
+                  }}
                 >
-                  {folder}
-                </li>
-              );
-            })}
-          </ul>
+                  Go to root!
+                </button>
+              )}
+            </div>
+          )}
+          {state.foldersResults.length > 0 && (
+            <ul className="flex flex-col overflow-y-auto">
+              {state.foldersResults.map((folder, _) => {
+                const isSelected = folder === selected;
+                return (
+                  <li
+                    className={`px-2 py-4 ${
+                      isSelected
+                        ? 'bg-blue-200'
+                        : 'even:bg-gray-100 hover:bg-blue-100 '
+                    }`}
+                    key={folder}
+                    onClick={(evt) => handleFolderClick(evt, folder)}
+                  >
+                    {folder}
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </div>
       </StateWrapper>
     </>

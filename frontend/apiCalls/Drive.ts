@@ -35,16 +35,20 @@ export const deleteImages = async (): Promise<DeleteImagesResponse> => {
 const getRandomStr = () => Math.random().toString(36).substring(3, 9);
 
 export const fakeFetchFolders = (
+  path: string[],
   n: number = 1,
 ): Promise<GetFoldersResponse> => {
+  const folders =
+    path.length > 3 ? [] : Array.from(Array(n), () => getRandomStr());
+
   return new Promise((resolve, _) => {
     setTimeout(
       () =>
         resolve({
           ok: true,
-          folders: Array.from(Array(n), () => getRandomStr()),
+          folders,
         }),
-      1500 + Math.random() * 1000,
+      1000 + Math.random() * 1000,
     );
   });
 };

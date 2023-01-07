@@ -40,6 +40,7 @@ export const LAST_STEP_N = Math.max(...Object.values(STATE_TO_STEP_N));
 
 export type DahsboardState = {
   currState: StateType;
+  folderPath: string[];
   foldersResults: string[];
   foldersSelected: string[];
   filesClusterResults: Cluster[];
@@ -50,6 +51,7 @@ export type DahsboardState = {
 
 export const DEFAULT_DAHSBOARD_STATE: DahsboardState = {
   currState: StateType.INITIAL,
+  folderPath: [],
   foldersResults: [],
   foldersSelected: [],
   filesClusterResults: [],
@@ -60,6 +62,7 @@ export const DEFAULT_DAHSBOARD_STATE: DahsboardState = {
 
 export type Action = {
   goTo: StateType;
+  folderPathSelected?: string[];
   fetchedFolders?: string[];
   foldersSelected?: string[];
   fetchedFilesCluster?: Cluster[];
@@ -84,11 +87,17 @@ export function reducer(state: DahsboardState, action: Action) {
     case StateType.INITIAL:
       return DEFAULT_DAHSBOARD_STATE;
     case StateType.FOLDER_FETCH:
+      if (action.folderPathSelected) {
+        return {
+          ...validState,
+          currState: StateType.FOLDER_FETCH,
+          folderPath: [...action.folderPathSelected],
+        };
+      }
       return { ...validState, currState: StateType.FOLDER_FETCH };
     case StateType.FOLDER_SELECT:
-      if (!action.fetchedFolders?.length) {
-        return errorSameState;
-      }
+      // We can get into a nested folder where we don't have further inner folders.
+      // if (!action.fetchedFolders?.length) { return errorSameState; }
       return {
         ...validState,
         currState: StateType.FOLDER_SELECT,
