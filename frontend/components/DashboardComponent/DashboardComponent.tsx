@@ -12,7 +12,7 @@ import { fakeFetchResults } from '../../apiCalls/Drive';
 type StateDispatchArgs = { state: DashboardState; dispatch: Dispatch<Action> };
 type Email = { email: string };
 
-import { StateWrapper } from './StateWrapper';
+import { ActionButton, StateWrapper } from './StateWrapper';
 import { FolderFetch, FolderSelect } from './FolderStates';
 import { FilesFetch, FilesSelect } from './FileComparisonStates';
 import {
@@ -38,7 +38,9 @@ export default function DashboardComponent() {
       case StateType.FOLDER_FETCH:
         return <FolderFetch state={state} dispatch={dispatch} />;
       case StateType.FOLDER_SELECT:
-        return <FolderSelect state={state} dispatch={dispatch} />;
+        return (
+          <FolderSelect state={state} dispatch={dispatch} setModal={setModal} />
+        );
       case StateType.FILES_FETCH:
         return <FilesFetch state={state} dispatch={dispatch} />;
       case StateType.FILES_SELECT:
@@ -83,7 +85,7 @@ const InitialState = ({
     <>
       <StateWrapper
         state={state}
-        nextBtn={<button onClick={nextAction}>Next</button>}
+        nextBtn={<ActionButton label={'Next'} onClick={nextAction} />}
       >
         <div className="flex flex-col items-center gap-y-4">
           <div>Well hello there {email}!</div>
@@ -121,15 +123,14 @@ const Final = ({ state, dispatch }: StateDispatchArgs) => {
       <StateWrapper
         state={state}
         nextBtn={
-          <button
+          <ActionButton
+            label={'Reset'}
             onClick={() =>
               dispatch({
                 goTo: StateType.INITIAL,
               })
             }
-          >
-            Reset
-          </button>
+          />
         }
       >
         <p>Finish! Deleted {deletedN} media</p>

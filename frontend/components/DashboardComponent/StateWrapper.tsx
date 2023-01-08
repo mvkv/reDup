@@ -19,8 +19,8 @@ export function StateWrapper({
   return (
     <>
       <div className="flex flex-col justify-center flex-grow gap-y-4">
-        <div className="shadow-md bg-slate-200 p-8 rounded-md flex justify-between">
-          <div>
+        <div className="shadow-md bg-slate-200 p-8 rounded-md flex justify-between items-center">
+          <div className="py-2">
             <DiscreteProgressBar
               currStep={STATE_TO_STEP_N[state.currState] + 1}
               maxStep={LAST_STEP_N + 1}
@@ -36,5 +36,29 @@ export function StateWrapper({
         </div>
       </div>
     </>
+  );
+}
+
+export function ActionButton({
+  label,
+  onClick,
+  isLoading,
+}: {
+  label: string;
+  onClick?: any;
+  isLoading?: boolean;
+}) {
+  return (
+    <button
+      className={`py-2.5 px-5 text-sm font-medium text-white focus:outline-none rounded-md border-gray-600 select-none ${
+        isLoading
+          ? 'cursor-progress bg-gray-400 hover:bg-gray-400'
+          : 'bg-blue-600 hover:bg-blue-700 hover:text-gray-200 '
+      }`}
+      disabled={isLoading ?? false}
+      onClick={onClick}
+    >
+      {label}
+    </button>
   );
 }

@@ -13,17 +13,5 @@
 
 .scrollbar::-webkit-scrollbar-thumb {
   border-radius: 0.25rem;
-  background-color: lightblue;
-}
-
-.scrollbar::-webkit-scrollbar-thumb:hover {
-  background: transparent;
-}
-
-.cluster {
-  border-bottom: 2px solid black;
-}
-
-.cluster:last-child {
-  border: none;
+  background-color: theme('colors.blue.300');
 }

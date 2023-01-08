@@ -39,7 +39,7 @@ export const fakeFetchFolders = (
   n: number = 1,
 ): Promise<GetFoldersResponse> => {
   const folders =
-    path.length > 3 ? [] : Array.from(Array(n), () => getRandomStr());
+    path.length > 4 ? [] : Array.from(Array(n), () => getRandomStr());
 
   return new Promise((resolve, _) => {
     setTimeout(

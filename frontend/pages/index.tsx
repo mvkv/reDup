@@ -18,7 +18,7 @@ const Home: NextPage = () => {
         <meta name="description" content="ReDup" />
       </Head>
 
-      <main className="h-full min-w-full flex justify-center items-center flex-col gap-8 px-[200px]">
+      <main className="text h-full min-w-full flex justify-center items-center flex-col gap-8 px-[200px]">
         <div className="grid grid-cols-8">
           <div className="col-span-5 flex flex-col gap-5">
             <h1 className="text-5xl font-bold text-main-text">

@@ -25,7 +25,7 @@ export const ModalTemplate = ({
   return (
     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
       <div className="min-h-[60px] min-w-[200px] p-4 border-solid border-black border-2 rounded-md shadow-lg bg-slate-200">
-        <div className="flex flex-col gap-y-4 justify-center">
+        <div className="flex flex-col gap-y-4 items-center">
           <button
             className="self-end"
             onClick={() => setModal({ type: Modal.NO_MODAL })}
@@ -35,12 +35,13 @@ export const ModalTemplate = ({
           <div>{content}</div>
           {onWarningDismiss && (
             <button
+              className="px-5 py-2 border-black border-2 rounded-md w-fit"
               onClick={() => {
                 onWarningDismiss!();
                 setModal({ type: Modal.NO_MODAL });
               }}
             >
-              "OK"
+              OK
             </button>
           )}
         </div>

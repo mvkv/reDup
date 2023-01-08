@@ -2,18 +2,17 @@ import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { DashboardState, StateType, Action } from '../../store/dashboard';
 import InfiniteSpinner from '../common/InfiniteSpinner';
 import { Cluster } from '../../types/api';
-import css from './DashboardComponent.module.css';
 import { fakeFetchFiles } from '../../apiCalls/Drive';
 import Image from 'next/image';
 type StateDispatchArgs = { state: DashboardState; dispatch: Dispatch<Action> };
 
-import { StateWrapper } from './StateWrapper';
+import { ActionButton, StateWrapper } from './StateWrapper';
 import { Modal, SetModal } from './Modal';
 
 export const FilesFetch = ({ state, dispatch }: StateDispatchArgs) => {
   useEffect(() => {
     async function foo() {
-      const resp = await fakeFetchFiles(30);
+      const resp = await fakeFetchFiles(15);
       if (resp.ok) {
         dispatch({
           goTo: StateType.FILES_SELECT,
@@ -26,14 +25,17 @@ export const FilesFetch = ({ state, dispatch }: StateDispatchArgs) => {
 
   return (
     <>
-      <StateWrapper state={state}>
+      <StateWrapper
+        state={state}
+        nextBtn={<ActionButton label={'Next'} isLoading={true} />}
+      >
         <InfiniteSpinner label={'Fetching files'} />
       </StateWrapper>
     </>
   );
 };
 
-export const FileCluster = ({
+const FileComparison = ({
   cluster,
   selected,
   setSelected,
@@ -51,7 +53,9 @@ export const FileCluster = ({
   };
 
   return (
-    <li className={`flex gap-4 py-8 flex-wrap items-baseline ${css.cluster}`}>
+    <li
+      className={`flex gap-4 py-8 flex-wrap items-baseline border-b-2 border-blue-400 last:border-none`}
+    >
       {cluster.images.map((img, _) => {
         const isSelected = selected.includes(img.id);
 
@@ -61,7 +65,7 @@ export const FileCluster = ({
               className={`min-w-[8em] border-solid border-2 rounded-lg overflow-hidden select-none text-center ${
                 isSelected
                   ? 'bg-yellow-100 border-yellow-800 shadow-lg shadow-yellow-400/30'
-                  : 'hover:bg-blue-100 border-black'
+                  : 'hover:bg-blue-100 border-gray-800'
               }`}
               key={img.id}
               onClick={() => clickOn(img.id)}
@@ -72,7 +76,13 @@ export const FileCluster = ({
                 width={300}
                 height={300}
               ></Image>
-              <div className="m-1">{img.id}</div>
+              <div
+                className={`m-1.5 text-base font-medium ${
+                  isSelected ? 'text-yellow-700' : 'text-gray-800'
+                }`}
+              >
+                {img.id}
+              </div>
             </div>
           </ul>
         );
@@ -92,24 +102,31 @@ export const FilesSelect = ({
     goTo: StateType.RESULT_FETCH,
     filesSelected: [...selected],
   };
+
+  const confirmDeletionModal = {
+    type: Modal.WARNING,
+    onWarningDismiss: () => dispatch(nextAction),
+    content: (
+      <>You are about to delete {selected.length} files. Are you sure?</>
+    ),
+  };
+
+  const onNextClick = () => {
+    if (selected.length == 0) {
+      setModal({
+        type: Modal.ERROR,
+        content: <>No files marked to be deleted!</>,
+      });
+    } else {
+      setModal(confirmDeletionModal);
+    }
+  };
+
   return (
     <>
       <StateWrapper
         state={state}
-        nextBtn={
-          <button
-            disabled={selected.length == 0}
-            onClick={() =>
-              setModal({
-                type: Modal.WARNING,
-                onWarningDismiss: () => dispatch(nextAction),
-                content: <>HIII</>,
-              })
-            }
-          >
-            Next
-          </button>
-        }
+        nextBtn={<ActionButton label={'Next'} onClick={onNextClick} />}
       >
         <div className="place-self-start flex flex-col gap-y-4 min-w-full">
           <div className="text-2xl pb-4 border-b-2 border-blue-400 flex justify-between">
@@ -119,7 +136,7 @@ export const FilesSelect = ({
 
           <ul className="flex flex-col overflow-y-auto">
             {state.filesClusterResults.map((cluster, _) => (
-              <FileCluster
+              <FileComparison
                 key={cluster.id}
                 cluster={cluster}
                 selected={selected}
