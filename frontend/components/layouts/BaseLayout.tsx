@@ -9,7 +9,7 @@ const BaseLayout = ({ children }: BaseLayoutProps) => {
   return (
     <div className="flex flex-col h-screen">
       <Navbar />
-      <div className="flex-grow">{children}</div>
+      <div className="flex-grow min-h-0">{children}</div>
     </div>
   );
 };

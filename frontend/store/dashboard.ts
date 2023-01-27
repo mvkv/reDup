@@ -1,3 +1,5 @@
+import { Cluster, DeletionStatus } from '../types/api';
+
 export enum StateType {
   INITIAL = 1,
   FOLDER_FETCH = 2,
@@ -18,6 +20,16 @@ export const STATE_TO_STEP_N = {
   [StateType.FINAL]: 3,
 };
 
+export const STATE_TO_LABEL = {
+  [StateType.INITIAL]: 'Welcome',
+  [StateType.FOLDER_FETCH]: 'Select Folder',
+  [StateType.FOLDER_SELECT]: 'Select Folder',
+  [StateType.FILES_FETCH]: 'Select Files',
+  [StateType.FILES_SELECT]: 'Select Files',
+  [StateType.RESULT_FETCH]: 'Summary',
+  [StateType.FINAL]: 'Summary',
+};
+
 export const LOADING_STEPS = new Set([
   StateType.FILES_FETCH,
   StateType.FOLDER_FETCH,
@@ -26,21 +38,23 @@ export const LOADING_STEPS = new Set([
 
 export const LAST_STEP_N = Math.max(...Object.values(STATE_TO_STEP_N));
 
-export type DahsboardState = {
+export type DashboardState = {
   currState: StateType;
+  folderPath: string[];
   foldersResults: string[];
   foldersSelected: string[];
-  filesResults: string[];
+  filesClusterResults: Cluster[];
   filesSelected: string[];
-  finalSummary: string[];
+  finalSummary: DeletionStatus[];
   error: string;
 };
 
-export const DEFAULT_DAHSBOARD_STATE: DahsboardState = {
+export const DEFAULT_DAHSBOARD_STATE: DashboardState = {
   currState: StateType.INITIAL,
+  folderPath: [],
   foldersResults: [],
   foldersSelected: [],
-  filesResults: [],
+  filesClusterResults: [],
   filesSelected: [],
   finalSummary: [],
   error: '',
@@ -48,19 +62,19 @@ export const DEFAULT_DAHSBOARD_STATE: DahsboardState = {
 
 export type Action = {
   goTo: StateType;
+  folderPathSelected?: string[];
   fetchedFolders?: string[];
   foldersSelected?: string[];
-  fetchedFiles?: string[];
+  fetchedFilesCluster?: Cluster[];
   filesSelected?: string[];
-  fetchedSummary?: string[];
+  fetchedSummary?: DeletionStatus[];
 };
 
 function validateStateTransition(curr: StateType, goTo: StateType): boolean {
-  return curr !== StateType.FINAL && goTo - curr <= 1;
+  return goTo == StateType.INITIAL || goTo - curr <= 1;
 }
 
-export function reducer(state: DahsboardState, action: Action) {
-  console.log(state, action, 'doing');
+export function reducer(state: DashboardState, action: Action): DashboardState {
   const errorSameState = {
     ...state,
     error: 'State unchanged, something might be wrong.', // TODO Implement more accurate error handling.
@@ -70,16 +84,24 @@ export function reducer(state: DahsboardState, action: Action) {
     return errorSameState;
   }
   switch (action.goTo) {
+    case StateType.INITIAL:
+      return DEFAULT_DAHSBOARD_STATE;
     case StateType.FOLDER_FETCH:
+      if (action.folderPathSelected) {
+        return {
+          ...validState,
+          currState: StateType.FOLDER_FETCH,
+          folderPath: [...action.folderPathSelected],
+        };
+      }
       return { ...validState, currState: StateType.FOLDER_FETCH };
     case StateType.FOLDER_SELECT:
-      if (!action.fetchedFolders?.length) {
-        return errorSameState;
-      }
+      // We can get into a nested folder where we don't have further inner folders.
+      // if (!action.fetchedFolders?.length) { return errorSameState; }
       return {
         ...validState,
         currState: StateType.FOLDER_SELECT,
-        foldersResults: action.fetchedFolders,
+        foldersResults: action.fetchedFolders ?? [],
       };
     case StateType.FILES_FETCH:
       if (!action.foldersSelected?.length) {
@@ -91,13 +113,13 @@ export function reducer(state: DahsboardState, action: Action) {
         foldersSelected: action.foldersSelected,
       };
     case StateType.FILES_SELECT:
-      if (!action.fetchedFiles?.length) {
+      if (!action.fetchedFilesCluster?.length) {
         return errorSameState;
       }
       return {
         ...validState,
         currState: StateType.FILES_SELECT,
-        filesResults: action.fetchedFiles,
+        filesClusterResults: action.fetchedFilesCluster,
       };
     case StateType.RESULT_FETCH:
       if (!action.filesSelected?.length) {
