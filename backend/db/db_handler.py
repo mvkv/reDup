@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, TypedDict
 from google.oauth2.service_account import Credentials
 from google.cloud import firestore
 import os
@@ -68,14 +68,18 @@ def find_user_uuid_by_email(email_to_find: str) -> Union[None, str]:
     else:
         return None
 
+class Tokens(TypedDict):
+    access_token: str
+    refresh_token: str
 
-def get_access_and_refresh_token_from_email(email: str) -> str:
-    user = users.document(find_user_uuid_by_email(email)).get()
-    if user.exists:
-        user = user.to_dict()
-        return {
-            "access_token": user["access_token"],
-            "refresh_token": user["refresh_token"]
-        }
-    else:
-        return None
+def get_access_and_refresh_token_from_email(email: str) -> Union[None, Tokens]:
+    user_uuid = find_user_uuid_by_email(email)
+    if not user_uuid: return None
+    user = users.document(user_uuid).get()
+    if not user.exists: return None
+    user = user.to_dict()
+    access_token, refresh_token = user["access_token"], user["refresh_token"]
+    return {
+        "access_token": access_token,
+        "refresh_token": refresh_token
+    }

@@ -5,35 +5,16 @@ from googleapiclient.http import MediaIoBaseDownload
 from custom_types.Image import Image
 from enums.mime_types import DriveMimeType
 from custom_types.File import File
-from typing import List
+from typing import Dict, List
 import requests
-import io
 
 
 class DriveHandler:
     def __init__(self, credentials: Credentials):
         self.drive = build('drive', 'v3', credentials=credentials)
 
-    def get_image_bytes_from_url(self, image_url: str):
-        return requests.get(image_url).content
-
-    def get_image_from_id(self, image_id: str) -> str or None:
-        try:
-            request = self.drive.files().get_media(fileId=image_id)
-            file = io.BytesIO()
-            downloader = MediaIoBaseDownload(file, request)
-            done = False
-            while not done:
-                status, done = downloader.next_chunk()
-                # TODO: add logging library
-                print(f'Downloading image: {int(status.progress() * 100)}%')
-            file = file.getvalue()
-
-        except HttpError as error:
-            print(f'An error occurred: {error}')
-            file = None
-
-        return file
+    def get_image_bytes_from_url(self, image_url: str) -> str:
+        return requests.get(image_url).content.decode('utf-8')
 
     def get_files_from_parent_id(self, parent_id: str = "root", mime_type: str = DriveMimeType.FOLDER.value, page_size: int = 1000) -> List[File]:
         if page_size < 1 or page_size > 1000:
@@ -69,12 +50,13 @@ class DriveHandler:
         files = self.get_files_from_parent_id(
             folder_id, DriveMimeType.IMAGE.value)
         for img in files:
+            if not img.thumbnailLink: continue
             image_bytes = self.get_image_bytes_from_url(img.thumbnailLink)
             images.append(
                 Image(img.id, img.name, image_bytes, img.thumbnailLink))
         return images
 
-    def get_images_from_folders_ids(self, folders_ids: List[dict]) -> List[Image]:
+    def get_images_from_folders_ids(self, folders_ids: List[str]) -> List[Image]:
         folders_image = [self.get_images_from_folder_id(
             folder_id) for folder_id in folders_ids]
         images = []
@@ -91,7 +73,7 @@ class DriveHandler:
             return False
         return True
 
-    def delete_files_from_ids(self, files_ids: List[str]) -> List:
+    def delete_files_from_ids(self, files_ids: List[str]) -> Dict[str, bool]:
         deletion_status = {}
         for file_id in files_ids:
             deletion_status[file_id] = self.delete_file_from_id(file_id)

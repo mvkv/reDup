@@ -12,7 +12,7 @@ router = APIRouter(
 
 
 @router.get("/folders")
-async def get_folders(request: Request, folder_id: str = None):
+async def get_folders(request: Request, folder_id: str = ""):
 
     get_files_from_parent_id_args = {}
     if folder_id:
