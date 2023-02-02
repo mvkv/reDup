@@ -6,5 +6,4 @@ from typing import List, Union
 class File:
     id: str
     name: str
-    parents: List[str]
     thumbnailLink: Union[str, None] = None

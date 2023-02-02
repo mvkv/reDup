@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { DashboardState, StateType, Action } from '../../store/dashboard';
 import InfiniteSpinner from '../common/InfiniteSpinner';
 import { Cluster } from '../../types/api';
-import { fakeFetchFiles } from '../../apiCalls/Drive';
+import { fetchImagesCluster } from '../../apiCalls/Drive';
 import Image from 'next/image';
 type StateDispatchArgs = { state: DashboardState; dispatch: Dispatch<Action> };
 
@@ -12,7 +12,7 @@ import { Modal, SetModal } from './Modal';
 export const FilesFetch = ({ state, dispatch }: StateDispatchArgs) => {
   useEffect(() => {
     async function foo() {
-      const resp = await fakeFetchFiles(15);
+      const resp = await fetchImagesCluster(state.foldersSelected);
       if (resp.ok) {
         dispatch({
           goTo: StateType.FILES_SELECT,

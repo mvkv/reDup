@@ -1,4 +1,4 @@
-import { Cluster, DeletionStatus } from '../types/api';
+import { Cluster, DeletionStatus, Folders } from '../types/api';
 
 export enum StateType {
   INITIAL = 1,
@@ -41,7 +41,7 @@ export const LAST_STEP_N = Math.max(...Object.values(STATE_TO_STEP_N));
 export type DashboardState = {
   currState: StateType;
   folderPath: string[];
-  foldersResults: string[];
+  foldersResults: Folders[];
   foldersSelected: string[];
   filesClusterResults: Cluster[];
   filesSelected: string[];
@@ -63,7 +63,7 @@ export const DEFAULT_DAHSBOARD_STATE: DashboardState = {
 export type Action = {
   goTo: StateType;
   folderPathSelected?: string[];
-  fetchedFolders?: string[];
+  fetchedFolders?: Folders[];
   foldersSelected?: string[];
   fetchedFilesCluster?: Cluster[];
   filesSelected?: string[];

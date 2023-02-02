@@ -40,6 +40,7 @@ def cluster_images(images: List[Image]) -> List[Cluster]:
                 seen.add(images[other_image_idx].id)
         clusters.append(cluster)
 
+    # TODO Filter out clusters with only 1 image.
     return clusters
 
 
