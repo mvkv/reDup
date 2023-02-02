@@ -1,15 +1,13 @@
+from dotenv import load_dotenv
+load_dotenv("./secrets/.env")
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 import db.db_handler as db
 
 from routers import drive, auth
 
-from dotenv import load_dotenv
-
-load_dotenv("./secrets/.env")
-
 app = FastAPI()
-
 
 app.add_middleware(
     CORSMiddleware,

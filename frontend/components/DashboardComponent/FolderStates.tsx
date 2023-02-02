@@ -1,7 +1,7 @@
 import { Dispatch, useEffect, useState } from 'react';
 import { DashboardState, StateType, Action } from '../../store/dashboard';
 import InfiniteSpinner from '../common/InfiniteSpinner';
-import { fakeFetchFolders } from '../../apiCalls/Drive';
+import { fetchDriveFolders } from '../../apiCalls/Drive';
 import colors from 'tailwindcss/colors';
 type StateDispatchArgs = { state: DashboardState; dispatch: Dispatch<Action> };
 import { ArrowUp, Folder } from 'react-feather';
@@ -11,7 +11,7 @@ import { Modal, SetModal } from './Modal';
 export const FolderFetch = ({ state, dispatch }: StateDispatchArgs) => {
   useEffect(() => {
     async function foo() {
-      const resp = await fakeFetchFolders(state.folderPath, 30);
+      const resp = await fetchDriveFolders(state.folderPath);
       if (resp.ok) {
         dispatch({
           goTo: StateType.FOLDER_SELECT,
@@ -68,16 +68,16 @@ export const FolderSelect = ({
 
   const handleFolderClick = (
     evt: React.MouseEvent<HTMLElement>,
-    folder: string,
+    folder_id: string,
   ) => {
     switch (evt.detail) {
       case 1:
-        setSelected(folder);
+        setSelected(folder_id);
         break;
       case 2:
         dispatch({
           goTo: StateType.FOLDER_FETCH,
-          folderPathSelected: [...state.folderPath, folder],
+          folderPathSelected: [...state.folderPath, folder_id],
         });
         break;
     }
@@ -130,20 +130,20 @@ export const FolderSelect = ({
           )}
           {state.foldersResults.length > 0 && (
             <ul className="flex flex-wrap overflow-y-auto gap-x-8 gap-y-12">
-              {state.foldersResults.map((folder, _) => {
-                const isSelected = folder === selected;
+              {state.foldersResults.map(({ id }, _) => {
+                const isSelected = id === selected;
                 return (
                   <button
                     className={`p-4 hover:bg-blue-200`}
-                    key={folder}
-                    onClick={(evt) => handleFolderClick(evt, folder)}
+                    key={id}
+                    onClick={(evt) => handleFolderClick(evt, id)}
                   >
                     <Folder
                       strokeWidth={1}
                       size={64}
                       fill={isSelected ? `${colors.sky[400]}` : ''}
                     />
-                    <li>{folder}</li>
+                    <li>{id}</li>
                   </button>
                 );
               })}

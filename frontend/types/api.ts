@@ -7,9 +7,14 @@ export type LogoutResponse = {
   ok: boolean;
 };
 
+export type Folders = {
+  id: string;
+  name: string;
+};
+
 export type GetFoldersResponse = {
   ok: boolean;
-  folders: string[];
+  folders: Folders[];
 };
 
 export type Image = {
@@ -35,5 +40,5 @@ export type DeletionStatus = {
 
 export type DeleteImagesResponse = {
   ok: boolean;
-  deletedImages: DeletionStatus[];
+  deleted_images: DeletionStatus[];
 };

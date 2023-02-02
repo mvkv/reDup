@@ -1,13 +1,11 @@
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google.auth.credentials import Credentials
-from googleapiclient.http import MediaIoBaseDownload
 from custom_types.Image import Image
-from enums.mime_types import DriveMimeType
+from custom_types.Drive import DriveMimeType
 from custom_types.File import File
 from typing import Dict, List
 import requests
-
 
 class DriveHandler:
     def __init__(self, credentials: Credentials):
@@ -16,7 +14,7 @@ class DriveHandler:
     def get_image_bytes_from_url(self, image_url: str) -> str:
         return requests.get(image_url).content.decode('utf-8')
 
-    def get_files_from_parent_id(self, parent_id: str = "root", mime_type: str = DriveMimeType.FOLDER.value, page_size: int = 1000) -> List[File]:
+    def get_files_from_parent_id(self, parent_id: str = "root", mime_type: DriveMimeType = DriveMimeType.FOLDER, page_size: int = 1000) -> List[File]:
         if page_size < 1 or page_size > 1000:
             raise Exception("Page size must be between 0 and 1000")
 
@@ -29,7 +27,7 @@ class DriveHandler:
                     q=f"'{parent_id}' in parents and mimeType = '{mime_type}' and trashed = false",
                     pageSize=page_size,
                     corpora="user",
-                    fields=f"nextPageToken, files(id, name, parents {', thumbnailLink' if mime_type == DriveMimeType.IMAGE.value else ''})",
+                    fields=f"nextPageToken, files(id, name {', thumbnailLink' if mime_type == DriveMimeType.IMAGE else ''})",
                     pageToken=page_token,
                 ).execute()
 
@@ -47,18 +45,15 @@ class DriveHandler:
 
     def get_images_from_folder_id(self, folder_id: str) -> List[Image]:
         images = []
-        files = self.get_files_from_parent_id(
-            folder_id, DriveMimeType.IMAGE.value)
+        files = self.get_files_from_parent_id(folder_id, DriveMimeType.IMAGE)
         for img in files:
             if not img.thumbnailLink: continue
             image_bytes = self.get_image_bytes_from_url(img.thumbnailLink)
-            images.append(
-                Image(img.id, img.name, image_bytes, img.thumbnailLink))
+            images.append(Image(img.id, img.name, image_bytes, img.thumbnailLink))
         return images
 
     def get_images_from_folders_ids(self, folders_ids: List[str]) -> List[Image]:
-        folders_image = [self.get_images_from_folder_id(
-            folder_id) for folder_id in folders_ids]
+        folders_image = [self.get_images_from_folder_id(folder_id) for folder_id in folders_ids]
         images = []
         for folder_image in folders_image:
             for image in folder_image:

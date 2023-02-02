@@ -8,7 +8,7 @@ import {
   Action,
 } from '../../store/dashboard';
 import InfiniteSpinner from '../common/InfiniteSpinner';
-import { fakeFetchResults } from '../../apiCalls/Drive';
+import { deleteImagesAndFetchSummary } from '../../apiCalls/Drive';
 type StateDispatchArgs = { state: DashboardState; dispatch: Dispatch<Action> };
 type Email = { email: string };
 
@@ -99,9 +99,12 @@ const InitialState = ({
 const ResultFetch = ({ state, dispatch }: StateDispatchArgs) => {
   useEffect(() => {
     async function foo() {
-      const resp = await fakeFetchResults();
+      const resp = await deleteImagesAndFetchSummary(state.filesSelected);
       if (resp.ok) {
-        dispatch({ goTo: StateType.FINAL, fetchedSummary: resp.deletedImages });
+        dispatch({
+          goTo: StateType.FINAL,
+          fetchedSummary: resp.deleted_images,
+        });
       }
     }
     foo();
