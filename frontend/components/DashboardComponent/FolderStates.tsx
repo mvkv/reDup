@@ -11,7 +11,9 @@ import { Modal, SetModal } from './Modal';
 export const FolderFetch = ({ state, dispatch }: StateDispatchArgs) => {
   useEffect(() => {
     async function foo() {
-      const resp = await fetchDriveFolders(state.folderPath);
+      const resp = await fetchDriveFolders(
+        state.folderPath[state.folderPath.length - 1],
+      );
       if (resp.ok) {
         dispatch({
           goTo: StateType.FOLDER_SELECT,
@@ -130,7 +132,7 @@ export const FolderSelect = ({
           )}
           {state.foldersResults.length > 0 && (
             <ul className="flex flex-wrap overflow-y-auto gap-x-8 gap-y-12">
-              {state.foldersResults.map(({ id }, _) => {
+              {state.foldersResults.map(({ id, name }, _) => {
                 const isSelected = id === selected;
                 return (
                   <button
@@ -143,7 +145,7 @@ export const FolderSelect = ({
                       size={64}
                       fill={isSelected ? `${colors.sky[400]}` : ''}
                     />
-                    <li>{id}</li>
+                    <li>{name}</li>
                   </button>
                 );
               })}
