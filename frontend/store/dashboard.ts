@@ -40,7 +40,7 @@ export const LAST_STEP_N = Math.max(...Object.values(STATE_TO_STEP_N));
 
 export type DashboardState = {
   currState: StateType;
-  folderPath: string[];
+  folderPath: Folders[];
   foldersResults: Folders[];
   foldersSelected: string[];
   filesClusterResults: Cluster[];
@@ -62,7 +62,7 @@ export const DEFAULT_DAHSBOARD_STATE: DashboardState = {
 
 export type Action = {
   goTo: StateType;
-  folderPathSelected?: string[];
+  folderPathSelected?: Folders[];
   fetchedFolders?: Folders[];
   foldersSelected?: string[];
   fetchedFilesCluster?: Cluster[];
@@ -96,8 +96,6 @@ export function reducer(state: DashboardState, action: Action): DashboardState {
       }
       return { ...validState, currState: StateType.FOLDER_FETCH };
     case StateType.FOLDER_SELECT:
-      // We can get into a nested folder where we don't have further inner folders.
-      // if (!action.fetchedFolders?.length) { return errorSameState; }
       return {
         ...validState,
         currState: StateType.FOLDER_SELECT,

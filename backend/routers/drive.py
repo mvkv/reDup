@@ -24,9 +24,7 @@ async def get_folders(request: Request, folder_id: str = "root"):
         folders = fake_get_folders_from_parent_id(folder_id)
     else:
         folders = request.state.drive_handler.get_files_from_parent_id(
-            folder_id, DriveMimeType.FOLDER.value)
-        if not folders:
-            return ERROR_RESPONSE
+            folder_id, DriveMimeType.FOLDER)
 
     return JSONResponse(content={
         "ok": True,
@@ -35,7 +33,7 @@ async def get_folders(request: Request, folder_id: str = "root"):
 
 
 @router.post("/images")
-async def get_images_from_folders(request: Request, folders_id: List[str] = Query(None)):
+async def get_images_from_folders(request: Request, folders_id: List[str] = Query(...)):
     if not folders_id:
         raise HTTPException(
             status_code=400, detail="<folders_ids> param missing")

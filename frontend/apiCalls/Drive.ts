@@ -6,11 +6,11 @@ import {
 import config from '../config.json';
 
 export const fetchDriveFolders = async (
-  folder_id: string,
+  folder_id: string = 'root',
 ): Promise<GetFoldersResponse> => {
   const res = await fetch(
     `${config.backendAddress}/api/drive/folders?${new URLSearchParams({
-      ...(folder_id && { folder_id: folder_id }),
+      folder_id: folder_id,
     })}`,
     {
       method: 'GET',

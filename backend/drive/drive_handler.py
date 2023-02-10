@@ -15,7 +15,7 @@ class DriveHandler:
     def get_image_bytes_from_url(self, image_url: str) -> str:
         return requests.get(image_url).content
 
-    def get_files_from_parent_id(self, parent_id: str = "root", mime_type: DriveMimeType = DriveMimeType.FOLDER.value, page_size: int = 1000) -> List[File]:
+    def get_files_from_parent_id(self, parent_id: str = "root", mime_type: DriveMimeType = DriveMimeType.FOLDER, page_size: int = 1000) -> List[File]:
         if page_size < 1 or page_size > 1000:
             raise Exception("Page size must be between 0 and 1000")
 
@@ -25,10 +25,10 @@ class DriveHandler:
             page_token = None
             while not request_done:
                 res = self.drive.files().list(
-                    q=f"'{parent_id}' in parents and mimeType = '{mime_type}' and trashed = false",
+                    q=f"'{parent_id}' in parents and mimeType = '{mime_type.value}' and trashed = false",
                     pageSize=page_size,
                     corpora="user",
-                    fields=f"nextPageToken, files(id, name {', thumbnailLink' if mime_type == DriveMimeType.IMAGE.value else ''})",
+                    fields=f"nextPageToken, files(id, name {', thumbnailLink' if mime_type == DriveMimeType.IMAGE else ''})",
                     pageToken=page_token,
                 ).execute()
 
@@ -40,6 +40,7 @@ class DriveHandler:
                 files += [File(**file) for file in res["files"]]
 
         except HttpError as e:
+            # TODO: handle drive API errors properly
             print(f"An error occurred: {e}")
 
         return files
@@ -47,7 +48,7 @@ class DriveHandler:
     def get_images_from_folder_id(self, folder_id: str) -> List[Image]:
         images = []
         files = self.get_files_from_parent_id(
-            folder_id, DriveMimeType.IMAGE.value)
+            folder_id, DriveMimeType.IMAGE)
         for img in files:
             if not img.thumbnailLink:
                 continue
