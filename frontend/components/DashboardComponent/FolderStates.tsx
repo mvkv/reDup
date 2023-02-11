@@ -87,7 +87,7 @@ export const FolderSelect = ({
   };
 
   const onNextClick = () => {
-    if (selected === undefined) {
+    if (!selected) {
       setModal({ type: Modal.ERROR, content: <>No folder selected!</> });
     } else {
       dispatch({

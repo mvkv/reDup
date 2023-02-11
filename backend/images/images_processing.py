@@ -40,9 +40,8 @@ def cluster_images(images: List[Image]) -> List[Cluster]:
                 seen.add(images[other_image_idx].id)
         clusters.append(cluster)
 
-    # TODO Filter out clusters with only 1 image.
-    return clusters
+    return [cluster for cluster in clusters if len(cluster.images) > 1]
 
 
 def get_web_content_from_clusters(clusters: List[Cluster]) -> List[dict]:
-    return [cluster.to_web_json() for cluster in clusters if len(cluster.images) > 1]
+    return [cluster.to_web_json() for cluster in clusters]
