@@ -6,11 +6,11 @@ import {
 import config from '../config.json';
 
 export const fetchDriveFolders = async (
-  path: string[],
+  folder_id: string = 'root',
 ): Promise<GetFoldersResponse> => {
   const res = await fetch(
     `${config.backendAddress}/api/drive/folders?${new URLSearchParams({
-      folder_id: path.join('/'),
+      folder_id: folder_id,
     })}`,
     {
       method: 'GET',
@@ -22,12 +22,12 @@ export const fetchDriveFolders = async (
 };
 
 export const fetchImagesCluster = async (
-  path: string[],
+  folders_id: string[],
 ): Promise<GetFilesResponse> => {
   const res = await fetch(
-    `${config.backendAddress}/api/drive/images?${new URLSearchParams({
-      folders_id: path.join('/'),
-    })}`,
+    `${config.backendAddress}/api/drive/images?${new URLSearchParams(
+      folders_id.map((folder_id) => ['folders_id', folder_id]),
+    )}`,
     {
       method: 'POST',
       credentials: 'include',

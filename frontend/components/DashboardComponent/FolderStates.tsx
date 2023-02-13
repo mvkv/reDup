@@ -7,11 +7,13 @@ type StateDispatchArgs = { state: DashboardState; dispatch: Dispatch<Action> };
 import { ArrowUp, Folder } from 'react-feather';
 import { ActionButton, StateWrapper } from './StateWrapper';
 import { Modal, SetModal } from './Modal';
+import { Folders } from '../../types/api';
 
 export const FolderFetch = ({ state, dispatch }: StateDispatchArgs) => {
   useEffect(() => {
-    async function foo() {
-      const resp = await fetchDriveFolders(state.folderPath);
+    async function fetchFolders() {
+      const folderToFetch = state.folderPath.at(-1)?.id || 'root';
+      const resp = await fetchDriveFolders(folderToFetch);
       if (resp.ok) {
         dispatch({
           goTo: StateType.FOLDER_SELECT,
@@ -19,7 +21,7 @@ export const FolderFetch = ({ state, dispatch }: StateDispatchArgs) => {
         });
       }
     }
-    foo();
+    fetchFolders();
   }, []);
   return (
     <>
@@ -38,7 +40,7 @@ export const FolderSelect = ({
   dispatch,
   setModal,
 }: StateDispatchArgs & SetModal) => {
-  const [selected, setSelected] = useState('');
+  const [selected, setSelected] = useState<Folders | undefined>(undefined);
 
   const navigateToRoot = () => {
     if (state.folderPath.length == 0) {
@@ -60,36 +62,37 @@ export const FolderSelect = ({
     });
   };
 
-  const getPathDisplayName = (folders: string[]) => {
-    if (folders.length < 3) return `~/${folders.join('/')}`;
+  const getPathDisplayName = (folders: Folders[]) => {
+    const foldersName = folders.map((folder) => folder.name);
+    if (folders.length < 3) return `~/${foldersName.join('/')}`;
     // Elipsize the start on very deeply nested paths.
-    return `~/.../${folders.slice(-2).join('/')}`;
+    return `~/.../${foldersName.slice(-2).join('/')}`;
   };
 
   const handleFolderClick = (
     evt: React.MouseEvent<HTMLElement>,
-    folder_id: string,
+    folder: Folders,
   ) => {
     switch (evt.detail) {
       case 1:
-        setSelected(folder_id);
+        setSelected(folder);
         break;
       case 2:
         dispatch({
           goTo: StateType.FOLDER_FETCH,
-          folderPathSelected: [...state.folderPath, folder_id],
+          folderPathSelected: [...state.folderPath, folder],
         });
         break;
     }
   };
 
   const onNextClick = () => {
-    if (selected == '') {
+    if (!selected) {
       setModal({ type: Modal.ERROR, content: <>No folder selected!</> });
     } else {
       dispatch({
         goTo: StateType.FILES_FETCH,
-        foldersSelected: [selected],
+        foldersSelected: [selected.id],
       });
     }
   };
@@ -102,7 +105,7 @@ export const FolderSelect = ({
       >
         <div className="place-self-start flex flex-col gap-y-4 min-w-full">
           <div className="text-2xl pb-4 border-b-2 border-blue-400 flex justify-between">
-            {!selected ? 'Select a folder' : `${selected} selected`}
+            {!selected ? 'Select a folder' : `"${selected.name}" selected`}
             <div className="flex items-center gap-x-4">
               {state.folderPath.length > 0 && (
                 <button onClick={() => navigateUp()}>
@@ -119,6 +122,7 @@ export const FolderSelect = ({
               No folders at this level
               {state.folderPath.length > 0 && (
                 <button
+                  className="underline text-main"
                   onClick={() => {
                     navigateToRoot();
                   }}
@@ -130,20 +134,20 @@ export const FolderSelect = ({
           )}
           {state.foldersResults.length > 0 && (
             <ul className="flex flex-wrap overflow-y-auto gap-x-8 gap-y-12">
-              {state.foldersResults.map(({ id }, _) => {
-                const isSelected = id === selected;
+              {state.foldersResults.map(({ id, name }, _) => {
+                const isSelected = id === selected?.id;
                 return (
                   <button
-                    className={`p-4 hover:bg-blue-200`}
+                    className={`p-4 hover:bg-blue-200 flex flex-col items-center justify-center`}
                     key={id}
-                    onClick={(evt) => handleFolderClick(evt, id)}
+                    onClick={(evt) => handleFolderClick(evt, { id, name })}
                   >
                     <Folder
                       strokeWidth={1}
                       size={64}
                       fill={isSelected ? `${colors.sky[400]}` : ''}
                     />
-                    <li>{id}</li>
+                    <li>{name}</li>
                   </button>
                 );
               })}

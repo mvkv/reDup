@@ -17,14 +17,14 @@ def fake_get_folders_from_parent_id(parent_id: str = "root") -> List[File]:
             for _ in range(random.randint(4, 25))]
 
 
-def fake_get_clusters_from_folders_ids(folders_ids: List[str]) -> List[dict]:
+def fake_get_clusters_from_folders_ids(folders_id: List[str]) -> List[dict]:
     def rand_size(): return [250, 300, 350, 400][random.randint(0, 3)]
     def fake_img(): return {'id': f'id_{fake_uuid()}', 'name': f'n_{fake_uuid()}',
                             'image_url': f'https://picsum.photos/{rand_size()}/{rand_size()}.jpg'}
     return [
         {'id': fake_uuid(), 'images': [fake_img()
                                        for _ in range(random.randint(2, 6))]}
-        for _ in range(random.randint(4, 15) * len(folders_ids))
+        for _ in range(random.randint(4, 15) * len(folders_id))
     ]
 
 

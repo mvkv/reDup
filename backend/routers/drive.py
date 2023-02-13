@@ -6,7 +6,7 @@ from images.images_processing import cluster_images, get_web_content_from_cluste
 from custom_types.Drive import DriveMimeType
 from typing import List
 from routers.fake_drive_responses import fake_get_folders_from_parent_id, fake_delete_files_from_ids, fake_get_clusters_from_folders_ids
-import os 
+import os
 
 router = APIRouter(
     prefix="/api/drive",
@@ -16,13 +16,15 @@ router = APIRouter(
 USE_FAKE_DATA = os.environ.get('REDUP_FAKE_DATA', 'False').lower() == "true"
 ERROR_RESPONSE = JSONResponse(content={'ok': False})
 
-@router.get("/folders")
-async def get_folders(request: Request, folder_id: str = "root") -> JSONResponse:
 
-    if USE_FAKE_DATA: folders = fake_get_folders_from_parent_id(folder_id)
+@router.get("/folders")
+async def get_folders(request: Request, folder_id: str = "root"):
+
+    if USE_FAKE_DATA:
+        folders = fake_get_folders_from_parent_id(folder_id)
     else:
-        folders = request.state.drive_handler.get_files_from_parent_id(folder_id,  DriveMimeType.FOLDER)
-        if not folders: return ERROR_RESPONSE
+        folders = request.state.drive_handler.get_files_from_parent_id(
+            folder_id, DriveMimeType.FOLDER)
 
     return JSONResponse(content={
         "ok": True,
@@ -31,16 +33,18 @@ async def get_folders(request: Request, folder_id: str = "root") -> JSONResponse
 
 
 @router.post("/images")
-async def get_images_from_folders(request: Request, folders_id: List[str] = Query(...)) -> JSONResponse:
+async def get_images_from_folders(request: Request, folders_id: List[str] = Query(...)):
     if not folders_id:
         raise HTTPException(
             status_code=400, detail="<folders_ids> param missing")
 
-    if USE_FAKE_DATA: clusters = fake_get_clusters_from_folders_ids(folders_id)
+    if USE_FAKE_DATA:
+        clusters = fake_get_clusters_from_folders_ids(folders_id)
     else:
         images = request.state.drive_handler.get_images_from_folders_ids(
             folders_id)
-        if not images: return ERROR_RESPONSE
+        if not images:
+            return ERROR_RESPONSE
         clusters = get_web_content_from_clusters(cluster_images(images))
 
     return JSONResponse(content={
@@ -50,15 +54,18 @@ async def get_images_from_folders(request: Request, folders_id: List[str] = Quer
 
 
 @router.post("/delete-images")
-def delete_images(request: Request, files_ids: List[str] = Query(...)) -> JSONResponse:
+def delete_images(request: Request, files_ids: List[str] = Query(...)):
     if not files_ids:
         raise HTTPException(
             status_code=400, detail="<files_ids> param missing")
 
-    if USE_FAKE_DATA: deletion_status = fake_delete_files_from_ids(files_ids)
+    if USE_FAKE_DATA:
+        deletion_status = fake_delete_files_from_ids(files_ids)
     else:
-        deletion_status = request.state.drive_handler.delete_files_from_ids(files_ids)
-        if not deletion_status: return ERROR_RESPONSE
+        deletion_status = request.state.drive_handler.delete_files_from_ids(
+            files_ids)
+        if not deletion_status:
+            return ERROR_RESPONSE
 
     return JSONResponse(content={
         "ok": True,

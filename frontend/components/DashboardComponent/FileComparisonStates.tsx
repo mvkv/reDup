@@ -53,14 +53,14 @@ const FileComparison = ({
   };
 
   return (
-    <li
+    <ul
       className={`flex gap-4 py-8 flex-wrap items-baseline border-b-2 border-blue-400 last:border-none`}
     >
       {cluster.images.map((img, _) => {
         const isSelected = selected.includes(img.id);
 
         return (
-          <ul className="basis-1/5 max-w-[300px] cursor-pointer" key={img.id}>
+          <li className="basis-1/5 max-w-[300px] cursor-pointer" key={img.id}>
             <div
               className={`min-w-[8em] border-solid border-2 rounded-lg overflow-hidden select-none text-center ${
                 isSelected
@@ -81,13 +81,13 @@ const FileComparison = ({
                   isSelected ? 'text-yellow-700' : 'text-gray-800'
                 }`}
               >
-                {img.id}
+                {img.name}
               </div>
             </div>
-          </ul>
+          </li>
         );
       })}
-    </li>
+    </ul>
   );
 };
 
