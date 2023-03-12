@@ -1,28 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="134" height="66" viewBox="0 0 134 66">
-  <defs>
-    <filter id="Re" x="0" y="0" width="62" height="66" filterUnits="userSpaceOnUse">
-      <feOffset dy="3" input="SourceAlpha"/>
-      <feGaussianBlur stdDeviation="3" result="blur"/>
-      <feFlood flood-opacity="0.161"/>
-      <feComposite operator="in" in2="blur"/>
-      <feComposite in="SourceGraphic"/>
-    </filter>
-    <filter id="Dup" x="45" y="0" width="89" height="66" filterUnits="userSpaceOnUse">
-      <feOffset dy="3" input="SourceAlpha"/>
-      <feGaussianBlur stdDeviation="3" result="blur-2"/>
-      <feFlood flood-opacity="0.161"/>
-      <feComposite operator="in" in2="blur-2"/>
-      <feComposite in="SourceGraphic"/>
-    </filter>
-  </defs>
-  <g id="Raggruppa_5" data-name="Raggruppa 5" transform="translate(-70 -9)">
-    <g id="Raggruppa_3" data-name="Raggruppa 3" transform="translate(-74 -6)">
-      <g transform="matrix(1, 0, 0, 1, 144, 15)" filter="url(#Re)">
-        <text id="Re-2" data-name="Re" transform="translate(9 42)" fill="#54616c" font-size="34" font-family="Poppins-Bold, Poppins" font-weight="700"><tspan x="0" y="0">Re</tspan></text>
-      </g>
-      <g transform="matrix(1, 0, 0, 1, 144, 15)" filter="url(#Dup)">
-        <text id="Dup-2" data-name="Dup" transform="translate(54 42)" fill="#4285f4" font-size="34" font-family="Poppins-Bold, Poppins" font-weight="700"><tspan x="0" y="0">Dup</tspan></text>
-      </g>
-    </g>
-  </g>
+<svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M13.2839 20.3182C14.1062 17.2499 17.2601 14.0961 20.3284 13.2738L39.4573 8.14742C42.5256 7.32516 44.3463 9.1459 43.5241 12.2142L38.3977 31.3432C37.5754 34.4114 34.4215 37.5653 31.3533 38.3876L12.2243 43.514C9.15603 44.3362 7.33528 42.5155 8.15755 39.4472L13.2839 20.3182Z" fill="#4B3873"/>
+<path d="M5.61521 12.6494C6.43748 9.58113 9.59138 6.42723 12.6597 5.60496L31.7886 0.478594C34.8569 -0.343671 36.6777 1.47708 35.8554 4.54535L30.729 23.6743C29.9068 26.7426 26.7529 29.8965 23.6846 30.7188L4.5556 35.8451C1.48733 36.6674 -0.333417 34.8466 0.488848 31.7784L5.61521 12.6494Z" fill="#8655F7"/>
 </svg>

@@ -1,4 +1,4 @@
-import Router from 'next/router';
+import Router, { useRouter } from 'next/router';
 import {
   createContext,
   ReactNode,
@@ -30,9 +30,11 @@ const AuthContext = createContext<
 function AuthProvider({ children }: { children: ReactNode }) {
   const [authState, setAuthState] = useState(DEFAULT_AUTH_STATE);
   const [lastCommand, setLastCommand] = useState(DEFAULT_ACTION);
+  const router = useRouter();
 
   const isLoggedIn = authState.isLoggedIn;
   const wasLoggedIn = usePrevious(isLoggedIn);
+  const isOnHomepage = router.pathname == '/' || router.pathname == '';
 
   useEffect(() => {
     async function tryOnLoadLogin() {
@@ -44,10 +46,10 @@ function AuthProvider({ children }: { children: ReactNode }) {
         // TODO: Use local storage to prevent firing unecessary request.
       }
     }
-    if (!isLoggedIn) {
+    if (!isLoggedIn && isOnHomepage) {
       tryOnLoadLogin();
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, isOnHomepage]);
 
   useEffect(() => {
     async function processCommand() {

@@ -1,8 +1,8 @@
-const Circle = ({ isFilled }: { isFilled: boolean }) => (
+const Square = ({ isFilled }: { isFilled: boolean }) => (
   <div
-    className={`h-4 w-4 border-solid border-slate-700 border-[1px] ${
-      isFilled ? 'bg-slate-600' : 'bg-slate-200'
-    } rounded-full`}
+    className={`h-4 w-4 ${
+      isFilled ? 'bg-spark-purple-700' : 'bg-spark-purple-100'
+    } rounded-md`}
   ></div>
 );
 
@@ -16,13 +16,13 @@ export function DiscreteProgressBar({
   stepLabel?: string;
 }) {
   return (
-    <div className="flex gap-x-2">
+    <div className="flex gap-x-4">
       <span className="flex gap-x-2 pr-2 items-center">
         {[...Array(maxStep)].map((_, i) => (
-          <Circle key={i} isFilled={i < currStep} />
+          <Square key={i} isFilled={i < currStep} />
         ))}
       </span>
-      <span>{stepLabel}</span>
+      <span className="font-inter text-lg">{stepLabel}</span>
     </div>
   );
 }

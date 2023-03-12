@@ -6,8 +6,10 @@ import { fetchImagesCluster } from '../../apiCalls/Drive';
 import Image from 'next/image';
 type StateDispatchArgs = { state: DashboardState; dispatch: Dispatch<Action> };
 
-import { ActionButton, StateWrapper } from './StateWrapper';
+import { StateWrapper } from './StateWrapper';
 import { Modal, SetModal } from './Modal';
+import { AlertTriangle, XCircle } from 'react-feather';
+import ThemedButton from '../common/ThemedButton';
 
 export const FilesFetch = ({ state, dispatch }: StateDispatchArgs) => {
   useEffect(() => {
@@ -27,7 +29,7 @@ export const FilesFetch = ({ state, dispatch }: StateDispatchArgs) => {
     <>
       <StateWrapper
         state={state}
-        nextBtn={<ActionButton label={'Next'} isLoading={true} />}
+        nextBtn={<ThemedButton label={'Next'} isLoading={true} />}
       >
         <InfiniteSpinner label={'Fetching files'} />
       </StateWrapper>
@@ -54,7 +56,7 @@ const FileComparison = ({
 
   return (
     <ul
-      className={`flex gap-4 py-8 flex-wrap items-baseline border-b-2 border-blue-400 last:border-none`}
+      className={`flex gap-4 py-8 flex-wrap items-baseline border-b-2 border-spark-purple-500 last:border-none`}
     >
       {cluster.images.map((img, _) => {
         const isSelected = selected.includes(img.id);
@@ -64,8 +66,8 @@ const FileComparison = ({
             <div
               className={`min-w-[8em] border-solid border-2 rounded-lg overflow-hidden select-none text-center ${
                 isSelected
-                  ? 'bg-yellow-100 border-yellow-800 shadow-lg shadow-yellow-400/30'
-                  : 'hover:bg-blue-100 border-gray-800'
+                  ? 'bg-spark-purple-200 border-spark-purple-700 shadow-lg shadow-spark-purple-500/30'
+                  : 'hover:bg-spark-purple-200 border-gray-800'
               }`}
               key={img.id}
               onClick={() => clickOn(img.id)}
@@ -77,10 +79,11 @@ const FileComparison = ({
                 height={300}
               ></Image>
               <div
-                className={`m-1.5 text-base font-medium ${
-                  isSelected ? 'text-yellow-700' : 'text-gray-800'
+                className={`m-1.5 text-base font-medium relative ${
+                  isSelected ? 'text-spark-purple-700' : 'text-gray-800'
                 }`}
               >
+                {isSelected && <XCircle className="absolute" />}
                 {img.name}
               </div>
             </div>
@@ -113,25 +116,54 @@ export const FilesSelect = ({
 
   const onNextClick = () => {
     if (selected.length == 0) {
-      setModal({
-        type: Modal.ERROR,
-        content: <>No files marked to be deleted!</>,
-      });
+      // Should not happen, as the button would be disabled in this circumstance.
     } else {
       setModal(confirmDeletionModal);
     }
   };
+  const clustersFetched = state.filesClusterResults.length;
+  const filesFetched = state.filesClusterResults
+    .map((cluster) => cluster.images.length ?? 0)
+    .reduce((acc, v) => acc + v, 0);
+  const validSelection = selected.length > 0;
 
   return (
     <>
       <StateWrapper
         state={state}
-        nextBtn={<ActionButton label={'Next'} onClick={onNextClick} />}
+        nextBtn={
+          <ThemedButton
+            label={'Next'}
+            onClick={onNextClick}
+            isDisabled={!validSelection}
+          />
+        }
       >
         <div className="place-self-start flex flex-col gap-y-4 min-w-full">
-          <div className="text-2xl pb-4 border-b-2 border-blue-400 flex justify-between">
-            <p>Select files to delete</p>
-            {selected.length > 0 && <p>{`${selected.length} selected`}</p>}
+          <div className="text-2xl flex justify-between">
+            <div className="flex items-center gap-x-2 font-inter text-base">
+              Fetched:
+              <p className=" bg-spark-purple-300  rounded-lg px-4 py-1 shadow-md">
+                {filesFetched} files
+              </p>
+              <p className=" bg-spark-purple-300  rounded-lg px-4 py-1 shadow-md">
+                {clustersFetched} clusters
+              </p>
+            </div>
+            {selected.length > 0 && (
+              <div className="flex items-center gap-x-2">
+                <p className="text-base font-inter">Selected:</p>
+                <div className="font-mono text-base bg-emerald-50 rounded-lg px-4 py-1 shadow-md">
+                  {selected.length} files
+                </div>
+              </div>
+            )}
+            {selected.length === 0 && (
+              <div className="flex justify-center items-center gap-x-2 font-inter text-base bg-rose-50 rounded-lg px-4 py-1 shadow-md">
+                <AlertTriangle size={16} />
+                Select files to delete
+              </div>
+            )}
           </div>
 
           <ul className="flex flex-col overflow-y-auto">
