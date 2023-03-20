@@ -6,6 +6,8 @@ from custom_types.Drive import DriveMimeType
 from custom_types.File import File
 from typing import Dict, List
 import requests
+from concurrent.futures import ThreadPoolExecutor
+from time import ctime
 
 
 class DriveHandler:
@@ -13,7 +15,16 @@ class DriveHandler:
         self.drive = build('drive', 'v3', credentials=credentials)
 
     def get_image_bytes_from_url(self, image_url: str) -> str:
-        return requests.get(image_url).content
+        trials = 0
+        try:
+            r = requests.get(image_url)
+            r.raise_for_status()
+        except requests.exceptions.HTTPError:
+            if trials >= 3:
+                raise SystemExit("Error in downloading images")
+
+            trials += 1
+        return r.content
 
     def get_files_from_parent_id(self, parent_id: str = "root", mime_type: DriveMimeType = DriveMimeType.FOLDER, page_size: int = 1000) -> List[File]:
         if page_size < 1 or page_size > 1000:
@@ -49,12 +60,13 @@ class DriveHandler:
         images = []
         files = self.get_files_from_parent_id(
             folder_id, DriveMimeType.IMAGE)
-        for img in files:
-            if not img.thumbnailLink:
-                continue
-            image_bytes = self.get_image_bytes_from_url(img.thumbnailLink)
+        print(f"{ctime()} - Downloading images")
+        with ThreadPoolExecutor(max_workers=len(files)) as pool:
+            images_bytes = list(pool.map(self.get_image_bytes_from_url, [image.thumbnailLink for image in files]))
+        for image_idx in range(len(files)):
             images.append(
-                Image(img.id, img.name, image_bytes, img.thumbnailLink))
+                Image(files[image_idx].id, files[image_idx].name, images_bytes[image_idx], files[image_idx].thumbnailLink))
+        print(f"{ctime()} - Images downloaded")
         return images
 
     def get_images_from_folders_ids(self, folders_ids: List[str]) -> List[Image]:

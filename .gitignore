@@ -41,3 +41,6 @@
 **/.env
 **/secrets
 
+# Backend ML models
+backend/models
+
