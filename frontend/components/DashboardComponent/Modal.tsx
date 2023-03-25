@@ -1,9 +1,8 @@
 import { Dispatch, ReactNode, SetStateAction } from 'react';
-import { X } from 'react-feather';
-
+import { AlertCircle, AlertTriangle, X } from 'react-feather';
+import ThemedButton from '../common/ThemedButton';
 export enum Modal {
   NO_MODAL,
-  ERROR,
   WARNING,
 }
 
@@ -13,39 +12,55 @@ export type ModalData = {
   content?: ReactNode;
 };
 
-export type SetModal = { setModal: Dispatch<SetStateAction<ModalData>> };
+export type SetModal = {
+  setModal: Dispatch<SetStateAction<ModalData>>;
+};
 
 export const FADED_BACKGROUND_TW_CLASSES =
   'grayscale-[80%] blur-[2px] pointer-events-none select-none overflow-hidden';
-export const ModalTemplate = ({
+export const WarningDialogTemplate = ({
   setModal,
   onWarningDismiss,
   content,
 }: SetModal & Partial<ModalData>) => {
   return (
-    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-      <div className="min-h-[60px] min-w-[200px] p-4 border-solid border-black border-2 rounded-md shadow-lg bg-slate-200">
-        <div className="flex flex-col gap-y-4 items-center">
-          <button
-            className="self-end"
-            onClick={() => setModal({ type: Modal.NO_MODAL })}
-          >
-            <X size={24} />
-          </button>
-          <div>{content}</div>
-          {onWarningDismiss && (
-            <button
-              className="px-5 py-2 border-black border-2 rounded-md w-fit"
+    <div className="fixed inset-0 flex items-center justify-center p-4">
+      <div className="max-w-[420px] p-5 rounded-md shadow-xl bg-slate-50">
+        <div className="flex flex-col gap-y-6 items-center py-4">
+          <WarningConcentricPulseCircle />
+          <div className="font-inter text-center font-bold">{content}</div>
+          <div className="flex gap-x-2 self-stretch">
+            <ThemedButton
+              label={'Cancel'}
+              className={'flex-grow'}
+              onClick={() => {
+                setModal({ type: Modal.NO_MODAL });
+              }}
+            />
+            <ThemedButton
+              label={'Ok'}
+              className={'flex-grow'}
               onClick={() => {
                 onWarningDismiss!();
                 setModal({ type: Modal.NO_MODAL });
               }}
-            >
-              OK
-            </button>
-          )}
+            />
+          </div>
         </div>
       </div>
     </div>
+  );
+};
+import colors from 'tailwindcss/colors';
+const WarningConcentricPulseCircle = () => {
+  return (
+    <>
+      <div className="relative flex">
+        <div className="w-[44px] h-[44px] border-solid bg-orange-100 rounded-full absolute opacity-50 animate-slow-ping"></div>
+        <div className="p-2 border-solid bg-orange-100 rounded-full">
+          <AlertTriangle size={28} stroke={colors.orange[500]} />
+        </div>
+      </div>
+    </>
   );
 };

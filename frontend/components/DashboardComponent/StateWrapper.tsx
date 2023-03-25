@@ -18,7 +18,7 @@ export function StateWrapper({
 }) {
   return (
     <>
-      <div className="flex flex-col justify-center flex-grow gap-y-4">
+      <div className="flex flex-col justify-center flex-grow gap-y-2">
         <div className="shadow-md bg-spark-purple-300 p-4 rounded-md flex justify-between items-center">
           <div className="py-2">
             <DiscreteProgressBar
@@ -30,7 +30,7 @@ export function StateWrapper({
           {nextBtn && <div>{nextBtn}</div>}
         </div>
         <div
-          className={`shadow-md bg-spark-purple-100 px-8 py-4 rounded-md grow grid place-items-center overflow-y-auto ${css.scrollbar}`}
+          className={`shadow-md bg-spark-purple-50 px-8 py-4 rounded-md grow grid place-items-center overflow-y-auto ${css.scrollbar}`}
         >
           {children}
         </div>

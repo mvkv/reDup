@@ -15,16 +15,12 @@ type Email = { email: string };
 import { StateWrapper } from './StateWrapper';
 import { FolderFetch, FolderSelect } from './FolderStates';
 import { FilesFetch, FilesSelect } from './FileComparisonStates';
-import {
-  FADED_BACKGROUND_TW_CLASSES,
-  Modal,
-  ModalData,
-  ModalTemplate,
-} from './Modal';
+import { Modal, ModalData, WarningDialogTemplate } from './Modal';
 import CircleBadge from '../common/CircleBadge';
 import ThemedButton from '../common/ThemedButton';
 import { Smile } from 'react-feather';
 import Link from 'next/link';
+import { Dialog } from '@headlessui/react';
 
 export default function DashboardComponent() {
   const {
@@ -59,22 +55,28 @@ export default function DashboardComponent() {
         return '';
     }
   };
+
   return (
-    <div className=" min-w-full min-h-full rounded-md px-8 py-2 flex">
-      <div
-        className={`${
-          hasModal ? FADED_BACKGROUND_TW_CLASSES : ''
-        } min-w-full min-h-full flex`}
-      >
+    <div className=" min-w-full min-h-full rounded-md flex">
+      <div className="min-w-full min-h-full flex">
         {renderCurrStep(state.currState)}
       </div>
-      {hasModal && (
-        <ModalTemplate
-          setModal={setModal}
-          onWarningDismiss={modal.onWarningDismiss}
-          content={modal.content}
-        />
-      )}
+      <Dialog
+        open={hasModal}
+        onClose={() => {
+          setModal({ type: Modal.NO_MODAL });
+        }}
+        className="relative z-50"
+      >
+        <Dialog.Panel>
+          <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+          <WarningDialogTemplate
+            setModal={setModal}
+            onWarningDismiss={modal.onWarningDismiss}
+            content={modal.content}
+          />
+        </Dialog.Panel>
+      </Dialog>
     </div>
   );
 }
@@ -133,6 +135,7 @@ const ResultFetch = ({ state, dispatch }: StateDispatchArgs) => {
       }
     }
     foo();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -150,12 +153,12 @@ const Final = ({ state, dispatch }: StateDispatchArgs) => {
     <>
       <StateWrapper state={state}>
         <p className="flex flex-col items-center gap-y-12 font-inter">
-          <p className="text-2xl flex items-center gap-x-2">
+          <p className="text-2xl flex items-center gap-x-">
             Operation completed! We deleted:{' '}
             <span className="text-spark-purple-500 font-bold">
               {deletedN} files!
             </span>
-            <Smile className="pl-1" size={42} />
+            <Smile className="pl-1" size={28} />
           </p>
           <p className="text-xl">
             Hope this website was helpful! You can check out the code on Github

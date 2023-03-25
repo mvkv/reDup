@@ -28,7 +28,7 @@ const Dashboard: NextPage = () => {
         ></link>
       </Head>
 
-      <main className="h-full min-w-full flex justify-center items-center flex-col gap-8 p-6">
+      <main className="h-full min-w-full flex justify-center items-center flex-col gap-8 p-4">
         {isLoggedIn && <DashboardComponent />}
       </main>
     </>

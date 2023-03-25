@@ -32,7 +32,7 @@ const UserProfile = () => {
           }}
           className="z-10 w-60"
         >
-          <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 bg-white">
+          <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 border-solid border-spark-purple-900 border-2">
             <UserPanel />
           </div>
         </Popover.Panel>

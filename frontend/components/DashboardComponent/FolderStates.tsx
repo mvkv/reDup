@@ -7,7 +7,7 @@ import tailwindConfig from '../../tailwind.config.js';
 type StateDispatchArgs = { state: DashboardState; dispatch: Dispatch<Action> };
 import { AlertTriangle, ChevronsUp, Folder } from 'react-feather';
 import { StateWrapper } from './StateWrapper';
-import { Modal, SetModal } from './Modal';
+import { SetModal } from './Modal';
 import { Folders } from '../../types/api';
 import ThemedButton from '../common/ThemedButton';
 
@@ -26,6 +26,7 @@ export const FolderFetch = ({ state, dispatch }: StateDispatchArgs) => {
       }
     }
     fetchFolders();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <>
@@ -129,7 +130,7 @@ export const FolderSelect = ({
                 </button>
               )}
             </div>
-            <div className="flex items-center gap-x-2">
+            <div className="flex items-center gap-x-4">
               {selected && (
                 <>
                   <p className="text-base font-inter">Selected:</p>
@@ -139,7 +140,7 @@ export const FolderSelect = ({
                 </>
               )}
               {!selected && (
-                <div className="flex justify-center items-center gap-x-2 font-inter text-base bg-rose-50 rounded-lg px-4 py-1 shadow-md">
+                <div className="flex justify-center items-center gap-x-4 font-inter text-base bg-rose-50 rounded-lg px-4 py-1 shadow-md">
                   <AlertTriangle size={16} />
                   Select a folder
                 </div>

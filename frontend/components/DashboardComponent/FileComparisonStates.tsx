@@ -23,6 +23,7 @@ export const FilesFetch = ({ state, dispatch }: StateDispatchArgs) => {
       }
     }
     foo();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -110,7 +111,10 @@ export const FilesSelect = ({
     type: Modal.WARNING,
     onWarningDismiss: () => dispatch(nextAction),
     content: (
-      <>You are about to delete {selected.length} files. Are you sure?</>
+      <>
+        {selected.length} Image{selected.length > 1 ? 's are' : ' is'} about to
+        be deleted. Are you sure you want to continue?
+      </>
     ),
   };
 
@@ -141,7 +145,7 @@ export const FilesSelect = ({
       >
         <div className="place-self-start flex flex-col gap-y-4 min-w-full">
           <div className="text-2xl flex justify-between">
-            <div className="flex items-center gap-x-2 font-inter text-base">
+            <div className="flex items-center gap-x-4 font-inter text-base">
               Fetched:
               <p className=" bg-spark-purple-300  rounded-lg px-4 py-1 shadow-md">
                 {filesFetched} files
@@ -151,7 +155,7 @@ export const FilesSelect = ({
               </p>
             </div>
             {selected.length > 0 && (
-              <div className="flex items-center gap-x-2">
+              <div className="flex items-center gap-x-4">
                 <p className="text-base font-inter">Selected:</p>
                 <div className="font-mono text-base bg-emerald-50 rounded-lg px-4 py-1 shadow-md">
                   {selected.length} files
@@ -159,7 +163,7 @@ export const FilesSelect = ({
               </div>
             )}
             {selected.length === 0 && (
-              <div className="flex justify-center items-center gap-x-2 font-inter text-base bg-rose-50 rounded-lg px-4 py-1 shadow-md">
+              <div className="flex justify-center items-center gap-x-4 font-inter text-base bg-rose-50 rounded-lg px-4 py-1 shadow-md">
                 <AlertTriangle size={16} />
                 Select files to delete
               </div>

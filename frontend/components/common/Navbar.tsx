@@ -9,7 +9,7 @@ const Navbar = () => {
     'cursor-pointer transition duration-150 border-b-2 border-transparent hover:border-spark-purple-500 text-3xl font-semibold font-montserrat';
 
   return (
-    <div className="flex justify-between items-center px-14 py-6 border-b-spark-purple-500 border-b-8 shadow-md ">
+    <div className="flex justify-between items-center px-12 py-4 border-b-spark-purple-500 border-b-8 shadow-md ">
       <Link href="/">
         <div className="flex gap-4">
           <Image
