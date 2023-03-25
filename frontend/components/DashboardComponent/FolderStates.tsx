@@ -1,15 +1,15 @@
 import { Dispatch, useEffect, useState } from 'react';
-import { DashboardState, StateType, Action } from '../../store/dashboard';
-import InfiniteSpinner from '../common/InfiniteSpinner';
-import { fetchDriveFolders } from '../../apiCalls/Drive';
-import resolveConfig from 'tailwindcss/resolveConfig';
-import tailwindConfig from '../../tailwind.config.js';
-type StateDispatchArgs = { state: DashboardState; dispatch: Dispatch<Action> };
 import { AlertTriangle, ChevronsUp, Folder } from 'react-feather';
-import { StateWrapper } from './StateWrapper';
-import { SetModal } from './Modal';
+import resolveConfig from 'tailwindcss/resolveConfig';
+import { fetchDriveFolders } from '../../apiCalls/Drive';
+import { Action, DashboardState, StateType } from '../../store/dashboard';
+import tailwindConfig from '../../tailwind.config.js';
 import { Folders } from '../../types/api';
-import ThemedButton from '../common/ThemedButton';
+import InfiniteSpinner from '../common/InfiniteSpinner';
+import ThemedButton, { ThemedButtonKind } from '../common/ThemedButton';
+import { SetModal } from './Modal';
+import { StateWrapper } from './StateWrapper';
+type StateDispatchArgs = { state: DashboardState; dispatch: Dispatch<Action> };
 
 const fullConfig = resolveConfig(tailwindConfig) as any;
 
@@ -32,7 +32,12 @@ export const FolderFetch = ({ state, dispatch }: StateDispatchArgs) => {
     <>
       <StateWrapper
         state={state}
-        nextBtn={<ThemedButton label={'Next'} isLoading={true} />}
+        nextBtn={
+          <ThemedButton
+            label={'Next'}
+            buttonKind={ThemedButtonKind.PRIMARY_LOADING}
+          />
+        }
       >
         <InfiniteSpinner label={'Fetching folders'} />
       </StateWrapper>
@@ -110,7 +115,11 @@ export const FolderSelect = ({
           <ThemedButton
             label={'Next'}
             onClick={onNextClick}
-            isDisabled={!selected}
+            buttonKind={
+              !selected
+                ? ThemedButtonKind.PRIMARY_DISABLED
+                : ThemedButtonKind.PRIMARY_ACTION
+            }
           />
         }
       >
@@ -123,10 +132,13 @@ export const FolderSelect = ({
               </p>
               {state.folderPath.length > 0 && (
                 <button
-                  className=" bg-spark-purple-400 rounded-full px-1 py-1 shadow-md"
+                  className=" bg-spark-purple-400 rounded-full px-1 py-1 shadow-md group"
                   onClick={() => navigateUp()}
                 >
-                  <ChevronsUp size={24} />
+                  <ChevronsUp
+                    size={24}
+                    className="group-hover:stroke-gray-200 transition-colors duration-500 ease-in-out group-hover:animate-hop"
+                  />
                 </button>
               )}
             </div>

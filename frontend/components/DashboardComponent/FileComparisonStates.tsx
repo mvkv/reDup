@@ -9,7 +9,7 @@ type StateDispatchArgs = { state: DashboardState; dispatch: Dispatch<Action> };
 import { StateWrapper } from './StateWrapper';
 import { Modal, SetModal } from './Modal';
 import { AlertTriangle, XCircle } from 'react-feather';
-import ThemedButton from '../common/ThemedButton';
+import ThemedButton, { ThemedButtonKind } from '../common/ThemedButton';
 
 export const FilesFetch = ({ state, dispatch }: StateDispatchArgs) => {
   useEffect(() => {
@@ -30,7 +30,12 @@ export const FilesFetch = ({ state, dispatch }: StateDispatchArgs) => {
     <>
       <StateWrapper
         state={state}
-        nextBtn={<ThemedButton label={'Next'} isLoading={true} />}
+        nextBtn={
+          <ThemedButton
+            label={'Next'}
+            buttonKind={ThemedButtonKind.PRIMARY_LOADING}
+          />
+        }
       >
         <InfiniteSpinner label={'Fetching files'} />
       </StateWrapper>
@@ -112,8 +117,11 @@ export const FilesSelect = ({
     onWarningDismiss: () => dispatch(nextAction),
     content: (
       <>
-        {selected.length} Image{selected.length > 1 ? 's are' : ' is'} about to
-        be deleted. Are you sure you want to continue?
+        <p className="font-bold pb-2">
+          {selected.length} Image{selected.length > 1 ? 's are' : ' is'} about
+          to be deleted.{' '}
+        </p>
+        <p className="text-sm">Are you sure you want to continue?</p>
       </>
     ),
   };
@@ -139,7 +147,11 @@ export const FilesSelect = ({
           <ThemedButton
             label={'Next'}
             onClick={onNextClick}
-            isDisabled={!validSelection}
+            buttonKind={
+              !validSelection
+                ? ThemedButtonKind.PRIMARY_DISABLED
+                : ThemedButtonKind.PRIMARY_ACTION
+            }
           />
         }
       >

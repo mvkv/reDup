@@ -13,10 +13,14 @@ const UserProfile = () => {
   });
 
   const button = (
-    <User
-      className="transition-colors duration-500 ease-in-out group-hover:animate-hop border-black border-2 p-1 rounded-full"
-      size={32}
-    />
+    <div className="group">
+      <User
+        className="transition-colors duration-500 ease-in-out p-1 rounded-full
+                 group-hover:animate-hop border-black border-2 
+                 group-hover:stroke-spark-purple-700 group-hover:border-spark-purple-700 "
+        size={32}
+      />
+    </div>
   );
 
   return (

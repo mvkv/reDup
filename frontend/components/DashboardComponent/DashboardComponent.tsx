@@ -69,7 +69,7 @@ export default function DashboardComponent() {
         className="relative z-50"
       >
         <Dialog.Panel>
-          <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+          <div className="fixed inset-0 bg-black/50" aria-hidden="true" />
           <WarningDialogTemplate
             setModal={setModal}
             onWarningDismiss={modal.onWarningDismiss}
@@ -112,11 +112,13 @@ const InitialState = ({
               pictures will be deleted.
             </p>
           </div>
-          <p className="text-xl">Easy right?</p>
-          <ThemedButton
-            onClick={() => nextAction()}
-            label={"Let's get started"}
-          />
+          <div>
+            <p className="text-xl pb-4 text-center">Easy right?</p>
+            <ThemedButton
+              onClick={() => nextAction()}
+              label={"Let's get started"}
+            />
+          </div>
         </p>
       </StateWrapper>
     </>
@@ -155,12 +157,13 @@ const Final = ({ state, dispatch }: StateDispatchArgs) => {
         <p className="flex flex-col items-center gap-y-12 font-inter">
           <p className="text-2xl flex items-center gap-x-">
             Operation completed! We deleted:{' '}
-            <span className="text-spark-purple-500 font-bold">
+            <span className="text-spark-purple-500 font-bold px-2">
               {deletedN} files!
             </span>
             <Smile className="pl-1" size={28} />
           </p>
           <p className="text-xl">
+            {/* TODO: Add proper link. */}
             Hope this website was helpful! You can check out the code on Github
           </p>
           <div className="flex flex-col gap-y-6 items-center">
