@@ -2,6 +2,7 @@ export type AuthState = {
   isLoggedIn: boolean;
   errorMsg: string;
   email: string;
+  profilePic: string;
 };
 
 export enum ActionType {

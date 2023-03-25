@@ -13,12 +13,12 @@ SESSION_ID = "session_id"
 
 @router.get("/google")
 def login(code=None):
-    login_error_response = JSONResponse(content={'ok': False, 'email': ''})
+    login_error_response = JSONResponse(content={'ok': False, 'email': '', 'profile_pic': ''})
     if not code:
         return login_error_response
-    try:
+    try:    
         token_data = g_auth.get_token_from_code(code)
-        email, at_hash = g_auth.get_email_and_hash_from_id_token(
+        email, at_hash, profile_pic = g_auth.get_email_and_hash_from_id_token(
             token_data["id_token"])
 
         user_id = db.add_user_and_get_uuid(
@@ -28,7 +28,7 @@ def login(code=None):
             return login_error_response
 
         response = JSONResponse(
-            content={'ok': True, 'email': email})
+            content={'ok': True, 'email': email, 'profile_pic': profile_pic})
         response.set_cookie(
             key=SESSION_ID, value=str(auth), httponly=True, max_age=60 * 60 * 24)  # TODO: Add Cookie expiration validation.
         return response
@@ -51,5 +51,5 @@ def logout(request: Request):
 @router.get("/cookie")
 def cookie(request: Request):
     if request.state.user_email:
-        return JSONResponse(content={'ok': True, 'email': request.state.user_email})
-    return JSONResponse(content={'ok': False, 'email': ''})
+        return JSONResponse(content={'ok': True, 'email': request.state.user_email, 'profile_pic': request.state.profile_pic})
+    return JSONResponse(content={'ok': False, 'email': '', 'profile_pic': ''})

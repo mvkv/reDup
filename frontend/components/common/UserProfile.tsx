@@ -5,21 +5,35 @@ import { useAuth } from '../../providers/auth-context';
 import { ActionType, Service } from '../../types/auth';
 import ThemedButton from './ThemedButton';
 import SignInWithGoogle from './SignInWithGoogle';
-
+import Image from 'next/image';
 const UserProfile = () => {
+  const { authState } = useAuth();
+  const userWithProfilePic =
+    authState.isLoggedIn && authState.profilePic.length > 0;
   const { x, y, reference, floating, strategy } = useFloating({
     placement: 'bottom-end',
     middleware: [offset(10), shift({ padding: 5 })],
   });
 
   const button = (
-    <div className="group">
-      <User
-        className="transition-colors duration-500 ease-in-out p-1 rounded-full
-                 group-hover:animate-hop border-black border-2 
+    <div className="group hover:animate-hop">
+      {!userWithProfilePic && (
+        <User
+          className="transition-colors duration-500 ease-in-out p-1 rounded-full
+                  border-black border-2 
                  group-hover:stroke-spark-purple-700 group-hover:border-spark-purple-700 "
-        size={32}
-      />
+          size={32}
+        />
+      )}
+      {userWithProfilePic && (
+        <Image
+          alt="Profile picture"
+          src={authState.profilePic}
+          width={32}
+          height={32}
+          className="rounded-full border-black border-2"
+        />
+      )}
     </div>
   );
 
