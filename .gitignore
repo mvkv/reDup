@@ -44,3 +44,7 @@
 # Backend ML models
 backend/models
 
+# Docker
+**/Dockerfile
+**/docker-compose.yml
+

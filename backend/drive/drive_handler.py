@@ -8,6 +8,9 @@ from typing import Dict, List
 import requests
 from concurrent.futures import ThreadPoolExecutor
 from time import ctime
+import logging
+
+logger = logging.getLogger("uvicorn")
 
 
 class DriveHandler:
@@ -60,13 +63,13 @@ class DriveHandler:
         images = []
         files = self.get_files_from_parent_id(
             folder_id, DriveMimeType.IMAGE)
-        print(f"{ctime()} - Downloading images")
+        logger.debug(f"{ctime()} - Downloading images")
         with ThreadPoolExecutor(max_workers=len(files)) as pool:
             images_bytes = list(pool.map(self.get_image_bytes_from_url, [image.thumbnailLink for image in files]))
         for image_idx in range(len(files)):
             images.append(
                 Image(files[image_idx].id, files[image_idx].name, images_bytes[image_idx], files[image_idx].thumbnailLink))
-        print(f"{ctime()} - Images downloaded")
+        logger.debug(f"{ctime()} - Images downloaded")
         return images
 
     def get_images_from_folders_ids(self, folders_ids: List[str]) -> List[Image]:
