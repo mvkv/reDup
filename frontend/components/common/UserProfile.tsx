@@ -6,6 +6,7 @@ import { ActionType, Service } from '../../types/auth';
 import ThemedButton from './ThemedButton';
 import SignInWithGoogle from './SignInWithGoogle';
 import Image from 'next/image';
+
 const UserProfile = () => {
   const { authState } = useAuth();
   const userWithProfilePic =
@@ -29,9 +30,9 @@ const UserProfile = () => {
         <Image
           alt="Profile picture"
           src={authState.profilePic}
-          width={32}
-          height={32}
-          className="rounded-full border-black border-2"
+          width={36}
+          height={36}
+          className="rounded-full border-spark-purple-700 border-2"
         />
       )}
     </div>

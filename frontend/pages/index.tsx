@@ -2,8 +2,6 @@ import type { NextPage } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
 import LandingPageMain from '../public/images/landing_page_main.svg';
-import GoogleButton from 'react-google-button';
-import { redirectToGoogleAuth } from '../utils/GoogleAuthRedirect';
 import { useAuth } from '../providers/auth-context';
 import Link from 'next/link';
 import ThemedButton from '../components/common/ThemedButton';
@@ -27,10 +25,10 @@ const Home: NextPage = () => {
       </Head>
 
       <main className="h-full min-w-full flex flex-col">
-        <div className="flex flex-1 justify-center items-center flex-col gap-8 px-[120px]">
-          <div className="grid grid-cols-8 gap-x-8 items-center ">
-            <div className="col-span-5 flex flex-col gap-5 max-w-[1080px]">
-              <h1 className="text-5xl font-bold text-black font-montserrat">
+        <div className="flex flex-1 justify-center items-center flex-col gap-8 px-[24px] xl:px-[120px]">
+          <div className="grid grid-cols-1 xl:grid-cols-8 gap-8 items-center ">
+            <div className="col-span-5 flex flex-col gap-5 max-w-[1080px] order-2 xl:order-1">
+              <h1 className="text-2xl xl:text-5xl font-bold text-black font-montserrat">
                 Review & remove similar images from your Google Drive{' '}
                 <span className="text-spark-purple-500">
                   quickly and for free!
@@ -57,7 +55,7 @@ const Home: NextPage = () => {
                 )}
               </div>
             </div>
-            <div className="col-span-3">
+            <div className="col-span-3 order-1 xl:order-2">
               <Image src={LandingPageMain} alt="Landing page main image" />
             </div>
           </div>
