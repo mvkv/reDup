@@ -21,9 +21,14 @@ const Dashboard: NextPage = () => {
       <Head>
         <title>Remove duplicates from drive</title>
         <meta name="description" content="ReDup" />
+        <link
+          rel="icon"
+          href="/public/images/logo.svg"
+          type="image/svg+xml"
+        ></link>
       </Head>
 
-      <main className="h-full min-w-full flex justify-center items-center flex-col gap-8 p-6 bg-slate-200">
+      <main className="h-full min-w-full flex justify-center items-center flex-col gap-8 p-4">
         {isLoggedIn && <DashboardComponent />}
       </main>
     </>

@@ -1,4 +1,4 @@
-from typing import Union, TypedDict
+from typing import Union, TypedDict, List
 from google.oauth2.service_account import Credentials
 from google.cloud import firestore
 import os
@@ -52,13 +52,13 @@ def delete_session_id(session_id: Union[str, None]) -> None:
         cookies.document(session_id).delete()
 
 
-def get_email_from_session_id(session_id: str) -> Union[None, str]:
+def get_email_and_pic_from_session_id(session_id: str) -> List[Union[None, str]]:
     cookie_to_id = cookies.document(session_id).get()
     if cookie_to_id.exists:
         email = cookie_to_id.to_dict()['email']  # type: ignore
         if email:
-            return email
-    return None
+            return [email, ''] # TODO Support storing image to DB
+    return [None, None]
 
 
 def find_user_uuid_by_email(email_to_find: str) -> Union[None, str]:

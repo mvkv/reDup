@@ -1,6 +1,7 @@
 export type LoginResponse = {
   ok: boolean;
   email: string;
+  profile_pic: string;
 };
 
 export type LogoutResponse = {

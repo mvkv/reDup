@@ -1,13 +1,17 @@
 import { Dispatch, useEffect, useState } from 'react';
-import { DashboardState, StateType, Action } from '../../store/dashboard';
-import InfiniteSpinner from '../common/InfiniteSpinner';
+import { AlertTriangle, ChevronsUp, Folder } from 'react-feather';
+import resolveConfig from 'tailwindcss/resolveConfig';
 import { fetchDriveFolders } from '../../apiCalls/Drive';
-import colors from 'tailwindcss/colors';
-type StateDispatchArgs = { state: DashboardState; dispatch: Dispatch<Action> };
-import { ArrowUp, Folder } from 'react-feather';
-import { ActionButton, StateWrapper } from './StateWrapper';
-import { Modal, SetModal } from './Modal';
+import { Action, DashboardState, StateType } from '../../store/dashboard';
+import tailwindConfig from '../../tailwind.config.js';
 import { Folders } from '../../types/api';
+import InfiniteSpinner from '../common/InfiniteSpinner';
+import ThemedButton, { ThemedButtonKind } from '../common/ThemedButton';
+import { SetModal } from './Modal';
+import { StateWrapper } from './StateWrapper';
+type StateDispatchArgs = { state: DashboardState; dispatch: Dispatch<Action> };
+
+const fullConfig = resolveConfig(tailwindConfig) as any;
 
 export const FolderFetch = ({ state, dispatch }: StateDispatchArgs) => {
   useEffect(() => {
@@ -22,12 +26,18 @@ export const FolderFetch = ({ state, dispatch }: StateDispatchArgs) => {
       }
     }
     fetchFolders();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <>
       <StateWrapper
         state={state}
-        nextBtn={<ActionButton label={'Next'} isLoading={true} />}
+        nextBtn={
+          <ThemedButton
+            label={'Next'}
+            buttonKind={ThemedButtonKind.PRIMARY_LOADING}
+          />
+        }
       >
         <InfiniteSpinner label={'Fetching folders'} />
       </StateWrapper>
@@ -88,7 +98,7 @@ export const FolderSelect = ({
 
   const onNextClick = () => {
     if (!selected) {
-      setModal({ type: Modal.ERROR, content: <>No folder selected!</> });
+      // Should not happen, as the button would be disabled in this circumstance.
     } else {
       dispatch({
         goTo: StateType.FILES_FETCH,
@@ -101,20 +111,52 @@ export const FolderSelect = ({
     <>
       <StateWrapper
         state={state}
-        nextBtn={<ActionButton label={'Next'} onClick={onNextClick} />}
+        nextBtn={
+          <ThemedButton
+            label={'Next'}
+            onClick={onNextClick}
+            buttonKind={
+              !selected
+                ? ThemedButtonKind.PRIMARY_DISABLED
+                : ThemedButtonKind.PRIMARY_ACTION
+            }
+          />
+        }
       >
         <div className="place-self-start flex flex-col gap-y-4 min-w-full">
-          <div className="text-2xl pb-4 border-b-2 border-blue-400 flex justify-between">
-            {!selected ? 'Select a folder' : `"${selected.name}" selected`}
-            <div className="flex items-center gap-x-4">
-              {state.folderPath.length > 0 && (
-                <button onClick={() => navigateUp()}>
-                  <ArrowUp size={24} />
-                </button>
-              )}
-              <p className="font-mono">
+          <div className="text-2xl flex justify-between">
+            <div className="flex items-center gap-x-2">
+              <p className="text-base font-inter">Current path:</p>
+              <p className="font-mono text-base bg-spark-purple-300 rounded-lg px-4 py-1 shadow-md">
                 {getPathDisplayName(state.folderPath)}
               </p>
+              {state.folderPath.length > 0 && (
+                <button
+                  className=" bg-spark-purple-400 rounded-full px-1 py-1 shadow-md group"
+                  onClick={() => navigateUp()}
+                >
+                  <ChevronsUp
+                    size={24}
+                    className="group-hover:stroke-gray-200 transition-colors duration-500 ease-in-out group-hover:animate-hop"
+                  />
+                </button>
+              )}
+            </div>
+            <div className="flex items-center gap-x-4">
+              {selected && (
+                <>
+                  <p className="text-base font-inter">Selected:</p>
+                  <div className="font-mono text-base bg-emerald-50 rounded-lg px-4 py-1 shadow-md">
+                    {selected.name}
+                  </div>
+                </>
+              )}
+              {!selected && (
+                <div className="flex justify-center items-center gap-x-4 font-inter text-base bg-rose-50 rounded-lg px-4 py-1 shadow-md">
+                  <AlertTriangle size={16} />
+                  Select a folder
+                </div>
+              )}
             </div>
           </div>
           {state.foldersResults.length == 0 && (
@@ -138,14 +180,18 @@ export const FolderSelect = ({
                 const isSelected = id === selected?.id;
                 return (
                   <button
-                    className={`p-4 hover:bg-blue-200 flex flex-col items-center justify-center`}
+                    className={`p-4 hover:bg-spark-purple-200 flex flex-col items-center justify-center`}
                     key={id}
                     onClick={(evt) => handleFolderClick(evt, { id, name })}
                   >
                     <Folder
                       strokeWidth={1}
                       size={64}
-                      fill={isSelected ? `${colors.sky[400]}` : ''}
+                      fill={
+                        isSelected
+                          ? `${fullConfig.theme.colors['spark-purple'][400]}`
+                          : `${fullConfig.theme.colors.orange[100]}`
+                      }
                     />
                     <li>{name}</li>
                   </button>

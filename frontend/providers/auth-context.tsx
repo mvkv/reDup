@@ -1,4 +1,4 @@
-import Router from 'next/router';
+import Router, { useRouter } from 'next/router';
 import {
   createContext,
   ReactNode,
@@ -14,6 +14,7 @@ const DEFAULT_AUTH_STATE: AuthState = {
   isLoggedIn: false,
   errorMsg: '',
   email: '',
+  profilePic: '',
 };
 
 const DEFAULT_ACTION: Action = {
@@ -30,24 +31,31 @@ const AuthContext = createContext<
 function AuthProvider({ children }: { children: ReactNode }) {
   const [authState, setAuthState] = useState(DEFAULT_AUTH_STATE);
   const [lastCommand, setLastCommand] = useState(DEFAULT_ACTION);
+  const router = useRouter();
 
   const isLoggedIn = authState.isLoggedIn;
   const wasLoggedIn = usePrevious(isLoggedIn);
+  const isOnHomepage = router.pathname == '/' || router.pathname == '';
 
   useEffect(() => {
     async function tryOnLoadLogin() {
       const body = await doCookieLogin();
       if (body.ok) {
-        setAuthState({ isLoggedIn: true, errorMsg: '', email: body.email });
+        setAuthState({
+          isLoggedIn: true,
+          errorMsg: '',
+          email: body.email,
+          profilePic: body.profile_pic,
+        });
       } else {
         // The user might not have the cookie set.
         // TODO: Use local storage to prevent firing unecessary request.
       }
     }
-    if (!isLoggedIn) {
+    if (!isLoggedIn && isOnHomepage) {
       tryOnLoadLogin();
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, isOnHomepage]);
 
   useEffect(() => {
     async function processCommand() {
@@ -55,16 +63,26 @@ function AuthProvider({ children }: { children: ReactNode }) {
         case ActionType.LOGIN: {
           const body = await doGoogleLogin(lastCommand.token);
           if (body.ok) {
-            setAuthState({ isLoggedIn: true, errorMsg: '', email: body.email });
+            setAuthState({
+              isLoggedIn: true,
+              errorMsg: '',
+              email: body.email,
+              profilePic: body.profile_pic,
+            });
           } else {
-            setAuthState({ isLoggedIn: false, errorMsg: 'Error', email: '' });
+            setAuthState({
+              isLoggedIn: false,
+              errorMsg: 'Error',
+              email: '',
+              profilePic: '',
+            });
           }
           break;
         }
         case ActionType.LOGOUT: {
           const body = await doLogout();
           if (body.ok) {
-            setAuthState({ isLoggedIn: false, errorMsg: 'Error', email: '' });
+            setAuthState(DEFAULT_AUTH_STATE);
           }
           break;
         }
