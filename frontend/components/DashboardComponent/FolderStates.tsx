@@ -74,20 +74,21 @@ export const FolderSelect = ({ state, dispatch }: StateDispatchArgs) => {
     return `~/.../${foldersName.slice(-2).join('/')}`;
   };
 
-  const handleFolderClick = (
-    evt: React.MouseEvent<HTMLElement>,
-    folder: Folders,
-  ) => {
-    switch (evt.detail) {
-      case 1:
-        setSelected(folder);
-        break;
-      case 2:
-        dispatch({
-          goTo: StateType.FOLDER_FETCH,
-          folderPathSelected: [...state.folderPath, folder],
-        });
-        break;
+  const [clicked, setClicked] = useState(false);
+
+  const handleFolderClick = (folder: Folders) => {
+    if (clicked) {
+      setClicked(false);
+      dispatch({
+        goTo: StateType.FOLDER_FETCH,
+        folderPathSelected: [...state.folderPath, folder],
+      });
+    } else {
+      setClicked(true);
+      setSelected(folder);
+      setTimeout(() => {
+        setClicked(false);
+      }, 200);
     }
   };
 
@@ -177,7 +178,7 @@ export const FolderSelect = ({ state, dispatch }: StateDispatchArgs) => {
                   <button
                     className={`xl:p-4 hover:bg-spark-purple-200 flex flex-col items-center justify-center`}
                     key={id}
-                    onClick={(evt) => handleFolderClick(evt, { id, name })}
+                    onClick={() => handleFolderClick({ id, name })}
                   >
                     <Folder
                       strokeWidth={1}
