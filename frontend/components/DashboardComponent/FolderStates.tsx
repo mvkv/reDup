@@ -74,20 +74,19 @@ export const FolderSelect = ({ state, dispatch }: StateDispatchArgs) => {
     return `~/.../${foldersName.slice(-2).join('/')}`;
   };
 
-  const [clicked, setClicked] = useState(false);
+  const [lastClicked, setLastClicked] = useState('');
 
   const handleFolderClick = (folder: Folders) => {
-    if (clicked) {
-      setClicked(false);
+    if (folder.id == lastClicked) {
       dispatch({
         goTo: StateType.FOLDER_FETCH,
         folderPathSelected: [...state.folderPath, folder],
       });
     } else {
-      setClicked(true);
+      setLastClicked(folder.id);
       setSelected(folder);
       setTimeout(() => {
-        setClicked(false);
+        setLastClicked('');
       }, 200);
     }
   };
