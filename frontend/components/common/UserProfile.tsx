@@ -40,7 +40,7 @@ const UserProfile = () => {
 
   return (
     <div>
-      <Popover className="relative">
+      <Popover className="relative flex">
         <Popover.Button ref={reference}>{button}</Popover.Button>
         <Popover.Panel
           ref={floating}

@@ -18,7 +18,7 @@ import { FilesFetch, FilesSelect } from './FileComparisonStates';
 import { Modal, ModalData, WarningDialogTemplate } from './Modal';
 import CircleBadge from '../common/CircleBadge';
 import ThemedButton from '../common/ThemedButton';
-import { Smile } from 'react-feather';
+import { ExternalLink, Smile } from 'react-feather';
 import Link from 'next/link';
 import { Dialog } from '@headlessui/react';
 
@@ -38,9 +38,7 @@ export default function DashboardComponent() {
       case StateType.FOLDER_FETCH:
         return <FolderFetch state={state} dispatch={dispatch} />;
       case StateType.FOLDER_SELECT:
-        return (
-          <FolderSelect state={state} dispatch={dispatch} setModal={setModal} />
-        );
+        return <FolderSelect state={state} dispatch={dispatch} />;
       case StateType.FILES_FETCH:
         return <FilesFetch state={state} dispatch={dispatch} />;
       case StateType.FILES_SELECT:
@@ -90,12 +88,12 @@ const InitialState = ({
   return (
     <>
       <StateWrapper state={state}>
-        <p className="flex flex-col items-center gap-y-12 font-inter">
-          <p className="text-2xl">
+        <p className="flex flex-col items-center gap-y-6 xl:gap-y-12 font-inter">
+          <p className="text-xl xl:text-2xl">
             Hello{' '}
             <span className="text-spark-purple-500 font-bold">{email}!</span>
           </p>
-          <p className="text-xl">
+          <p className="text-l xl:text-xl">
             Let us help you find and keep only the pictures you care about!
           </p>
           <div className="flex flex-col gap-y-6 items-start">
@@ -113,7 +111,7 @@ const InitialState = ({
             </p>
           </div>
           <div>
-            <p className="text-xl pb-4 text-center">Easy right?</p>
+            <p className="text-lg xl:text-xl pb-4 text-center">Easy right?</p>
             <ThemedButton
               onClick={() => nextAction()}
               label={"Let's get started"}
@@ -154,19 +152,27 @@ const Final = ({ state, dispatch }: StateDispatchArgs) => {
   return (
     <>
       <StateWrapper state={state}>
-        <p className="flex flex-col items-center gap-y-12 font-inter">
-          <p className="text-2xl flex items-center gap-x-">
-            Operation completed! We deleted:{' '}
-            <span className="text-spark-purple-500 font-bold px-2">
-              {deletedN} files!
+        <p className="flex flex-col items-center gap-y-6 xl:gap-y-12 font-inter">
+          <p className="text-lg xl:text-2xl xl:flex xl:items-center gap-x-2">
+            <span>Operation completed!</span>
+            <span>We deleted: </span>
+            <span className="text-spark-purple-500 font-bold whitespace-nowrap">
+              {deletedN} file{deletedN > 1 ? 's' : ''}!
             </span>
-            <Smile className="pl-1" size={28} />
+            <Smile className="hidden xl:visible" size={28} />
           </p>
-          <p className="text-xl">
+          <p className="text-base xl:text-xl">
             {/* TODO: Add proper link. */}
-            Hope this website was helpful! You can check out the code on Github
+            Hope this website was helpful! You can check out the code on{' '}
+            <a
+              className="inline-flex items-baseline text-spark-purple-600 font-bold"
+              href="TODO"
+            >
+              Github
+              <ExternalLink size={12} />
+            </a>
           </p>
-          <div className="flex flex-col gap-y-6 items-center">
+          <div className="flex flex-col gap-y-6 items-center text-sm xl:text-base">
             <p className="flex gap-x-6 justify-center ">
               Did you accidentaly deleted a picuture you wanted to keep?
             </p>

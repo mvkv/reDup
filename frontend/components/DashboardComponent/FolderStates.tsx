@@ -7,7 +7,6 @@ import tailwindConfig from '../../tailwind.config.js';
 import { Folders } from '../../types/api';
 import InfiniteSpinner from '../common/InfiniteSpinner';
 import ThemedButton, { ThemedButtonKind } from '../common/ThemedButton';
-import { SetModal } from './Modal';
 import { StateWrapper } from './StateWrapper';
 type StateDispatchArgs = { state: DashboardState; dispatch: Dispatch<Action> };
 
@@ -45,11 +44,7 @@ export const FolderFetch = ({ state, dispatch }: StateDispatchArgs) => {
   );
 };
 
-export const FolderSelect = ({
-  state,
-  dispatch,
-  setModal,
-}: StateDispatchArgs & SetModal) => {
+export const FolderSelect = ({ state, dispatch }: StateDispatchArgs) => {
   const [selected, setSelected] = useState<Folders | undefined>(undefined);
 
   const navigateToRoot = () => {
@@ -124,10 +119,10 @@ export const FolderSelect = ({
         }
       >
         <div className="place-self-start flex flex-col gap-y-4 min-w-full">
-          <div className="text-2xl flex justify-between">
+          <div className="flex justify-between flex-wrap gap-y-2">
             <div className="flex items-center gap-x-2">
               <p className="text-base font-inter">Current path:</p>
-              <p className="font-mono text-base bg-spark-purple-300 rounded-lg px-4 py-1 shadow-md">
+              <p className="text-sm xl:text-base font-mono bg-spark-purple-300 rounded-lg px-2 xl:px-4 py-1 shadow-md">
                 {getPathDisplayName(state.folderPath)}
               </p>
               {state.folderPath.length > 0 && (
@@ -142,7 +137,7 @@ export const FolderSelect = ({
                 </button>
               )}
             </div>
-            <div className="flex items-center gap-x-4">
+            <div className="flex items-center gap-x-2 xl:gap-x-4">
               {selected && (
                 <>
                   <p className="text-base font-inter">Selected:</p>
@@ -152,7 +147,7 @@ export const FolderSelect = ({
                 </>
               )}
               {!selected && (
-                <div className="flex justify-center items-center gap-x-4 font-inter text-base bg-rose-50 rounded-lg px-4 py-1 shadow-md">
+                <div className="flex justify-center items-center gap-x-2 xl:gap-x-4 font-inter text-sm xl:text-base bg-rose-50 rounded-lg px-2 xl:px-4 py-1 shadow-md">
                   <AlertTriangle size={16} />
                   Select a folder
                 </div>
@@ -175,17 +170,18 @@ export const FolderSelect = ({
             </div>
           )}
           {state.foldersResults.length > 0 && (
-            <ul className="flex flex-wrap overflow-y-auto gap-x-8 gap-y-12">
+            <ul className="flex flex-wrap justify-around xl:justify-start overflow-y-auto gap-x-8 gap-y-8 xl:gap-y-12">
               {state.foldersResults.map(({ id, name }, _) => {
                 const isSelected = id === selected?.id;
                 return (
                   <button
-                    className={`p-4 hover:bg-spark-purple-200 flex flex-col items-center justify-center`}
+                    className={`xl:p-4 hover:bg-spark-purple-200 flex flex-col items-center justify-center`}
                     key={id}
                     onClick={(evt) => handleFolderClick(evt, { id, name })}
                   >
                     <Folder
                       strokeWidth={1}
+                      className="h-12 w-12 xl:h-16 xl:w-16"
                       size={64}
                       fill={
                         isSelected

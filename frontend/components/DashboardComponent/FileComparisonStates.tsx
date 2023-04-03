@@ -70,7 +70,7 @@ const FileComparison = ({
         return (
           <li className="basis-1/5 max-w-[300px] cursor-pointer" key={img.id}>
             <div
-              className={`min-w-[8em] border-solid border-2 rounded-lg overflow-hidden select-none text-center ${
+              className={`min-w-[8em] border-solid border-2 rounded-lg overflow-hidden select-none text-center relative ${
                 isSelected
                   ? 'bg-spark-purple-200 border-spark-purple-700 shadow-lg shadow-spark-purple-500/30'
                   : 'hover:bg-spark-purple-200 border-gray-800'
@@ -85,11 +85,11 @@ const FileComparison = ({
                 height={300}
               ></Image>
               <div
-                className={`m-1.5 text-base font-medium relative ${
+                className={`m-1.5 text-base font-medium ${
                   isSelected ? 'text-spark-purple-700' : 'text-gray-800'
                 }`}
               >
-                {isSelected && <XCircle className="absolute" />}
+                {isSelected && <XCircle className="absolute top-2 right-2" />}
                 {img.name}
               </div>
             </div>
@@ -156,26 +156,26 @@ export const FilesSelect = ({
         }
       >
         <div className="place-self-start flex flex-col gap-y-4 min-w-full">
-          <div className="text-2xl flex justify-between">
-            <div className="flex items-center gap-x-4 font-inter text-base">
+          <div className="text-2xl flex justify-between flex-wrap gap-y-2">
+            <div className="flex items-center gap-x-2 xl:gap-x-4 font-inter text-sm xl:text-base">
               Fetched:
-              <p className=" bg-spark-purple-300  rounded-lg px-4 py-1 shadow-md">
+              <p className=" bg-spark-purple-300 rounded-lg px-2 xl:px-4 py-1 shadow-md">
                 {filesFetched} files
               </p>
-              <p className=" bg-spark-purple-300  rounded-lg px-4 py-1 shadow-md">
+              <p className=" bg-spark-purple-300 rounded-lg px-2 xl:px-4 py-1 shadow-md">
                 {clustersFetched} clusters
               </p>
             </div>
             {selected.length > 0 && (
-              <div className="flex items-center gap-x-4">
-                <p className="text-base font-inter">Selected:</p>
-                <div className="font-mono text-base bg-emerald-50 rounded-lg px-4 py-1 shadow-md">
+              <div className="flex items-center gap-x-2 xl:gap-x-4">
+                <p className="text-sm xl:text-base font-inter">Selected:</p>
+                <div className="text-sm xl:text-base bg-emerald-50 rounded-lg px-2 xl:px-4 py-1 shadow-md">
                   {selected.length} files
                 </div>
               </div>
             )}
             {selected.length === 0 && (
-              <div className="flex justify-center items-center gap-x-4 font-inter text-base bg-rose-50 rounded-lg px-4 py-1 shadow-md">
+              <div className="flex justify-center items-center gap-x-2 xl:gap-x-4 font-inter text-sm xl:text-base bg-rose-50 rounded-lg px-2 xl:px-4 py-1 shadow-md">
                 <AlertTriangle size={16} />
                 Select files to delete
               </div>

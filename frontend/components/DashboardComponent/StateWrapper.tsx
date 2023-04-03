@@ -30,7 +30,7 @@ export function StateWrapper({
           {nextBtn && <div>{nextBtn}</div>}
         </div>
         <div
-          className={`shadow-md bg-spark-purple-50 px-8 py-4 rounded-md grow grid place-items-center overflow-y-auto ${css.scrollbar}`}
+          className={`shadow-md bg-spark-purple-50 px-4 py-2 xl:px-8 xl:py-4 rounded-md grow grid place-items-center overflow-y-auto ${css.scrollbar}`}
         >
           {children}
         </div>
