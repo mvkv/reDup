@@ -22,7 +22,7 @@ def login(code=None):
             token_data["id_token"])
 
         user_id = db.add_user_and_get_uuid(
-            email, token_data['access_token'], token_data['refresh_token'], at_hash)
+            email, profile_pic, token_data['access_token'], token_data['refresh_token'], at_hash)
         auth = db.get_session_id_from_uuid(user_id)
         if not auth:
             return login_error_response
