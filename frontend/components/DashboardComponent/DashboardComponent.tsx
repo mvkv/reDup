@@ -153,8 +153,8 @@ const Final = ({ state, dispatch }: StateDispatchArgs) => {
     <>
       <StateWrapper state={state}>
         <p className="flex flex-col items-center gap-y-6 xl:gap-y-12 font-inter">
-          <p className="text-lg xl:text-2xl xl:flex xl:items-center gap-x-2">
-            <span>Operation completed!</span>
+          <p className="text-lg xl:text-2xl lg:flex lg:items-center gap-x-2">
+            <span>Operation completed! </span>
             <span>We deleted: </span>
             <span className="text-spark-purple-500 font-bold whitespace-nowrap">
               {deletedN} file{deletedN > 1 ? 's' : ''}!
@@ -162,15 +162,16 @@ const Final = ({ state, dispatch }: StateDispatchArgs) => {
             <Smile className="hidden xl:visible" size={28} />
           </p>
           <p className="text-base xl:text-xl">
-            {/* TODO: Add proper link. */}
             Hope this website was helpful! You can check out the code on{' '}
-            <a
+            {/* TODO: Add proper link. */}
+            <Link
               className="inline-flex items-baseline text-spark-purple-600 font-bold"
+              target="_blank"
               href="TODO"
             >
               Github
               <ExternalLink size={12} />
-            </a>
+            </Link>
           </p>
           <div className="flex flex-col gap-y-6 items-center text-sm xl:text-base">
             <p className="flex gap-x-6 justify-center ">
@@ -179,11 +180,12 @@ const Final = ({ state, dispatch }: StateDispatchArgs) => {
             <p>
               Fear not: you can still find them in the{' '}
               <Link
-                className="text-spark-purple-600 font-bold underline"
+                className="inline-flex items-baseline text-spark-purple-600 font-bold"
                 target="_blank"
                 href={'https://drive.google.com/drive/trash'}
               >
                 Google Drive trash
+                <ExternalLink size={12} />
               </Link>{' '}
               and recover them from there.
             </p>

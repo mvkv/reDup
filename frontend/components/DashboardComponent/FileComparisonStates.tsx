@@ -10,6 +10,8 @@ import { StateWrapper } from './StateWrapper';
 import { Modal, SetModal } from './Modal';
 import { AlertTriangle, XCircle } from 'react-feather';
 import ThemedButton, { ThemedButtonKind } from '../common/ThemedButton';
+import PillBadge from '../common/PillBadge';
+import { InteractiveStatesWrapper } from './Shared';
 
 export const FilesFetch = ({ state, dispatch }: StateDispatchArgs) => {
   useEffect(() => {
@@ -62,7 +64,7 @@ const FileComparison = ({
 
   return (
     <ul
-      className={`flex gap-4 py-8 flex-wrap items-baseline border-b-2 border-spark-purple-500 last:border-none`}
+      className={`flex gap-4 py-4 xl:py-8 flex-wrap items-baseline border-b-2 border-spark-purple-500 last:border-none`}
     >
       {cluster.images.map((img, _) => {
         const isSelected = selected.includes(img.id);
@@ -89,7 +91,9 @@ const FileComparison = ({
                   isSelected ? 'text-spark-purple-700' : 'text-gray-800'
                 }`}
               >
-                {isSelected && <XCircle className="absolute top-2 right-2" />}
+                {isSelected && (
+                  <XCircle className="absolute top-2 right-2 fill-spark-purple-100" />
+                )}
                 {img.name}
               </div>
             </div>
@@ -155,44 +159,51 @@ export const FilesSelect = ({
           />
         }
       >
-        <div className="place-self-start flex flex-col gap-y-4 min-w-full">
-          <div className="text-2xl flex justify-between flex-wrap gap-y-2">
-            <div className="flex items-center gap-x-2 xl:gap-x-4 font-inter text-sm xl:text-base">
-              Fetched:
-              <p className=" bg-spark-purple-300 rounded-lg px-2 xl:px-4 py-1 shadow-md">
+        <InteractiveStatesWrapper
+          firstHeaderGroup={
+            <>
+              <p className="text-base font-inter">Fetched:</p>
+              <PillBadge extraClasses={'bg-spark-purple-300'}>
                 {filesFetched} files
-              </p>
-              <p className=" bg-spark-purple-300 rounded-lg px-2 xl:px-4 py-1 shadow-md">
+              </PillBadge>
+              <PillBadge extraClasses={'bg-spark-purple-300'}>
                 {clustersFetched} clusters
-              </p>
-            </div>
-            {selected.length > 0 && (
-              <div className="flex items-center gap-x-2 xl:gap-x-4">
-                <p className="text-sm xl:text-base font-inter">Selected:</p>
-                <div className="text-sm xl:text-base bg-emerald-50 rounded-lg px-2 xl:px-4 py-1 shadow-md">
-                  {selected.length} files
+              </PillBadge>
+            </>
+          }
+          secondHeaderGroup={
+            <>
+              {selected.length === 0 && (
+                <PillBadge extraClasses={'bg-rose-50 '}>
+                  <AlertTriangle size={16} />
+                  Select files to delete
+                </PillBadge>
+              )}
+              {selected.length > 0 && (
+                <div className="flex items-center gap-x-2 xl:gap-x-4">
+                  <p className="text-sm xl:text-base font-inter">Selected:</p>
+                  <PillBadge extraClasses={'bg-emerald-50'}>
+                    {selected.length} files
+                  </PillBadge>
                 </div>
-              </div>
-            )}
-            {selected.length === 0 && (
-              <div className="flex justify-center items-center gap-x-2 xl:gap-x-4 font-inter text-sm xl:text-base bg-rose-50 rounded-lg px-2 xl:px-4 py-1 shadow-md">
-                <AlertTriangle size={16} />
-                Select files to delete
-              </div>
-            )}
-          </div>
-
-          <ul className="flex flex-col overflow-y-auto">
-            {state.filesClusterResults.map((cluster, _) => (
-              <FileComparison
-                key={cluster.id}
-                cluster={cluster}
-                selected={selected}
-                setSelected={setSelected}
-              />
-            ))}
-          </ul>
-        </div>
+              )}
+            </>
+          }
+          content={
+            <>
+              <ul className="flex flex-col overflow-y-auto">
+                {state.filesClusterResults.map((cluster, _) => (
+                  <FileComparison
+                    key={cluster.id}
+                    cluster={cluster}
+                    selected={selected}
+                    setSelected={setSelected}
+                  />
+                ))}
+              </ul>
+            </>
+          }
+        ></InteractiveStatesWrapper>
       </StateWrapper>
     </>
   );

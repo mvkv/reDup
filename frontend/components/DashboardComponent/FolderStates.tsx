@@ -6,7 +6,9 @@ import { Action, DashboardState, StateType } from '../../store/dashboard';
 import tailwindConfig from '../../tailwind.config.js';
 import { Folders } from '../../types/api';
 import InfiniteSpinner from '../common/InfiniteSpinner';
+import PillBadge from '../common/PillBadge';
 import ThemedButton, { ThemedButtonKind } from '../common/ThemedButton';
+import { InteractiveStatesWrapper } from './Shared';
 import { StateWrapper } from './StateWrapper';
 type StateDispatchArgs = { state: DashboardState; dispatch: Dispatch<Action> };
 
@@ -87,7 +89,7 @@ export const FolderSelect = ({ state, dispatch }: StateDispatchArgs) => {
       setSelected(folder);
       setTimeout(() => {
         setLastClicked('');
-      }, 200);
+      }, 400);
     }
   };
 
@@ -118,13 +120,13 @@ export const FolderSelect = ({ state, dispatch }: StateDispatchArgs) => {
           />
         }
       >
-        <div className="place-self-start flex flex-col gap-y-4 min-w-full">
-          <div className="flex justify-between flex-wrap gap-y-2">
-            <div className="flex items-center gap-x-2">
+        <InteractiveStatesWrapper
+          firstHeaderGroup={
+            <>
               <p className="text-base font-inter">Current path:</p>
-              <p className="text-sm xl:text-base font-mono bg-spark-purple-300 rounded-lg px-2 xl:px-4 py-1 shadow-md">
+              <PillBadge extraClasses={'bg-spark-purple-300'} isFontMono={true}>
                 {getPathDisplayName(state.folderPath)}
-              </p>
+              </PillBadge>
               {state.folderPath.length > 0 && (
                 <button
                   className=" bg-spark-purple-400 rounded-full px-1 py-1 shadow-md group"
@@ -136,66 +138,73 @@ export const FolderSelect = ({ state, dispatch }: StateDispatchArgs) => {
                   />
                 </button>
               )}
-            </div>
-            <div className="flex items-center gap-x-2 xl:gap-x-4">
+            </>
+          }
+          secondHeaderGroup={
+            <>
               {selected && (
                 <>
                   <p className="text-base font-inter">Selected:</p>
-                  <div className="font-mono text-base bg-emerald-50 rounded-lg px-4 py-1 shadow-md">
+                  <PillBadge extraClasses={'bg-emerald-50'} isFontMono={true}>
                     {selected.name}
-                  </div>
+                  </PillBadge>
                 </>
               )}
               {!selected && (
-                <div className="flex justify-center items-center gap-x-2 xl:gap-x-4 font-inter text-sm xl:text-base bg-rose-50 rounded-lg px-2 xl:px-4 py-1 shadow-md">
-                  <AlertTriangle size={16} />
-                  Select a folder
+                <>
+                  <PillBadge extraClasses={'bg-rose-50'}>
+                    <AlertTriangle size={16} />
+                    Select a folder
+                  </PillBadge>
+                </>
+              )}
+            </>
+          }
+          content={
+            <>
+              {state.foldersResults.length == 0 && (
+                <div className="min-h-[200px] grid place-content-center text-2xl">
+                  No folders at this level
+                  {state.folderPath.length > 0 && (
+                    <button
+                      className="underline text-main"
+                      onClick={() => {
+                        navigateToRoot();
+                      }}
+                    >
+                      Go to root!
+                    </button>
+                  )}
                 </div>
               )}
-            </div>
-          </div>
-          {state.foldersResults.length == 0 && (
-            <div className="min-h-[200px] grid place-content-center text-2xl">
-              No folders at this level
-              {state.folderPath.length > 0 && (
-                <button
-                  className="underline text-main"
-                  onClick={() => {
-                    navigateToRoot();
-                  }}
-                >
-                  Go to root!
-                </button>
+              {state.foldersResults.length > 0 && (
+                <ul className="grid grid-cols-fill-sm xl:grid-cols-fill-xl overflow-y-auto gap-x-4 xl:gap-x-8 gap-y-2 xl:gap-y-12">
+                  {state.foldersResults.map(({ id, name }, _) => {
+                    const isSelected = id === selected?.id;
+                    return (
+                      <button
+                        className={`p-2 xl:p-4 hover:bg-spark-purple-200 flex flex-col items-center justify-center`}
+                        key={id}
+                        onClick={() => handleFolderClick({ id, name })}
+                      >
+                        <Folder
+                          strokeWidth={1}
+                          className={`h-12 w-12 xl:h-16 xl:w-16 ${
+                            isSelected
+                              ? 'fill-spark-purple-400'
+                              : 'fill-orange-100'
+                          }`}
+                          size={64}
+                        />
+                        <li>{name}</li>
+                      </button>
+                    );
+                  })}
+                </ul>
               )}
-            </div>
-          )}
-          {state.foldersResults.length > 0 && (
-            <ul className="flex flex-wrap justify-around xl:justify-start overflow-y-auto gap-x-8 gap-y-8 xl:gap-y-12">
-              {state.foldersResults.map(({ id, name }, _) => {
-                const isSelected = id === selected?.id;
-                return (
-                  <button
-                    className={`xl:p-4 hover:bg-spark-purple-200 flex flex-col items-center justify-center`}
-                    key={id}
-                    onClick={() => handleFolderClick({ id, name })}
-                  >
-                    <Folder
-                      strokeWidth={1}
-                      className="h-12 w-12 xl:h-16 xl:w-16"
-                      size={64}
-                      fill={
-                        isSelected
-                          ? `${fullConfig.theme.colors['spark-purple'][400]}`
-                          : `${fullConfig.theme.colors.orange[100]}`
-                      }
-                    />
-                    <li>{name}</li>
-                  </button>
-                );
-              })}
-            </ul>
-          )}
-        </div>
+            </>
+          }
+        ></InteractiveStatesWrapper>
       </StateWrapper>
     </>
   );
