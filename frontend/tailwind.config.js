@@ -7,6 +7,10 @@ module.exports = {
   ],
   theme: {
     extend: {
+      gridTemplateColumns: {
+        'fill-sm': 'repeat(auto-fill, minmax(7rem, 1fr))',
+        'fill-xl': 'repeat(auto-fill, minmax(9rem, 1fr))',
+      },
       fontFamily: {
         montserrat: ['Montserrat', 'sans-serif'],
         inter: ['Inter', 'sans-serif'],

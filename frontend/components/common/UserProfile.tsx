@@ -10,7 +10,7 @@ import Image from 'next/image';
 const UserProfile = () => {
   const { authState } = useAuth();
   const userWithProfilePic =
-    authState.isLoggedIn && authState.profilePic.length > 0;
+    authState.isLoggedIn && authState?.profilePic?.length > 0;
   const { x, y, reference, floating, strategy } = useFloating({
     placement: 'bottom-end',
     middleware: [offset(10), shift({ padding: 5 })],
@@ -40,7 +40,7 @@ const UserProfile = () => {
 
   return (
     <div>
-      <Popover className="relative">
+      <Popover className="relative flex">
         <Popover.Button ref={reference}>{button}</Popover.Button>
         <Popover.Panel
           ref={floating}

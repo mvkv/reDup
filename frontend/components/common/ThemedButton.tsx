@@ -45,7 +45,7 @@ const ThemedButton = ({
   return (
     <button
       {...(onClick && { onClick: onClick })}
-      className={`px-5 py-2.5 grid place-content-center rounded-lg font-inter select-none text-base
+      className={`px-4 py-2 xl:px-5 xl:py-2.5 grid place-content-center rounded-lg font-inter select-none text-sm xl:text-base
       ${KIND_TO_TEXT.get(buttonKind)}
       ${KIND_TO_BG.get(buttonKind)}
       ${isLoadingButton ? ' cursor-progress' : ''}

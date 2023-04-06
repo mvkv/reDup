@@ -1,17 +1,14 @@
 import { Dispatch, useEffect, useState } from 'react';
 import { AlertTriangle, ChevronsUp, Folder } from 'react-feather';
-import resolveConfig from 'tailwindcss/resolveConfig';
 import { fetchDriveFolders } from '../../apiCalls/Drive';
 import { Action, DashboardState, StateType } from '../../store/dashboard';
-import tailwindConfig from '../../tailwind.config.js';
 import { Folders } from '../../types/api';
 import InfiniteSpinner from '../common/InfiniteSpinner';
+import PillBadge from '../common/PillBadge';
 import ThemedButton, { ThemedButtonKind } from '../common/ThemedButton';
-import { SetModal } from './Modal';
+import { InteractiveStatesWrapper } from './Shared';
 import { StateWrapper } from './StateWrapper';
 type StateDispatchArgs = { state: DashboardState; dispatch: Dispatch<Action> };
-
-const fullConfig = resolveConfig(tailwindConfig) as any;
 
 export const FolderFetch = ({ state, dispatch }: StateDispatchArgs) => {
   useEffect(() => {
@@ -45,11 +42,7 @@ export const FolderFetch = ({ state, dispatch }: StateDispatchArgs) => {
   );
 };
 
-export const FolderSelect = ({
-  state,
-  dispatch,
-  setModal,
-}: StateDispatchArgs & SetModal) => {
+export const FolderSelect = ({ state, dispatch }: StateDispatchArgs) => {
   const [selected, setSelected] = useState<Folders | undefined>(undefined);
 
   const navigateToRoot = () => {
@@ -79,20 +72,21 @@ export const FolderSelect = ({
     return `~/.../${foldersName.slice(-2).join('/')}`;
   };
 
-  const handleFolderClick = (
-    evt: React.MouseEvent<HTMLElement>,
-    folder: Folders,
-  ) => {
-    switch (evt.detail) {
-      case 1:
-        setSelected(folder);
-        break;
-      case 2:
-        dispatch({
-          goTo: StateType.FOLDER_FETCH,
-          folderPathSelected: [...state.folderPath, folder],
-        });
-        break;
+  const [lastClicked, setLastClicked] = useState('');
+
+  // TODO: Consider not using a double click as paradigm to open a folder, as uncommon on mobile.
+  const handleFolderClick = (folder: Folders) => {
+    if (folder.id == lastClicked) {
+      dispatch({
+        goTo: StateType.FOLDER_FETCH,
+        folderPathSelected: [...state.folderPath, folder],
+      });
+    } else {
+      setLastClicked(folder.id);
+      setSelected(folder);
+      setTimeout(() => {
+        setLastClicked('');
+      }, 400);
     }
   };
 
@@ -123,13 +117,13 @@ export const FolderSelect = ({
           />
         }
       >
-        <div className="place-self-start flex flex-col gap-y-4 min-w-full">
-          <div className="text-2xl flex justify-between">
-            <div className="flex items-center gap-x-2">
+        <InteractiveStatesWrapper
+          firstHeaderGroup={
+            <>
               <p className="text-base font-inter">Current path:</p>
-              <p className="font-mono text-base bg-spark-purple-300 rounded-lg px-4 py-1 shadow-md">
+              <PillBadge extraClasses={'bg-spark-purple-300'} isFontMono={true}>
                 {getPathDisplayName(state.folderPath)}
-              </p>
+              </PillBadge>
               {state.folderPath.length > 0 && (
                 <button
                   className=" bg-spark-purple-400 rounded-full px-1 py-1 shadow-md group"
@@ -141,65 +135,72 @@ export const FolderSelect = ({
                   />
                 </button>
               )}
-            </div>
-            <div className="flex items-center gap-x-4">
+            </>
+          }
+          secondHeaderGroup={
+            <>
               {selected && (
                 <>
                   <p className="text-base font-inter">Selected:</p>
-                  <div className="font-mono text-base bg-emerald-50 rounded-lg px-4 py-1 shadow-md">
+                  <PillBadge extraClasses={'bg-emerald-50'} isFontMono={true}>
                     {selected.name}
-                  </div>
+                  </PillBadge>
                 </>
               )}
               {!selected && (
-                <div className="flex justify-center items-center gap-x-4 font-inter text-base bg-rose-50 rounded-lg px-4 py-1 shadow-md">
-                  <AlertTriangle size={16} />
-                  Select a folder
-                </div>
+                <>
+                  <PillBadge extraClasses={'bg-rose-50'}>
+                    <AlertTriangle size={16} />
+                    Select a folder
+                  </PillBadge>
+                </>
               )}
-            </div>
-          </div>
-          {state.foldersResults.length == 0 && (
-            <div className="min-h-[200px] grid place-content-center text-2xl">
-              No folders at this level
-              {state.folderPath.length > 0 && (
-                <button
-                  className="underline text-main"
-                  onClick={() => {
-                    navigateToRoot();
-                  }}
-                >
-                  Go to root!
-                </button>
-              )}
-            </div>
-          )}
-          {state.foldersResults.length > 0 && (
-            <ul className="flex flex-wrap overflow-y-auto gap-x-8 gap-y-12">
-              {state.foldersResults.map(({ id, name }, _) => {
-                const isSelected = id === selected?.id;
-                return (
+            </>
+          }
+        >
+          <>
+            {state.foldersResults.length == 0 && (
+              <div className="min-h-[200px] grid place-content-center text-2xl">
+                No folders at this level
+                {state.folderPath.length > 0 && (
                   <button
-                    className={`p-4 hover:bg-spark-purple-200 flex flex-col items-center justify-center`}
-                    key={id}
-                    onClick={(evt) => handleFolderClick(evt, { id, name })}
+                    className="underline text-main"
+                    onClick={() => {
+                      navigateToRoot();
+                    }}
                   >
-                    <Folder
-                      strokeWidth={1}
-                      size={64}
-                      fill={
-                        isSelected
-                          ? `${fullConfig.theme.colors['spark-purple'][400]}`
-                          : `${fullConfig.theme.colors.orange[100]}`
-                      }
-                    />
-                    <li>{name}</li>
+                    Go to root!
                   </button>
-                );
-              })}
-            </ul>
-          )}
-        </div>
+                )}
+              </div>
+            )}
+            {state.foldersResults.length > 0 && (
+              <ul className="grid grid-cols-fill-sm xl:grid-cols-fill-xl overflow-y-auto gap-x-4 xl:gap-x-8 gap-y-2 xl:gap-y-12">
+                {state.foldersResults.map(({ id, name }, _) => {
+                  const isSelected = id === selected?.id;
+                  return (
+                    <button
+                      className={`p-2 xl:p-4 hover:bg-spark-purple-200 flex flex-col items-center justify-center`}
+                      key={id}
+                      onClick={() => handleFolderClick({ id, name })}
+                    >
+                      <Folder
+                        strokeWidth={1}
+                        className={`h-12 w-12 xl:h-16 xl:w-16 ${
+                          isSelected
+                            ? 'fill-spark-purple-400'
+                            : 'fill-orange-100'
+                        }`}
+                        size={64}
+                      />
+                      <li>{name}</li>
+                    </button>
+                  );
+                })}
+              </ul>
+            )}
+          </>
+        </InteractiveStatesWrapper>
       </StateWrapper>
     </>
   );
