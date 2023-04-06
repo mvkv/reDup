@@ -191,6 +191,9 @@ export const FilesSelect = ({
           }
         >
           <ul className="flex flex-col overflow-y-auto">
+            {!state.filesClusterResults.length && (
+              <div>No files in this folder</div>
+            )}
             {state.filesClusterResults.map((cluster) => (
               <FileComparison
                 key={cluster.id}

@@ -33,7 +33,7 @@ async def get_folders(request: Request, folder_id: str = "root"):
 
 
 @router.post("/images")
-async def get_images_from_folders(request: Request, folders_id: List[str] = Query(...)):
+async def get_images_from_folders(request: Request, folders_id: List[str] = Query(...), use_clip: bool = True):
     if not folders_id:
         raise HTTPException(
             status_code=400, detail="<folders_ids> param missing")
@@ -45,7 +45,7 @@ async def get_images_from_folders(request: Request, folders_id: List[str] = Quer
             folders_id)
         if not images:
             return ERROR_RESPONSE
-        clusters = get_web_content_from_clusters(cluster_images(images))
+        clusters = get_web_content_from_clusters(cluster_images(images, use_clip))
 
     return JSONResponse(content={
         "ok": True,

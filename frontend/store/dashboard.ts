@@ -111,13 +111,10 @@ export function reducer(state: DashboardState, action: Action): DashboardState {
         foldersSelected: action.foldersSelected,
       };
     case StateType.FILES_SELECT:
-      if (!action.fetchedFilesCluster?.length) {
-        return errorSameState;
-      }
       return {
         ...validState,
         currState: StateType.FILES_SELECT,
-        filesClusterResults: action.fetchedFilesCluster,
+        filesClusterResults: action.fetchedFilesCluster ?? [],
       };
     case StateType.RESULT_FETCH:
       if (!action.filesSelected?.length) {
