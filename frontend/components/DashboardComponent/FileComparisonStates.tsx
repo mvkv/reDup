@@ -1,5 +1,10 @@
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { DashboardState, StateType, Action } from '../../store/dashboard';
+import {
+  DashboardState,
+  StateType,
+  Action,
+  ClusterMode,
+} from '../../store/dashboard';
 import InfiniteSpinner from '../common/InfiniteSpinner';
 import { Cluster } from '../../types/api';
 import { fetchImagesCluster } from '../../apiCalls/Drive';
@@ -16,7 +21,10 @@ import { InteractiveStatesWrapper } from './Shared';
 export const FilesFetch = ({ state, dispatch }: StateDispatchArgs) => {
   useEffect(() => {
     async function foo() {
-      const resp = await fetchImagesCluster(state.foldersSelected);
+      const resp = await fetchImagesCluster(
+        state.foldersSelected,
+        state.clusterMode === ClusterMode.ML,
+      );
       if (resp.ok) {
         dispatch({
           goTo: StateType.FILES_SELECT,
@@ -64,15 +72,15 @@ const FileComparison = ({
 
   return (
     <ul
-      className={`flex gap-4 py-4 xl:py-8 flex-wrap items-baseline border-b-2 border-spark-purple-500 last:border-none`}
+      className={`grid grid-cols-fill-img  gap-4 py-4 xl:py-8 items-baseline border-b-2 border-spark-purple-500 last:border-none`}
     >
       {cluster.images.map((img) => {
         const isSelected = selected.includes(img.id);
 
         return (
-          <li className="basis-1/5 max-w-[300px] cursor-pointer" key={img.id}>
+          <li className="cursor-pointer" key={img.id}>
             <div
-              className={`min-w-[8em] border-solid border-2 rounded-lg overflow-hidden select-none text-center relative ${
+              className={`border-solid border-2 rounded-lg overflow-hidden select-none text-center relative ${
                 isSelected
                   ? 'bg-spark-purple-200 border-spark-purple-700 shadow-lg shadow-spark-purple-500/30'
                   : 'hover:bg-spark-purple-200 border-gray-800'
@@ -85,8 +93,9 @@ const FileComparison = ({
                 alt=""
                 width={300}
                 height={300}
+                className="min-w-full"
               ></Image>
-              <div
+              <figcaption
                 className={`m-1.5 text-base font-medium ${
                   isSelected ? 'text-spark-purple-700' : 'text-gray-800'
                 }`}
@@ -95,7 +104,7 @@ const FileComparison = ({
                   <XCircle className="absolute top-2 right-2 fill-spark-purple-100" />
                 )}
                 {img.name}
-              </div>
+              </figcaption>
             </div>
           </li>
         );

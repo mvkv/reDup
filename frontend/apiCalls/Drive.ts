@@ -23,11 +23,14 @@ export const fetchDriveFolders = async (
 
 export const fetchImagesCluster = async (
   folders_id: string[],
+  use_clip: boolean,
 ): Promise<GetFilesResponse> => {
+  const urlSearchParams = new URLSearchParams(
+    folders_id.map((folder_id) => ['folders_id', folder_id]),
+  );
+  urlSearchParams.append('use_clip', String(use_clip));
   const res = await fetch(
-    `${config.backendAddress}/api/drive/images?${new URLSearchParams(
-      folders_id.map((folder_id) => ['folders_id', folder_id]),
-    )}`,
+    `${config.backendAddress}/api/drive/images?${urlSearchParams}`,
     {
       method: 'POST',
       credentials: 'include',

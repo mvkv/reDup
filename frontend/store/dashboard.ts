@@ -10,6 +10,11 @@ export enum StateType {
   FINAL = 7,
 }
 
+export enum ClusterMode {
+  ML = 1,
+  HASH = 2,
+}
+
 export const STATE_TO_STEP_N = {
   [StateType.INITIAL]: 0,
   [StateType.FOLDER_FETCH]: 1,
@@ -40,6 +45,7 @@ export const LAST_STEP_N = Math.max(...Object.values(STATE_TO_STEP_N));
 
 export type DashboardState = {
   currState: StateType;
+  clusterMode: ClusterMode;
   folderPath: Folders[];
   foldersResults: Folders[];
   foldersSelected: string[];
@@ -51,6 +57,7 @@ export type DashboardState = {
 
 export const DEFAULT_DAHSBOARD_STATE: DashboardState = {
   currState: StateType.INITIAL,
+  clusterMode: ClusterMode.ML,
   folderPath: [],
   foldersResults: [],
   foldersSelected: [],
@@ -62,6 +69,7 @@ export const DEFAULT_DAHSBOARD_STATE: DashboardState = {
 
 export type Action = {
   goTo: StateType;
+  setClusterMode?: ClusterMode;
   folderPathSelected?: Folders[];
   fetchedFolders?: Folders[];
   foldersSelected?: string[];
@@ -87,14 +95,20 @@ export function reducer(state: DashboardState, action: Action): DashboardState {
     case StateType.INITIAL:
       return DEFAULT_DAHSBOARD_STATE;
     case StateType.FOLDER_FETCH:
+      const newClusterMode = action.setClusterMode ?? state.clusterMode;
       if (action.folderPathSelected) {
         return {
           ...validState,
+          clusterMode: newClusterMode,
           currState: StateType.FOLDER_FETCH,
           folderPath: [...action.folderPathSelected],
         };
       }
-      return { ...validState, currState: StateType.FOLDER_FETCH };
+      return {
+        ...validState,
+        clusterMode: newClusterMode,
+        currState: StateType.FOLDER_FETCH,
+      };
     case StateType.FOLDER_SELECT:
       return {
         ...validState,

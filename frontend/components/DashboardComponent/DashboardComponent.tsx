@@ -6,11 +6,14 @@ import {
   reducer,
   StateType,
   Action,
+  ClusterMode,
 } from '../../store/dashboard';
 import InfiniteSpinner from '../common/InfiniteSpinner';
 import { deleteImagesAndFetchSummary } from '../../apiCalls/Drive';
 type StateDispatchArgs = { state: DashboardState; dispatch: Dispatch<Action> };
 type Email = { email: string };
+
+import { RadioGroup } from '@headlessui/react';
 
 import { StateWrapper } from './StateWrapper';
 import { FolderFetch, FolderSelect } from './FolderStates';
@@ -18,7 +21,7 @@ import { FilesFetch, FilesSelect } from './FileComparisonStates';
 import { Modal, ModalData, WarningDialogTemplate } from './Modal';
 import CircleBadge from '../common/CircleBadge';
 import ThemedButton from '../common/ThemedButton';
-import { ExternalLink, Smile } from 'react-feather';
+import { Check, ExternalLink, Smile } from 'react-feather';
 import Link from 'next/link';
 import { Dialog } from '@headlessui/react';
 
@@ -84,7 +87,13 @@ const InitialState = ({
   state,
   dispatch,
 }: Email & StateDispatchArgs) => {
-  const nextAction = () => dispatch({ goTo: StateType.FOLDER_FETCH });
+  const [mode, setMode] = useState(ClusterMode.ML);
+  const modeTwClass =
+    'text-sm lg:text-base flex items-center cursor-pointer pl-8 pr-14 py-3 shadow-md rounded-lg bg-spark-purple-200';
+
+  const nextAction = () =>
+    dispatch({ goTo: StateType.FOLDER_FETCH, setClusterMode: mode });
+
   return (
     <>
       <StateWrapper state={state}>
@@ -109,6 +118,45 @@ const InitialState = ({
               <CircleBadge label={3} /> Confirm the selection. The selected
               pictures will be deleted.
             </p>
+          </div>
+          <div className="flex flex-col items-center gap-y-2">
+            <p className="text-lg">Select Mode</p>
+            <RadioGroup
+              className={'flex flex-row gap-x-2'}
+              value={mode}
+              onChange={setMode}
+            >
+              <RadioGroup.Option value={ClusterMode.ML}>
+                {({ checked }) => (
+                  <div
+                    className={`${modeTwClass} ${
+                      checked ? 'bg-spark-purple-400' : ''
+                    }`}
+                  >
+                    <div className="flex flex-col mr-6">
+                      <span className="font-bold">ML clustering ✨</span>
+                      <span>Good for close duplicates</span>
+                    </div>
+                    {checked && <Check className="mr-[-24px]" size={24} />}
+                  </div>
+                )}
+              </RadioGroup.Option>
+              <RadioGroup.Option value={ClusterMode.HASH}>
+                {({ checked }) => (
+                  <div
+                    className={`${modeTwClass} ${
+                      checked ? 'bg-spark-purple-400' : ''
+                    }`}
+                  >
+                    <div className="flex flex-col mr-6">
+                      <span className="font-bold">Hash clustering 🔬</span>
+                      <span>Good for identical duplicates</span>
+                    </div>
+                    {checked && <Check className="mr-[-24px]" size={24} />}
+                  </div>
+                )}
+              </RadioGroup.Option>
+            </RadioGroup>
           </div>
           <div>
             <p className="text-lg xl:text-xl pb-4 text-center">Easy right?</p>
@@ -152,7 +200,7 @@ const Final = ({ state, dispatch }: StateDispatchArgs) => {
   return (
     <>
       <StateWrapper state={state}>
-        <p className="flex flex-col items-center gap-y-6 xl:gap-y-12 font-inter">
+        <div className="flex flex-col items-center gap-y-6 xl:gap-y-12 font-inter">
           <p className="text-lg xl:text-2xl lg:flex lg:items-center gap-x-2">
             <span>Operation completed! </span>
             <span>We deleted: </span>
@@ -203,7 +251,7 @@ const Final = ({ state, dispatch }: StateDispatchArgs) => {
             }
             label={'Delete more picture?'}
           />
-        </p>
+        </div>
       </StateWrapper>
     </>
   );

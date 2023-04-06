@@ -1,4 +1,4 @@
-from typing import Union, TypedDict, List
+from typing import Union, TypedDict
 from custom_types.UserInfo import UserInfo
 from google.oauth2.service_account import Credentials
 from google.cloud import firestore

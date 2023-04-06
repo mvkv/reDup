@@ -8,6 +8,7 @@ module.exports = {
   theme: {
     extend: {
       gridTemplateColumns: {
+        'fill-img': 'repeat(auto-fill, minmax(200px, 1fr))',
         'fill-sm': 'repeat(auto-fill, minmax(7rem, 1fr))',
         'fill-xl': 'repeat(auto-fill, minmax(9rem, 1fr))',
       },
