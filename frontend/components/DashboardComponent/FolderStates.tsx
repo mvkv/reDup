@@ -1,13 +1,14 @@
 import { Dispatch, useEffect, useState } from 'react';
-import { DashboardState, StateType, Action } from '../../store/dashboard';
-import InfiniteSpinner from '../common/InfiniteSpinner';
+import { AlertTriangle, ChevronsUp, Folder } from 'react-feather';
 import { fetchDriveFolders } from '../../apiCalls/Drive';
-import colors from 'tailwindcss/colors';
-type StateDispatchArgs = { state: DashboardState; dispatch: Dispatch<Action> };
-import { ArrowUp, Folder } from 'react-feather';
-import { ActionButton, StateWrapper } from './StateWrapper';
-import { Modal, SetModal } from './Modal';
+import { Action, DashboardState, StateType } from '../../store/dashboard';
 import { Folders } from '../../types/api';
+import InfiniteSpinner from '../common/InfiniteSpinner';
+import PillBadge from '../common/PillBadge';
+import ThemedButton, { ThemedButtonKind } from '../common/ThemedButton';
+import { InteractiveStatesWrapper } from './Shared';
+import { StateWrapper } from './StateWrapper';
+type StateDispatchArgs = { state: DashboardState; dispatch: Dispatch<Action> };
 
 export const FolderFetch = ({ state, dispatch }: StateDispatchArgs) => {
   useEffect(() => {
@@ -22,12 +23,18 @@ export const FolderFetch = ({ state, dispatch }: StateDispatchArgs) => {
       }
     }
     fetchFolders();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <>
       <StateWrapper
         state={state}
-        nextBtn={<ActionButton label={'Next'} isLoading={true} />}
+        nextBtn={
+          <ThemedButton
+            label={'Next'}
+            buttonKind={ThemedButtonKind.PRIMARY_LOADING}
+          />
+        }
       >
         <InfiniteSpinner label={'Fetching folders'} />
       </StateWrapper>
@@ -35,11 +42,7 @@ export const FolderFetch = ({ state, dispatch }: StateDispatchArgs) => {
   );
 };
 
-export const FolderSelect = ({
-  state,
-  dispatch,
-  setModal,
-}: StateDispatchArgs & SetModal) => {
+export const FolderSelect = ({ state, dispatch }: StateDispatchArgs) => {
   const [selected, setSelected] = useState<Folders | undefined>(undefined);
 
   const navigateToRoot = () => {
@@ -69,26 +72,27 @@ export const FolderSelect = ({
     return `~/.../${foldersName.slice(-2).join('/')}`;
   };
 
-  const handleFolderClick = (
-    evt: React.MouseEvent<HTMLElement>,
-    folder: Folders,
-  ) => {
-    switch (evt.detail) {
-      case 1:
-        setSelected(folder);
-        break;
-      case 2:
-        dispatch({
-          goTo: StateType.FOLDER_FETCH,
-          folderPathSelected: [...state.folderPath, folder],
-        });
-        break;
+  const [lastClicked, setLastClicked] = useState('');
+
+  // TODO: Consider not using a double click as paradigm to open a folder, as uncommon on mobile.
+  const handleFolderClick = (folder: Folders) => {
+    if (folder.id == lastClicked) {
+      dispatch({
+        goTo: StateType.FOLDER_FETCH,
+        folderPathSelected: [...state.folderPath, folder],
+      });
+    } else {
+      setLastClicked(folder.id);
+      setSelected(folder);
+      setTimeout(() => {
+        setLastClicked('');
+      }, 400);
     }
   };
 
   const onNextClick = () => {
     if (!selected) {
-      setModal({ type: Modal.ERROR, content: <>No folder selected!</> });
+      // Should not happen, as the button would be disabled in this circumstance.
     } else {
       dispatch({
         goTo: StateType.FILES_FETCH,
@@ -101,59 +105,102 @@ export const FolderSelect = ({
     <>
       <StateWrapper
         state={state}
-        nextBtn={<ActionButton label={'Next'} onClick={onNextClick} />}
+        nextBtn={
+          <ThemedButton
+            label={'Next'}
+            onClick={onNextClick}
+            buttonKind={
+              !selected
+                ? ThemedButtonKind.PRIMARY_DISABLED
+                : ThemedButtonKind.PRIMARY_ACTION
+            }
+          />
+        }
       >
-        <div className="place-self-start flex flex-col gap-y-4 min-w-full">
-          <div className="text-2xl pb-4 border-b-2 border-blue-400 flex justify-between">
-            {!selected ? 'Select a folder' : `"${selected.name}" selected`}
-            <div className="flex items-center gap-x-4">
-              {state.folderPath.length > 0 && (
-                <button onClick={() => navigateUp()}>
-                  <ArrowUp size={24} />
-                </button>
-              )}
-              <p className="font-mono">
+        <InteractiveStatesWrapper
+          firstHeaderGroup={
+            <>
+              <p className="text-base font-inter">Current path:</p>
+              <PillBadge extraClasses={'bg-spark-purple-300'} isFontMono={true}>
                 {getPathDisplayName(state.folderPath)}
-              </p>
-            </div>
-          </div>
-          {state.foldersResults.length == 0 && (
-            <div className="min-h-[200px] grid place-content-center text-2xl">
-              No folders at this level
+              </PillBadge>
               {state.folderPath.length > 0 && (
                 <button
-                  className="underline text-main"
-                  onClick={() => {
-                    navigateToRoot();
-                  }}
+                  className=" bg-spark-purple-400 rounded-full px-1 py-1 shadow-md group"
+                  onClick={() => navigateUp()}
                 >
-                  Go to root!
+                  <ChevronsUp
+                    size={24}
+                    className="group-hover:stroke-gray-200 transition-colors duration-500 ease-in-out group-hover:animate-hop"
+                  />
                 </button>
               )}
-            </div>
-          )}
-          {state.foldersResults.length > 0 && (
-            <ul className="flex flex-wrap overflow-y-auto gap-x-8 gap-y-12">
-              {state.foldersResults.map(({ id, name }, _) => {
-                const isSelected = id === selected?.id;
-                return (
+            </>
+          }
+          secondHeaderGroup={
+            <>
+              {selected && (
+                <>
+                  <p className="text-base font-inter">Selected:</p>
+                  <PillBadge extraClasses={'bg-emerald-50'} isFontMono={true}>
+                    {selected.name}
+                  </PillBadge>
+                </>
+              )}
+              {!selected && (
+                <>
+                  <PillBadge extraClasses={'bg-rose-50'}>
+                    <AlertTriangle size={16} />
+                    Select a folder
+                  </PillBadge>
+                </>
+              )}
+            </>
+          }
+        >
+          <>
+            {state.foldersResults.length == 0 && (
+              <div className="min-h-[200px] grid place-content-center text-2xl">
+                No folders at this level
+                {state.folderPath.length > 0 && (
                   <button
-                    className={`p-4 hover:bg-blue-200 flex flex-col items-center justify-center`}
-                    key={id}
-                    onClick={(evt) => handleFolderClick(evt, { id, name })}
+                    className="underline text-main"
+                    onClick={() => {
+                      navigateToRoot();
+                    }}
                   >
-                    <Folder
-                      strokeWidth={1}
-                      size={64}
-                      fill={isSelected ? `${colors.sky[400]}` : ''}
-                    />
-                    <li>{name}</li>
+                    Go to root!
                   </button>
-                );
-              })}
-            </ul>
-          )}
-        </div>
+                )}
+              </div>
+            )}
+            {state.foldersResults.length > 0 && (
+              <ul className="grid grid-cols-fill-sm xl:grid-cols-fill-xl overflow-y-auto gap-x-4 xl:gap-x-8 gap-y-2 xl:gap-y-12">
+                {state.foldersResults.map(({ id, name }, _) => {
+                  const isSelected = id === selected?.id;
+                  return (
+                    <button
+                      className={`p-2 xl:p-4 hover:bg-spark-purple-200 flex flex-col items-center justify-center`}
+                      key={id}
+                      onClick={() => handleFolderClick({ id, name })}
+                    >
+                      <Folder
+                        strokeWidth={1}
+                        className={`h-12 w-12 xl:h-16 xl:w-16 ${
+                          isSelected
+                            ? 'fill-spark-purple-400'
+                            : 'fill-orange-100'
+                        }`}
+                        size={64}
+                      />
+                      <li>{name}</li>
+                    </button>
+                  );
+                })}
+              </ul>
+            )}
+          </>
+        </InteractiveStatesWrapper>
       </StateWrapper>
     </>
   );

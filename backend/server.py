@@ -28,5 +28,5 @@ def auth_middlewere(request: Request, call_next):
     session_id = request.cookies.get("session_id")
     request.state.user_email = None
     if session_id:
-        request.state.user_email = db.get_email_from_session_id(session_id)
+        request.state.user_email, request.state.profile_pic = db.get_email_and_pic_from_session_id(session_id)
     return call_next(request)
