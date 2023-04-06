@@ -18,7 +18,7 @@ def login(code=None):
         return login_error_response
     try:    
         token_data = g_auth.get_token_from_code(code)
-        email, at_hash, profile_pic = g_auth.get_email_and_hash_from_id_token(
+        email, at_hash, profile_pic = g_auth.get_user_info_from_id_token(
             token_data["id_token"])
 
         user_id = db.add_user_and_get_uuid(

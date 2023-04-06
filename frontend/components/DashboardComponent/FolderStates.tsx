@@ -1,9 +1,7 @@
 import { Dispatch, useEffect, useState } from 'react';
 import { AlertTriangle, ChevronsUp, Folder } from 'react-feather';
-import resolveConfig from 'tailwindcss/resolveConfig';
 import { fetchDriveFolders } from '../../apiCalls/Drive';
 import { Action, DashboardState, StateType } from '../../store/dashboard';
-import tailwindConfig from '../../tailwind.config.js';
 import { Folders } from '../../types/api';
 import InfiniteSpinner from '../common/InfiniteSpinner';
 import PillBadge from '../common/PillBadge';
@@ -11,8 +9,6 @@ import ThemedButton, { ThemedButtonKind } from '../common/ThemedButton';
 import { InteractiveStatesWrapper } from './Shared';
 import { StateWrapper } from './StateWrapper';
 type StateDispatchArgs = { state: DashboardState; dispatch: Dispatch<Action> };
-
-const fullConfig = resolveConfig(tailwindConfig) as any;
 
 export const FolderFetch = ({ state, dispatch }: StateDispatchArgs) => {
   useEffect(() => {
@@ -78,6 +74,7 @@ export const FolderSelect = ({ state, dispatch }: StateDispatchArgs) => {
 
   const [lastClicked, setLastClicked] = useState('');
 
+  // TODO: Consider not using a double click as paradigm to open a folder, as uncommon on mobile.
   const handleFolderClick = (folder: Folders) => {
     if (folder.id == lastClicked) {
       dispatch({
@@ -160,51 +157,50 @@ export const FolderSelect = ({ state, dispatch }: StateDispatchArgs) => {
               )}
             </>
           }
-          content={
-            <>
-              {state.foldersResults.length == 0 && (
-                <div className="min-h-[200px] grid place-content-center text-2xl">
-                  No folders at this level
-                  {state.folderPath.length > 0 && (
+        >
+          <>
+            {state.foldersResults.length == 0 && (
+              <div className="min-h-[200px] grid place-content-center text-2xl">
+                No folders at this level
+                {state.folderPath.length > 0 && (
+                  <button
+                    className="underline text-main"
+                    onClick={() => {
+                      navigateToRoot();
+                    }}
+                  >
+                    Go to root!
+                  </button>
+                )}
+              </div>
+            )}
+            {state.foldersResults.length > 0 && (
+              <ul className="grid grid-cols-fill-sm xl:grid-cols-fill-xl overflow-y-auto gap-x-4 xl:gap-x-8 gap-y-2 xl:gap-y-12">
+                {state.foldersResults.map(({ id, name }, _) => {
+                  const isSelected = id === selected?.id;
+                  return (
                     <button
-                      className="underline text-main"
-                      onClick={() => {
-                        navigateToRoot();
-                      }}
+                      className={`p-2 xl:p-4 hover:bg-spark-purple-200 flex flex-col items-center justify-center`}
+                      key={id}
+                      onClick={() => handleFolderClick({ id, name })}
                     >
-                      Go to root!
+                      <Folder
+                        strokeWidth={1}
+                        className={`h-12 w-12 xl:h-16 xl:w-16 ${
+                          isSelected
+                            ? 'fill-spark-purple-400'
+                            : 'fill-orange-100'
+                        }`}
+                        size={64}
+                      />
+                      <li>{name}</li>
                     </button>
-                  )}
-                </div>
-              )}
-              {state.foldersResults.length > 0 && (
-                <ul className="grid grid-cols-fill-sm xl:grid-cols-fill-xl overflow-y-auto gap-x-4 xl:gap-x-8 gap-y-2 xl:gap-y-12">
-                  {state.foldersResults.map(({ id, name }, _) => {
-                    const isSelected = id === selected?.id;
-                    return (
-                      <button
-                        className={`p-2 xl:p-4 hover:bg-spark-purple-200 flex flex-col items-center justify-center`}
-                        key={id}
-                        onClick={() => handleFolderClick({ id, name })}
-                      >
-                        <Folder
-                          strokeWidth={1}
-                          className={`h-12 w-12 xl:h-16 xl:w-16 ${
-                            isSelected
-                              ? 'fill-spark-purple-400'
-                              : 'fill-orange-100'
-                          }`}
-                          size={64}
-                        />
-                        <li>{name}</li>
-                      </button>
-                    );
-                  })}
-                </ul>
-              )}
-            </>
-          }
-        ></InteractiveStatesWrapper>
+                  );
+                })}
+              </ul>
+            )}
+          </>
+        </InteractiveStatesWrapper>
       </StateWrapper>
     </>
   );

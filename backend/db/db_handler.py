@@ -1,8 +1,10 @@
 from typing import Union, TypedDict, List
+from custom_types.UserInfo import UserInfo
 from google.oauth2.service_account import Credentials
 from google.cloud import firestore
 import os
 import secrets
+
 
 credentials = Credentials.from_service_account_file(
     "secrets/google_application_credentials.json", scopes=["https://www.googleapis.com/auth/cloud-platform"])
@@ -52,15 +54,15 @@ def delete_session_id(session_id: Union[str, None]) -> None:
         cookies.document(session_id).delete()
 
 
-def get_email_and_pic_from_session_id(session_id: str) -> List[Union[None, str]]:
+def get_email_and_pic_from_session_id(session_id: str) -> UserInfo:
     cookie_to_id = cookies.document(session_id).get()
     if cookie_to_id.exists:
         cookie_dict = cookie_to_id.to_dict()
         email = cookie_dict.get('email')  # type: ignore
         profile_pic_url = cookie_dict.get('profile_pic_url')  # type: ignore
         if email:
-            return [email, profile_pic_url] # TODO Support storing image to DB
-    return [None, None]
+            return UserInfo(email, profile_pic_url)
+    return UserInfo()
 
 
 def find_user_uuid_by_email(email_to_find: str) -> Union[None, str]:

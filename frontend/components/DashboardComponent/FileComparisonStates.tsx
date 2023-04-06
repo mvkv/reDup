@@ -66,7 +66,7 @@ const FileComparison = ({
     <ul
       className={`flex gap-4 py-4 xl:py-8 flex-wrap items-baseline border-b-2 border-spark-purple-500 last:border-none`}
     >
-      {cluster.images.map((img, _) => {
+      {cluster.images.map((img) => {
         const isSelected = selected.includes(img.id);
 
         return (
@@ -189,21 +189,18 @@ export const FilesSelect = ({
               )}
             </>
           }
-          content={
-            <>
-              <ul className="flex flex-col overflow-y-auto">
-                {state.filesClusterResults.map((cluster, _) => (
-                  <FileComparison
-                    key={cluster.id}
-                    cluster={cluster}
-                    selected={selected}
-                    setSelected={setSelected}
-                  />
-                ))}
-              </ul>
-            </>
-          }
-        ></InteractiveStatesWrapper>
+        >
+          <ul className="flex flex-col overflow-y-auto">
+            {state.filesClusterResults.map((cluster) => (
+              <FileComparison
+                key={cluster.id}
+                cluster={cluster}
+                selected={selected}
+                setSelected={setSelected}
+              />
+            ))}
+          </ul>
+        </InteractiveStatesWrapper>
       </StateWrapper>
     </>
   );

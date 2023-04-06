@@ -4,7 +4,7 @@ const PillBadge = ({
   children,
 }: {
   isFontMono?: boolean;
-  extraClasses?: string | null;
+  extraClasses?: string;
   children: React.ReactNode;
 }) => {
   return (

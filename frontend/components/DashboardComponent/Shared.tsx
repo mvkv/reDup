@@ -1,11 +1,11 @@
 export function InteractiveStatesWrapper({
   firstHeaderGroup,
   secondHeaderGroup,
-  content,
+  children,
 }: {
   firstHeaderGroup: React.ReactNode;
   secondHeaderGroup: React.ReactNode;
-  content: React.ReactNode;
+  children: React.ReactNode;
 }) {
   return (
     <div className="place-self-start flex flex-col gap-y-4 min-w-full">
@@ -17,7 +17,7 @@ export function InteractiveStatesWrapper({
           {secondHeaderGroup}
         </div>
       </div>
-      <div>{content}</div>
+      <div>{children}</div>
     </div>
   );
 }
