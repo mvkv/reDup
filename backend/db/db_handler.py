@@ -5,7 +5,6 @@ from google.cloud import firestore
 import os
 import secrets
 
-
 credentials = Credentials.from_service_account_file(
     "secrets/google_application_credentials.json", scopes=["https://www.googleapis.com/auth/cloud-platform"])
 db = firestore.Client(project=os.environ.get(

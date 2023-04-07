@@ -120,7 +120,7 @@ const InitialState = ({
             </p>
           </div>
           <div className="flex flex-col items-center gap-y-2">
-            <p className="text-lg">Select Mode</p>
+            <p className="text-lg">Image comparison mode</p>
             <RadioGroup
               className={'flex flex-row gap-x-2'}
               value={mode}
