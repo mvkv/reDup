@@ -101,7 +101,7 @@ const FileComparison = ({
                 }`}
               >
                 {isSelected && (
-                  <XCircle className="absolute top-2 right-2 fill-spark-purple-100" />
+                  <XCircle className="absolute top-2 right-2 fill-spark-purple-100 animate-slide-from-top text-red-800" />
                 )}
                 {img.name}
               </figcaption>

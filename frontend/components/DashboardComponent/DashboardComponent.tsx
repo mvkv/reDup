@@ -89,7 +89,9 @@ const InitialState = ({
 }: Email & StateDispatchArgs) => {
   const [mode, setMode] = useState(ClusterMode.ML);
   const modeTwClass =
-    'text-sm lg:text-base flex items-center cursor-pointer pl-8 pr-14 py-3 shadow-md rounded-lg bg-spark-purple-200';
+    'text-sm lg:text-base flex items-center cursor-pointer pl-4 lg:pl-8 pr-8 lg:pr-14 py-3 shadow-md rounded-lg bg-spark-purple-200';
+  const checkTwClass =
+    'mr-[-16px] lg:mr-[-24px] shrink-0 h-[16px] w-[16px] lg:h-[24px] lg:w-[24px]';
 
   const nextAction = () =>
     dispatch({ goTo: StateType.FOLDER_FETCH, setClusterMode: mode });
@@ -133,11 +135,11 @@ const InitialState = ({
                       checked ? 'bg-spark-purple-400' : ''
                     }`}
                   >
-                    <div className="flex flex-col mr-6">
+                    <div className="flex flex-col mr-3 lg:mr-6">
                       <span className="font-bold">ML clustering ✨</span>
                       <span>Good for close duplicates</span>
                     </div>
-                    {checked && <Check className="mr-[-24px]" size={24} />}
+                    {checked && <Check className={checkTwClass} size={24} />}
                   </div>
                 )}
               </RadioGroup.Option>
@@ -148,11 +150,11 @@ const InitialState = ({
                       checked ? 'bg-spark-purple-400' : ''
                     }`}
                   >
-                    <div className="flex flex-col mr-6">
+                    <div className="flex flex-col mr-3 lg:mr-6">
                       <span className="font-bold">Hash clustering 🔬</span>
                       <span>Good for identical duplicates</span>
                     </div>
-                    {checked && <Check className="mr-[-24px]" size={24} />}
+                    {checked && <Check className={checkTwClass} size={24} />}
                   </div>
                 )}
               </RadioGroup.Option>
@@ -211,11 +213,10 @@ const Final = ({ state, dispatch }: StateDispatchArgs) => {
           </p>
           <p className="text-base xl:text-xl">
             Hope this website was helpful! You can check out the code on{' '}
-            {/* TODO: Add proper link. */}
             <Link
               className="inline-flex items-baseline text-spark-purple-600 font-bold"
               target="_blank"
-              href="TODO"
+              href="https://github.com/mvkv/reDup"
             >
               Github
               <ExternalLink size={12} />

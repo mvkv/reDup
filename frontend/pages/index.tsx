@@ -52,8 +52,7 @@ const Home: NextPage = () => {
         <footer className="px-8 py-4 flex justify-end font-mono text-xs">
           <div className="flex gap-x-2">
             <p>Made with ❤ & Next.js.</p>
-            {/* TODO: Add proper link. */}
-            <a href="" className="group">
+            <a href="https://github.com/mvkv/reDup" className="group">
               <GitHub
                 size={14}
                 className="group-hover:stroke-spark-purple-600"
