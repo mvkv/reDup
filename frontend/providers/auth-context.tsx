@@ -69,6 +69,8 @@ function AuthProvider({ children }: { children: ReactNode }) {
               email: body.email,
               profilePic: body.profile_pic,
             });
+            // Redirect user to dashboard page on successful log-in.
+            Router.push('/dashboard');
           } else {
             setAuthState({
               isLoggedIn: false,
@@ -94,13 +96,6 @@ function AuthProvider({ children }: { children: ReactNode }) {
     }
     processCommand();
   }, [lastCommand]);
-
-  useEffect(() => {
-    // If the user log-in and was previously logged-out redirect them to the dashboard page.
-    if (isLoggedIn && !wasLoggedIn) {
-      Router.push('/dashboard');
-    }
-  }, [isLoggedIn, wasLoggedIn]);
 
   return (
     <AuthContext.Provider value={{ authState, setLastCommand }}>
