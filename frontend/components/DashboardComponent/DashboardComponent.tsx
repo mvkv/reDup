@@ -21,7 +21,7 @@ import { FilesFetch, FilesSelect } from './FileComparisonStates';
 import { Modal, ModalData, WarningDialogTemplate } from './Modal';
 import CircleBadge from '../common/CircleBadge';
 import ThemedButton from '../common/ThemedButton';
-import { Check, ExternalLink, Smile } from 'react-feather';
+import { Check, CheckCircle, ExternalLink, Smile } from 'react-feather';
 import Link from 'next/link';
 import { Dialog } from '@headlessui/react';
 
@@ -96,6 +96,12 @@ const InitialState = ({
   const nextAction = () =>
     dispatch({ goTo: StateType.FOLDER_FETCH, setClusterMode: mode });
 
+  const processPoints = [
+    'Select the folder in your drive where we should look for similar photos.',
+    'Check the pictures we found to be similar and select the ones you wish to delete.',
+    'Confirm the selection. The selected pictures will be deleted.',
+  ];
+
   return (
     <>
       <StateWrapper state={state}>
@@ -104,22 +110,18 @@ const InitialState = ({
             Hello{' '}
             <span className="text-spark-purple-500 font-bold">{email}!</span>
           </p>
-          <p className="text-l xl:text-xl">
+          <p className="text-base xl:text-xl">
             Let us help you find and keep only the pictures you care about!
           </p>
-          <div className="flex flex-col gap-y-6 items-start">
-            <p className="flex gap-x-6 justify-center items-baseline">
-              <CircleBadge label={1} /> Select the folder in your drive where we
-              should look for similar photos.
-            </p>
-            <p className="flex gap-x-6 justify-center items-baseline">
-              <CircleBadge label={2} /> Check the pictures we found to be
-              similar and select the ones you wish to delete.
-            </p>
-            <p className="flex gap-x-6 justify-center items-baseline">
-              <CircleBadge label={3} /> Confirm the selection. The selected
-              pictures will be deleted.
-            </p>
+          <div className=" flex flex-col gap-y-3 xl:gap-y-6 items-start">
+            {processPoints.map((point, idx) => (
+              <>
+                <p className="flex gap-x-6 justify-center items-baseline">
+                  <CircleBadge label={idx + 1} />{' '}
+                  <span className="text-base xl:text-xl">{point}</span>
+                </p>
+              </>
+            ))}
           </div>
           <div className="flex flex-col items-center gap-y-2">
             <p className="text-lg">Image comparison mode</p>
@@ -203,10 +205,11 @@ const Final = ({ state, dispatch }: StateDispatchArgs) => {
     <>
       <StateWrapper state={state}>
         <div className="flex flex-col items-center gap-y-6 xl:gap-y-12 font-inter">
+          <CheckCircle size={42} className="text-green-700 xl:mb-[-16px]" />
           <p className="text-lg xl:text-2xl lg:flex lg:items-center gap-x-2">
             <span>Operation completed! </span>
             <span>We deleted: </span>
-            <span className="text-spark-purple-500 font-bold whitespace-nowrap">
+            <span className="text-spark-purple-500 font-bold whitespace-nowrap block text-center xl:inline">
               {deletedN} file{deletedN > 1 ? 's' : ''}!
             </span>
             <Smile className="hidden xl:visible" size={28} />
