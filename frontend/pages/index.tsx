@@ -1,6 +1,6 @@
 import type { NextPage } from 'next';
 import Image from 'next/image';
-import LandingPageMain from '../public/images/landing_page_main.svg';
+import LandingPageMain from '../public/images/landing_page_main.png';
 import { useAuth } from '../providers/auth-context';
 import Link from 'next/link';
 import ThemedButton from '../components/common/ThemedButton';
