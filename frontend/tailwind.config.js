@@ -8,6 +8,7 @@ module.exports = {
   theme: {
     extend: {
       gridTemplateColumns: {
+        'fill-img': 'repeat(auto-fill, minmax(200px, 1fr))',
         'fill-sm': 'repeat(auto-fill, minmax(7rem, 1fr))',
         'fill-xl': 'repeat(auto-fill, minmax(9rem, 1fr))',
       },
@@ -43,10 +44,15 @@ module.exports = {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-10%)' },
         },
+        'slide-from-top': {
+          '0%': { transform: 'translateY(-100%)' },
+          '100%': 'translateY(0%)',
+        },
       },
       animation: {
         'slow-ping': 'ping 2s cubic-bezier(0, 0, 0.2, 1) 0.5s infinite',
         hop: 'hop 1s ease-in-out infinite',
+        'slide-from-top': 'slide-from-top 0.2s ease-out',
       },
     },
   },

@@ -15,7 +15,7 @@ const Home: NextPage = () => {
     <>
       <main className="h-full min-w-full flex flex-col">
         <div className="flex flex-1 justify-center items-center flex-col gap-8 px-[24px] lg:px-[120px]">
-          <div className="grid grid-cols-1 lg:grid-cols-8 gap-8 items-center ">
+          <div className="flex flex-col lg:grid grid-cols-1 lg:grid-cols-8 gap-8 items-center ">
             <div className="col-span-5 flex flex-col gap-5 max-w-[1080px] order-2 lg:order-1">
               <h1 className="text-2xl lg:text-5xl font-bold text-black font-montserrat">
                 Review & remove similar images from your Google Drive{' '}
@@ -44,16 +44,19 @@ const Home: NextPage = () => {
                 )}
               </div>
             </div>
-            <div className="col-span-3 order-1 lg:order-2">
-              <Image src={LandingPageMain} alt="Landing page main image" />
+            <div className="col-span-3 order-1 lg:order-2 px-6 lg:px-0">
+              <Image
+                src={LandingPageMain}
+                priority={true}
+                alt="Landing page main image"
+              />
             </div>
           </div>
         </div>
         <footer className="px-8 py-4 flex justify-end font-mono text-xs">
           <div className="flex gap-x-2">
             <p>Made with ❤ & Next.js.</p>
-            {/* TODO: Add proper link. */}
-            <a href="" className="group">
+            <a href="https://github.com/mvkv/reDup" className="group">
               <GitHub
                 size={14}
                 className="group-hover:stroke-spark-purple-600"

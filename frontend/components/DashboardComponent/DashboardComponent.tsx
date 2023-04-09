@@ -6,11 +6,14 @@ import {
   reducer,
   StateType,
   Action,
+  ClusterMode,
 } from '../../store/dashboard';
 import InfiniteSpinner from '../common/InfiniteSpinner';
 import { deleteImagesAndFetchSummary } from '../../apiCalls/Drive';
 type StateDispatchArgs = { state: DashboardState; dispatch: Dispatch<Action> };
 type Email = { email: string };
+
+import { RadioGroup } from '@headlessui/react';
 
 import { StateWrapper } from './StateWrapper';
 import { FolderFetch, FolderSelect } from './FolderStates';
@@ -18,7 +21,7 @@ import { FilesFetch, FilesSelect } from './FileComparisonStates';
 import { Modal, ModalData, WarningDialogTemplate } from './Modal';
 import CircleBadge from '../common/CircleBadge';
 import ThemedButton from '../common/ThemedButton';
-import { ExternalLink, Smile } from 'react-feather';
+import { Check, CheckCircle, ExternalLink, Smile } from 'react-feather';
 import Link from 'next/link';
 import { Dialog } from '@headlessui/react';
 
@@ -84,7 +87,21 @@ const InitialState = ({
   state,
   dispatch,
 }: Email & StateDispatchArgs) => {
-  const nextAction = () => dispatch({ goTo: StateType.FOLDER_FETCH });
+  const [mode, setMode] = useState(ClusterMode.ML);
+  const modeTwClass =
+    'text-sm lg:text-base flex items-center cursor-pointer pl-4 lg:pl-8 pr-8 lg:pr-14 py-3 shadow-md rounded-lg bg-spark-purple-200';
+  const checkTwClass =
+    'mr-[-16px] lg:mr-[-24px] shrink-0 h-[16px] w-[16px] lg:h-[24px] lg:w-[24px]';
+
+  const nextAction = () =>
+    dispatch({ goTo: StateType.FOLDER_FETCH, setClusterMode: mode });
+
+  const processPoints = [
+    'Select the folder in your drive where we should look for similar photos.',
+    'Check the pictures we found to be similar and select the ones you wish to delete.',
+    'Confirm the selection. The selected pictures will be deleted.',
+  ];
+
   return (
     <>
       <StateWrapper state={state}>
@@ -93,22 +110,57 @@ const InitialState = ({
             Hello{' '}
             <span className="text-spark-purple-500 font-bold">{email}!</span>
           </p>
-          <p className="text-l xl:text-xl">
+          <p className="text-base xl:text-xl">
             Let us help you find and keep only the pictures you care about!
           </p>
-          <div className="flex flex-col gap-y-6 items-start">
-            <p className="flex gap-x-6 justify-center items-baseline">
-              <CircleBadge label={1} /> Select the folder in your drive where we
-              should look for similar photos.
-            </p>
-            <p className="flex gap-x-6 justify-center items-baseline">
-              <CircleBadge label={2} /> Check the pictures we found to be
-              similar and select the ones you wish to delete.
-            </p>
-            <p className="flex gap-x-6 justify-center items-baseline">
-              <CircleBadge label={3} /> Confirm the selection. The selected
-              pictures will be deleted.
-            </p>
+          <div className=" flex flex-col gap-y-3 xl:gap-y-6 items-start">
+            {processPoints.map((point, idx) => (
+              <>
+                <p className="flex gap-x-6 justify-center items-baseline">
+                  <CircleBadge label={idx + 1} />{' '}
+                  <span className="text-base xl:text-xl">{point}</span>
+                </p>
+              </>
+            ))}
+          </div>
+          <div className="flex flex-col items-center gap-y-2">
+            <p className="text-lg">Image comparison mode</p>
+            <RadioGroup
+              className={'flex flex-row gap-x-2'}
+              value={mode}
+              onChange={setMode}
+            >
+              <RadioGroup.Option value={ClusterMode.ML}>
+                {({ checked }) => (
+                  <div
+                    className={`${modeTwClass} ${
+                      checked ? 'bg-spark-purple-400' : ''
+                    }`}
+                  >
+                    <div className="flex flex-col mr-3 lg:mr-6">
+                      <span className="font-bold">ML clustering ✨</span>
+                      <span>Good for close duplicates</span>
+                    </div>
+                    {checked && <Check className={checkTwClass} size={24} />}
+                  </div>
+                )}
+              </RadioGroup.Option>
+              <RadioGroup.Option value={ClusterMode.HASH}>
+                {({ checked }) => (
+                  <div
+                    className={`${modeTwClass} ${
+                      checked ? 'bg-spark-purple-400' : ''
+                    }`}
+                  >
+                    <div className="flex flex-col mr-3 lg:mr-6">
+                      <span className="font-bold">Hash clustering 🔬</span>
+                      <span>Good for identical duplicates</span>
+                    </div>
+                    {checked && <Check className={checkTwClass} size={24} />}
+                  </div>
+                )}
+              </RadioGroup.Option>
+            </RadioGroup>
           </div>
           <div>
             <p className="text-lg xl:text-xl pb-4 text-center">Easy right?</p>
@@ -152,22 +204,22 @@ const Final = ({ state, dispatch }: StateDispatchArgs) => {
   return (
     <>
       <StateWrapper state={state}>
-        <p className="flex flex-col items-center gap-y-6 xl:gap-y-12 font-inter">
+        <div className="flex flex-col items-center gap-y-6 xl:gap-y-12 font-inter">
+          <CheckCircle size={42} className="text-green-700 xl:mb-[-16px]" />
           <p className="text-lg xl:text-2xl lg:flex lg:items-center gap-x-2">
             <span>Operation completed! </span>
             <span>We deleted: </span>
-            <span className="text-spark-purple-500 font-bold whitespace-nowrap">
+            <span className="text-spark-purple-500 font-bold whitespace-nowrap block text-center xl:inline">
               {deletedN} file{deletedN > 1 ? 's' : ''}!
             </span>
             <Smile className="hidden xl:visible" size={28} />
           </p>
           <p className="text-base xl:text-xl">
             Hope this website was helpful! You can check out the code on{' '}
-            {/* TODO: Add proper link. */}
             <Link
               className="inline-flex items-baseline text-spark-purple-600 font-bold"
               target="_blank"
-              href="TODO"
+              href="https://github.com/mvkv/reDup"
             >
               Github
               <ExternalLink size={12} />
@@ -203,7 +255,7 @@ const Final = ({ state, dispatch }: StateDispatchArgs) => {
             }
             label={'Delete more picture?'}
           />
-        </p>
+        </div>
       </StateWrapper>
     </>
   );

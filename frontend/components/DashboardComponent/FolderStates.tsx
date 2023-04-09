@@ -72,21 +72,14 @@ export const FolderSelect = ({ state, dispatch }: StateDispatchArgs) => {
     return `~/.../${foldersName.slice(-2).join('/')}`;
   };
 
-  const [lastClicked, setLastClicked] = useState('');
-
-  // TODO: Consider not using a double click as paradigm to open a folder, as uncommon on mobile.
   const handleFolderClick = (folder: Folders) => {
-    if (folder.id == lastClicked) {
+    if (folder.id == selected?.id) {
       dispatch({
         goTo: StateType.FOLDER_FETCH,
         folderPathSelected: [...state.folderPath, folder],
       });
     } else {
-      setLastClicked(folder.id);
       setSelected(folder);
-      setTimeout(() => {
-        setLastClicked('');
-      }, 400);
     }
   };
 

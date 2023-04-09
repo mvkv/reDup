@@ -1,10 +1,9 @@
-from typing import Union, TypedDict, List
+from typing import Union, TypedDict
 from custom_types.UserInfo import UserInfo
 from google.oauth2.service_account import Credentials
 from google.cloud import firestore
 import os
 import secrets
-
 
 credentials = Credentials.from_service_account_file(
     "secrets/google_application_credentials.json", scopes=["https://www.googleapis.com/auth/cloud-platform"])
