@@ -13,7 +13,7 @@ export function InteractiveStatesWrapper({
         <div className="flex items-center gap-x-2 xl:gap-x-4">
           {firstHeaderGroup}
         </div>
-        <div className="flex items-center gap-x-2 xl:gap-x-4">
+        <div className="flex items-center flex-wrap gap-2 xl:gap-x-4">
           {secondHeaderGroup}
         </div>
       </div>

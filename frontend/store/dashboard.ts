@@ -48,7 +48,7 @@ export type DashboardState = {
   clusterMode: ClusterMode;
   folderPath: Folders[];
   foldersResults: Folders[];
-  foldersSelected: string[];
+  foldersSelected: Folders[];
   filesClusterResults: Cluster[];
   filesSelected: string[];
   finalSummary: DeletionStatus[];
@@ -72,7 +72,7 @@ export type Action = {
   setClusterMode?: ClusterMode;
   folderPathSelected?: Folders[];
   fetchedFolders?: Folders[];
-  foldersSelected?: string[];
+  foldersSelected?: Folders[];
   fetchedFilesCluster?: Cluster[];
   filesSelected?: string[];
   fetchedSummary?: DeletionStatus[];
@@ -113,16 +113,16 @@ export function reducer(state: DashboardState, action: Action): DashboardState {
       return {
         ...validState,
         currState: StateType.FOLDER_SELECT,
-        foldersResults: action.fetchedFolders ?? [],
+        foldersResults: action.fetchedFolders ?? validState.foldersResults,
+        foldersSelected: action.foldersSelected ?? state.foldersSelected,
       };
     case StateType.FILES_FETCH:
-      if (!action.foldersSelected?.length) {
+      if (!validState.foldersSelected.length) {
         return errorSameState;
       }
       return {
         ...validState,
         currState: StateType.FILES_FETCH,
-        foldersSelected: action.foldersSelected,
       };
     case StateType.FILES_SELECT:
       return {

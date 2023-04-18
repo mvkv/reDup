@@ -6,7 +6,7 @@ import {
   ClusterMode,
 } from '../../store/dashboard';
 import InfiniteSpinner from '../common/InfiniteSpinner';
-import { Cluster } from '../../types/api';
+import { Cluster, Folders } from '../../types/api';
 import { fetchImagesCluster } from '../../apiCalls/Drive';
 import Image from 'next/image';
 type StateDispatchArgs = { state: DashboardState; dispatch: Dispatch<Action> };
@@ -22,7 +22,7 @@ export const FilesFetch = ({ state, dispatch }: StateDispatchArgs) => {
   useEffect(() => {
     async function foo() {
       const resp = await fetchImagesCluster(
-        state.foldersSelected,
+        state.foldersSelected.map((folder: Folders) => folder.id),
         state.clusterMode === ClusterMode.ML,
       );
       if (resp.ok) {
