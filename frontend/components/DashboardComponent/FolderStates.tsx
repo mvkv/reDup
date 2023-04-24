@@ -1,14 +1,15 @@
-import { Dispatch, useEffect } from 'react';
+import { Dispatch, useEffect, useState } from 'react';
 import { AlertTriangle, ChevronsUp, Folder } from 'react-feather';
 import { fetchDriveFolders } from '../../apiCalls/Drive';
 import { Action, DashboardState, StateType } from '../../store/dashboard';
 import { Folders } from '../../types/api';
-import Checkbox from '../common/Checkbox';
+import ThemedCheckbox from '../common/ThemedCheckbox';
 import InfiniteSpinner from '../common/InfiniteSpinner';
 import PillBadge from '../common/PillBadge';
 import ThemedButton, { ThemedButtonKind } from '../common/ThemedButton';
 import { InteractiveStatesWrapper } from './Shared';
 import { StateWrapper } from './StateWrapper';
+import FoldersDropdown from '../common/FoldersDropdown';
 type StateDispatchArgs = { state: DashboardState; dispatch: Dispatch<Action> };
 
 export const FolderFetch = ({ state, dispatch }: StateDispatchArgs) => {
@@ -44,13 +45,24 @@ export const FolderFetch = ({ state, dispatch }: StateDispatchArgs) => {
 };
 
 export const FolderSelect = ({ state, dispatch }: StateDispatchArgs) => {
+  const [foldersSelected, setFoldersSelected] = useState<Folders[]>(
+    state.foldersSelected, // Init foldersSelected with all selected folders to handle G Drive's graph structure.
+  );
+
+  const updateFoldersDispatch = (action: Action) => {
+    dispatch({
+      ...action,
+      foldersSelected: foldersSelected,
+    });
+  };
+
   const navigateToRoot = () => {
     if (state.folderPath.length == 0) {
       return;
     }
-    dispatch({
+    updateFoldersDispatch({
       goTo: StateType.FOLDER_FETCH,
-      folderPathSelected: [],
+      currentFolderPath: [],
     });
   };
 
@@ -58,9 +70,9 @@ export const FolderSelect = ({ state, dispatch }: StateDispatchArgs) => {
     if (state.folderPath.length == 0) {
       return;
     }
-    dispatch({
+    updateFoldersDispatch({
       goTo: StateType.FOLDER_FETCH,
-      folderPathSelected: [...state.folderPath.slice(0, -1)],
+      currentFolderPath: [...state.folderPath.slice(0, -1)],
     });
   };
 
@@ -72,30 +84,27 @@ export const FolderSelect = ({ state, dispatch }: StateDispatchArgs) => {
   };
 
   const handleFolderClick = (folder: Folders) => {
-    dispatch({
+    updateFoldersDispatch({
       goTo: StateType.FOLDER_FETCH,
-      folderPathSelected: [...state.folderPath, folder],
+      currentFolderPath: [...state.folderPath, folder],
     });
   };
 
   const handleSelectFolder = (folder: Folders, isSelected: boolean) => {
-    const foldersSelected = isSelected
-      ? [...state.foldersSelected, folder]
-      : state.foldersSelected.filter(
+    const selected = isSelected
+      ? [...foldersSelected, folder]
+      : foldersSelected.filter(
           (folderSelected: Folders) => folderSelected.id !== folder.id,
         );
 
-    dispatch({
-      goTo: StateType.FOLDER_SELECT,
-      foldersSelected: foldersSelected,
-    });
+    setFoldersSelected(selected);
   };
 
   const onNextClick = () => {
     if (!state.foldersSelected.length) {
       // Should not happen, as the button would be disabled in this circumstance.
     } else {
-      dispatch({
+      updateFoldersDispatch({
         goTo: StateType.FILES_FETCH,
       });
     }
@@ -139,23 +148,10 @@ export const FolderSelect = ({ state, dispatch }: StateDispatchArgs) => {
           }
           secondHeaderGroup={
             <>
-              {state.foldersSelected.length && (
-                <>
-                  <p className="text-base font-inter">Selected:</p>
-                  {state.foldersSelected.map(
-                    (selected: Folders, idx: number) => (
-                      <PillBadge
-                        key={idx}
-                        extraClasses={'bg-emerald-50'}
-                        isFontMono={true}
-                      >
-                        {selected.name}
-                      </PillBadge>
-                    ),
-                  )}
-                </>
+              {foldersSelected.length > 0 && (
+                <FoldersDropdown folders={foldersSelected} />
               )}
-              {!state.foldersSelected.length && (
+              {!foldersSelected.length && (
                 <>
                   <PillBadge extraClasses={'bg-rose-50'}>
                     <AlertTriangle size={16} />
@@ -167,7 +163,7 @@ export const FolderSelect = ({ state, dispatch }: StateDispatchArgs) => {
           }
         >
           <>
-            {state.foldersResults.length == 0 && (
+            {!state.foldersResults.length && (
               <div className="min-h-[200px] grid place-content-center text-2xl">
                 No folders at this level
                 {state.folderPath.length > 0 && (
@@ -183,13 +179,12 @@ export const FolderSelect = ({ state, dispatch }: StateDispatchArgs) => {
             {state.foldersResults.length > 0 && (
               <ul className="grid grid-cols-fill-sm xl:grid-cols-fill-xl overflow-y-auto gap-x-4 xl:gap-x-8 gap-y-2 xl:gap-y-12">
                 {state.foldersResults.map(({ id, name }, _) => {
-                  const isSelected = state.foldersSelected
+                  const isSelected = foldersSelected
                     .map((folder: Folders) => folder.id)
                     .includes(id);
                   return (
-                    <div
-                      id={id}
-                      className={`p-2 xl:p-4  flex flex-col items-center justify-center`}
+                    <button
+                      className={`p-2 flex flex-col items-center justify-center truncate`}
                       key={id}
                     >
                       <Folder
@@ -199,7 +194,7 @@ export const FolderSelect = ({ state, dispatch }: StateDispatchArgs) => {
                         size={64}
                       />
                       <span className="-mt-5 -ml-12 ">
-                        <Checkbox
+                        <ThemedCheckbox
                           checked={isSelected}
                           onChange={(isChecked: boolean) =>
                             handleSelectFolder({ id, name }, isChecked)
@@ -207,7 +202,7 @@ export const FolderSelect = ({ state, dispatch }: StateDispatchArgs) => {
                         />
                       </span>
                       <li>{name}</li>
-                    </div>
+                    </button>
                   );
                 })}
               </ul>

@@ -1,7 +1,7 @@
 import React, { ChangeEvent } from 'react';
 import { Check } from 'react-feather';
 
-const Checkbox = ({
+const ThemedCheckbox = ({
   checked,
   onChange,
 }: {
@@ -9,11 +9,11 @@ const Checkbox = ({
   onChange: (isChecked: boolean) => void;
 }) => {
   return (
-    <div className="relative z-50">
+    <div className="relative">
       <input
         type="checkbox"
         checked={checked}
-        className="w-5 h-5 xl:w-6 xl:h-6 appearance-none rounded-md bg-white border-2 xl:border-[3px] border-black cursor-pointer z-50 hover:bg-spark-purple-100"
+        className="w-5 h-5 xl:w-6 xl:h-6 appearance-none rounded-md bg-white border-2 xl:border-[3px] border-black cursor-pointer hover:bg-spark-purple-100"
         onChange={(e: ChangeEvent<HTMLInputElement>) =>
           onChange(e.target.checked)
         }
@@ -28,4 +28,4 @@ const Checkbox = ({
   );
 };
 
-export default Checkbox;
+export default ThemedCheckbox;

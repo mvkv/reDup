@@ -70,7 +70,7 @@ export const DEFAULT_DAHSBOARD_STATE: DashboardState = {
 export type Action = {
   goTo: StateType;
   setClusterMode?: ClusterMode;
-  folderPathSelected?: Folders[];
+  currentFolderPath?: Folders[];
   fetchedFolders?: Folders[];
   foldersSelected?: Folders[];
   fetchedFilesCluster?: Cluster[];
@@ -96,25 +96,26 @@ export function reducer(state: DashboardState, action: Action): DashboardState {
       return DEFAULT_DAHSBOARD_STATE;
     case StateType.FOLDER_FETCH:
       const newClusterMode = action.setClusterMode ?? state.clusterMode;
-      if (action.folderPathSelected) {
+      if (action.currentFolderPath) {
         return {
           ...validState,
           clusterMode: newClusterMode,
           currState: StateType.FOLDER_FETCH,
-          folderPath: [...action.folderPathSelected],
+          folderPath: [...action.currentFolderPath],
+          foldersSelected: action.foldersSelected || validState.foldersSelected,
         };
       }
       return {
         ...validState,
         clusterMode: newClusterMode,
         currState: StateType.FOLDER_FETCH,
+        foldersSelected: action.foldersSelected || validState.foldersSelected,
       };
     case StateType.FOLDER_SELECT:
       return {
         ...validState,
         currState: StateType.FOLDER_SELECT,
-        foldersResults: action.fetchedFolders ?? validState.foldersResults,
-        foldersSelected: action.foldersSelected ?? state.foldersSelected,
+        foldersResults: action.fetchedFolders ?? [],
       };
     case StateType.FILES_FETCH:
       if (!validState.foldersSelected.length) {
@@ -122,6 +123,7 @@ export function reducer(state: DashboardState, action: Action): DashboardState {
       }
       return {
         ...validState,
+        foldersSelected: action.foldersSelected || validState.foldersSelected,
         currState: StateType.FILES_FETCH,
       };
     case StateType.FILES_SELECT:
