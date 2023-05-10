@@ -6,16 +6,15 @@ import { Folders } from '../../types/api';
 const FoldersDropdown = ({ folders }: { folders: Folders[] }) => {
   return (
     <Listbox>
-      <div className="relative z-10 font-inter text-sm">
+      <div className="relative font-inter text-sm">
         <Listbox.Button className="relative w-full cursor-default rounded-lg px-2 py-1 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 sm:text-sm bg-emerald-50">
           <div className="flex gap-2 items-center">
             <Check size={16} />
-            <span className="block truncate">Selected Folders</span>
+            <span className="block truncate">
+              {folders.length} Selected Folders
+            </span>
             <ChevronDown size={16} />
           </div>
-          <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-            {/* // TODO: put icon */}
-          </span>
         </Listbox.Button>
         <Transition
           as={Fragment}

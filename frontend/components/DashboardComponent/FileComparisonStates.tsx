@@ -22,7 +22,7 @@ export const FilesFetch = ({ state, dispatch }: StateDispatchArgs) => {
   useEffect(() => {
     async function foo() {
       const resp = await fetchImagesCluster(
-        state.foldersSelected.map((folder: Folders) => folder.id),
+        state.foldersSelected.map((folder) => folder.id),
         state.clusterMode === ClusterMode.ML,
       );
       if (resp.ok) {
@@ -225,7 +225,7 @@ export const FilesSelect = ({
                   onClick={() =>
                     dispatch({
                       goTo: StateType.FOLDER_FETCH,
-                      folderPathSelected: [],
+                      currentFolderPath: [],
                       foldersSelected: [],
                     })
                   }

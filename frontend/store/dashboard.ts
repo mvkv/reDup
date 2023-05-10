@@ -118,7 +118,7 @@ export function reducer(state: DashboardState, action: Action): DashboardState {
         foldersResults: action.fetchedFolders ?? [],
       };
     case StateType.FILES_FETCH:
-      if (!validState.foldersSelected.length) {
+      if (!validState.foldersSelected.length && !action.foldersSelected) {
         return errorSameState;
       }
       return {

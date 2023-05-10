@@ -9,7 +9,7 @@ const ThemedCheckbox = ({
   onChange: (isChecked: boolean) => void;
 }) => {
   return (
-    <div className="relative">
+    <div className="relative z-0">
       <input
         type="checkbox"
         checked={checked}

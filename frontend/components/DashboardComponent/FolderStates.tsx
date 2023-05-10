@@ -10,6 +10,12 @@ import ThemedButton, { ThemedButtonKind } from '../common/ThemedButton';
 import { InteractiveStatesWrapper } from './Shared';
 import { StateWrapper } from './StateWrapper';
 import FoldersDropdown from '../common/FoldersDropdown';
+import {
+  FolderAction,
+  FolderActions,
+  folderActionsToFolders,
+  handleFolderAction,
+} from '../../types/action';
 type StateDispatchArgs = { state: DashboardState; dispatch: Dispatch<Action> };
 
 export const FolderFetch = ({ state, dispatch }: StateDispatchArgs) => {
@@ -45,14 +51,17 @@ export const FolderFetch = ({ state, dispatch }: StateDispatchArgs) => {
 };
 
 export const FolderSelect = ({ state, dispatch }: StateDispatchArgs) => {
-  const [foldersSelected, setFoldersSelected] = useState<Folders[]>(
-    state.foldersSelected, // Init foldersSelected with all selected folders to handle G Drive's graph structure.
+  const [actions, setActions] = useState<FolderAction[]>([]);
+
+  const allSelectedFolders = folderActionsToFolders(
+    state.foldersSelected,
+    actions,
   );
 
   const updateFoldersDispatch = (action: Action) => {
     dispatch({
       ...action,
-      foldersSelected: foldersSelected,
+      foldersSelected: allSelectedFolders,
     });
   };
 
@@ -91,17 +100,35 @@ export const FolderSelect = ({ state, dispatch }: StateDispatchArgs) => {
   };
 
   const handleSelectFolder = (folder: Folders, isSelected: boolean) => {
-    const selected = isSelected
-      ? [...foldersSelected, folder]
-      : foldersSelected.filter(
-          (folderSelected: Folders) => folderSelected.id !== folder.id,
-        );
+    setActions(
+      handleFolderAction(
+        {
+          type: isSelected ? FolderActions.INSERT : FolderActions.DELETE,
+          folder,
+        },
+        actions,
+      ),
+    );
+  };
 
-    setFoldersSelected(selected);
+  const handleSelectAllFolders = () => {
+    let currActions = actions;
+    state.foldersResults.forEach(
+      (folder) =>
+        (currActions = handleFolderAction(
+          {
+            type: FolderActions.INSERT,
+            folder,
+          },
+          currActions,
+        )),
+    );
+
+    setActions(currActions);
   };
 
   const onNextClick = () => {
-    if (!state.foldersSelected.length) {
+    if (!allSelectedFolders.length) {
       // Should not happen, as the button would be disabled in this circumstance.
     } else {
       updateFoldersDispatch({
@@ -119,7 +146,7 @@ export const FolderSelect = ({ state, dispatch }: StateDispatchArgs) => {
             label={'Next'}
             onClick={onNextClick}
             buttonKind={
-              !state.foldersSelected.length
+              !allSelectedFolders.length
                 ? ThemedButtonKind.PRIMARY_DISABLED
                 : ThemedButtonKind.PRIMARY_ACTION
             }
@@ -148,10 +175,10 @@ export const FolderSelect = ({ state, dispatch }: StateDispatchArgs) => {
           }
           secondHeaderGroup={
             <>
-              {foldersSelected.length > 0 && (
-                <FoldersDropdown folders={foldersSelected} />
+              {allSelectedFolders.length > 0 && (
+                <FoldersDropdown folders={allSelectedFolders} />
               )}
-              {!foldersSelected.length && (
+              {allSelectedFolders.length === 0 && (
                 <>
                   <PillBadge extraClasses={'bg-rose-50'}>
                     <AlertTriangle size={16} />
@@ -163,6 +190,12 @@ export const FolderSelect = ({ state, dispatch }: StateDispatchArgs) => {
           }
         >
           <>
+            <button
+              className="text-spark-purple-700 underline"
+              onClick={() => handleSelectAllFolders()}
+            >
+              Check all folders
+            </button>
             {!state.foldersResults.length && (
               <div className="min-h-[200px] grid place-content-center text-2xl">
                 No folders at this level
@@ -179,12 +212,12 @@ export const FolderSelect = ({ state, dispatch }: StateDispatchArgs) => {
             {state.foldersResults.length > 0 && (
               <ul className="grid grid-cols-fill-sm xl:grid-cols-fill-xl overflow-y-auto gap-x-4 xl:gap-x-8 gap-y-2 xl:gap-y-12">
                 {state.foldersResults.map(({ id, name }, _) => {
-                  const isSelected = foldersSelected
+                  const isSelected = allSelectedFolders
                     .map((folder: Folders) => folder.id)
                     .includes(id);
                   return (
                     <button
-                      className={`p-2 flex flex-col items-center justify-center truncate`}
+                      className={`p-2 flex flex-col items-center justify-center truncate relative`}
                       key={id}
                     >
                       <Folder
@@ -193,7 +226,7 @@ export const FolderSelect = ({ state, dispatch }: StateDispatchArgs) => {
                         className="h-12 w-12 xl:h-16 xl:w-16  fill-orange-100 hover:fill-spark-purple-200 cursor-pointer"
                         size={64}
                       />
-                      <span className="-mt-5 -ml-12 ">
+                      <span className="-mt-5 -ml-12">
                         <ThemedCheckbox
                           checked={isSelected}
                           onChange={(isChecked: boolean) =>

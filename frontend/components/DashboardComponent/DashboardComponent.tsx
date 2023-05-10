@@ -105,7 +105,7 @@ const InitialState = ({
   return (
     <>
       <StateWrapper state={state}>
-        <p className="flex flex-col items-center gap-y-6 xl:gap-y-12 font-inter">
+        <div className="flex flex-col items-center gap-y-6 xl:gap-y-12 font-inter">
           <p className="text-xl xl:text-2xl">
             Hello{' '}
             <span className="text-spark-purple-500 font-bold">{email}!</span>
@@ -169,7 +169,7 @@ const InitialState = ({
               label={"Let's get started"}
             />
           </div>
-        </p>
+        </div>
       </StateWrapper>
     </>
   );
