@@ -156,14 +156,12 @@ export const FolderSelect = ({ state, dispatch }: StateDispatchArgs) => {
               <div className="min-h-[200px] grid place-content-center text-2xl">
                 No folders at this level
                 {state.folderPath.length > 0 && (
-                  <button
-                    className="underline text-main"
+                  <ThemedButton
+                    label={'Go to root!'}
                     onClick={() => {
                       navigateToRoot();
                     }}
-                  >
-                    Go to root!
-                  </button>
+                  ></ThemedButton>
                 )}
               </div>
             )}
