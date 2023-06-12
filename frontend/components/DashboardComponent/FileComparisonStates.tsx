@@ -71,45 +71,50 @@ const FileComparison = ({
   };
 
   return (
-    <ul
-      className={`grid grid-cols-fill-img  gap-4 py-4 xl:py-8 items-baseline border-b-2 border-spark-purple-500 last:border-none`}
-    >
-      {cluster.images.map((img) => {
-        const isSelected = selected.includes(img.id);
+    <>
+      <p className="text-base lg:hidden pt-4 pb-2">
+        Comparison group: {cluster.id ?? 'unnamed'}
+      </p>
+      <ul
+        className={`grid grid-cols-fill-img gap-4 pb-4 xl:py-8 items-baseline border-b-2 border-spark-purple-500 last:border-none`}
+      >
+        {cluster.images.map((img) => {
+          const isSelected = selected.includes(img.id);
 
-        return (
-          <li className="cursor-pointer" key={img.id}>
-            <div
-              className={`border-solid border-2 rounded-lg overflow-hidden select-none text-center relative ${
-                isSelected
-                  ? 'bg-spark-purple-200 border-spark-purple-700 shadow-lg shadow-spark-purple-500/30'
-                  : 'hover:bg-spark-purple-200 border-gray-800'
-              }`}
-              key={img.id}
-              onClick={() => clickOn(img.id)}
-            >
-              <Image
-                src={img.image_url}
-                alt=""
-                width={300}
-                height={300}
-                className="min-w-full"
-              ></Image>
-              <figcaption
-                className={`m-1.5 text-base font-medium ${
-                  isSelected ? 'text-spark-purple-700' : 'text-gray-800'
+          return (
+            <li className="cursor-pointer" key={img.id}>
+              <div
+                className={`border-solid border-2 rounded-lg overflow-hidden select-none text-center relative ${
+                  isSelected
+                    ? 'bg-spark-purple-200 border-spark-purple-700 shadow-lg shadow-spark-purple-500/30'
+                    : 'hover:bg-spark-purple-200 border-gray-800'
                 }`}
+                key={img.id}
+                onClick={() => clickOn(img.id)}
               >
-                {isSelected && (
-                  <XCircle className="absolute top-2 right-2 fill-spark-purple-100 animate-slide-from-top text-red-800" />
-                )}
-                {img.name}
-              </figcaption>
-            </div>
-          </li>
-        );
-      })}
-    </ul>
+                <Image
+                  src={img.image_url}
+                  alt=""
+                  width={300}
+                  height={300}
+                  className="min-w-full"
+                ></Image>
+                <figcaption
+                  className={`m-1.5 text-base font-medium ${
+                    isSelected ? 'text-spark-purple-700' : 'text-gray-800'
+                  }`}
+                >
+                  {isSelected && (
+                    <XCircle className="absolute top-2 right-2 fill-spark-purple-100 animate-slide-from-top text-red-800" />
+                  )}
+                  {img.name}
+                </figcaption>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </>
   );
 };
 
@@ -152,6 +157,8 @@ export const FilesSelect = ({
     .reduce((acc, v) => acc + v, 0);
   const validSelection = selected.length > 0;
 
+  const hasNoImages = !state.filesClusterResults.length;
+
   return (
     <>
       <StateWrapper
@@ -171,37 +178,59 @@ export const FilesSelect = ({
         <InteractiveStatesWrapper
           firstHeaderGroup={
             <>
-              <p className="text-base font-inter">Fetched:</p>
-              <PillBadge extraClasses={'bg-spark-purple-300'}>
-                {filesFetched} files
-              </PillBadge>
-              <PillBadge extraClasses={'bg-spark-purple-300'}>
-                {clustersFetched} clusters
-              </PillBadge>
+              {!hasNoImages && (
+                <>
+                  <p className="text-base font-inter">Fetched:</p>
+                  <PillBadge extraClasses={'bg-spark-purple-300'}>
+                    {filesFetched} files
+                  </PillBadge>
+                  <PillBadge extraClasses={'bg-spark-purple-300'}>
+                    {clustersFetched} clusters
+                  </PillBadge>
+                </>
+              )}
             </>
           }
           secondHeaderGroup={
             <>
-              {selected.length === 0 && (
-                <PillBadge extraClasses={'bg-rose-50 '}>
-                  <AlertTriangle size={16} />
-                  Select files to delete
-                </PillBadge>
-              )}
-              {selected.length > 0 && (
-                <div className="flex items-center gap-x-2 xl:gap-x-4">
-                  <p className="text-sm xl:text-base font-inter">Selected:</p>
-                  <PillBadge extraClasses={'bg-emerald-50'}>
-                    {selected.length} files
-                  </PillBadge>
-                </div>
+              {!hasNoImages && (
+                <>
+                  {selected.length === 0 && (
+                    <PillBadge extraClasses={'bg-rose-50 '}>
+                      <AlertTriangle size={16} />
+                      Select files to delete
+                    </PillBadge>
+                  )}
+                  {selected.length > 0 && (
+                    <div className="flex items-center gap-x-2 xl:gap-x-4">
+                      <p className="text-sm xl:text-base font-inter">
+                        Selected:
+                      </p>
+                      <PillBadge extraClasses={'bg-emerald-50'}>
+                        {selected.length} files
+                      </PillBadge>
+                    </div>
+                  )}
+                </>
               )}
             </>
           }
         >
           <ul className="flex flex-col overflow-y-auto">
             {!state.filesClusterResults.length && (
-              <div>No files in this folder</div>
+              <div className="min-h-[200px] grid place-content-center text-2xl gap-4 text-center">
+                No images were found in the provided folders
+                <ThemedButton
+                  label={'Select different folders'}
+                  onClick={() =>
+                    dispatch({
+                      goTo: StateType.FOLDER_FETCH,
+                      folderPathSelected: [],
+                      foldersSelected: [],
+                    })
+                  }
+                ></ThemedButton>
+              </div>
             )}
             {state.filesClusterResults.map((cluster) => (
               <FileComparison
