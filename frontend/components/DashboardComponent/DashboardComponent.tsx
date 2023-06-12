@@ -115,12 +115,12 @@ const InitialState = ({
           </p>
           <div className=" flex flex-col gap-y-3 xl:gap-y-6 items-start">
             {processPoints.map((point, idx) => (
-              <>
+              <span key={idx}>
                 <p className="flex gap-x-6 justify-center items-baseline">
                   <CircleBadge label={idx + 1} />{' '}
                   <span className="text-base xl:text-xl">{point}</span>
                 </p>
-              </>
+              </span>
             ))}
           </div>
           <div className="flex flex-col items-center gap-y-2">

@@ -1,8 +1,8 @@
 import { Folders } from './api';
 
 export enum FolderActions {
-  INSERT,
-  DELETE,
+  SELECTED,
+  UNSELECTED,
 }
 
 export type FolderAction = {
@@ -10,46 +10,47 @@ export type FolderAction = {
   folder: Folders;
 };
 
-export const handleFolderAction = (
-  action: FolderAction,
-  actions: FolderAction[],
+export const processAndReturnActions = (
+  newAction: FolderAction,
+  prevActions: FolderAction[],
 ) => {
   // Checks if the actions to insert is already in the list of actions
-  if (
-    actions.find(
-      (currAction) =>
-        action.folder.id === currAction.folder.id &&
-        action.type === currAction.type,
-    )
-  ) {
-    return actions;
+  const isDuplicatedAction = prevActions.find(
+    (currAction) =>
+      newAction.folder.id === currAction.folder.id &&
+      newAction.type === currAction.type,
+  );
+
+  if (isDuplicatedAction) {
+    return prevActions;
   }
 
   // Checks if there's the opposite action in list, if there is, remove and return
-  const oppositeActions = actions.filter(
-    (act) => !(act.folder.id === action.folder.id && act.type !== action.type),
+  const oppositeActions = prevActions.filter(
+    (act) =>
+      !(act.folder.id === newAction.folder.id && act.type !== newAction.type),
   );
 
-  if (oppositeActions.length !== actions.length) {
+  if (oppositeActions.length !== prevActions.length) {
     return oppositeActions;
   }
 
-  return [...actions, action];
+  return [...prevActions, newAction];
 };
 
 export const folderActionsToFolders = (
-  folders: Folders[],
+  prevSelectedFolders: Folders[],
   folderActions: FolderAction[],
 ) => {
   const toDeleteFoldersIds = folderActions
-    .filter((action) => action.type === FolderActions.DELETE)
+    .filter((action) => action.type === FolderActions.UNSELECTED)
     .map((action) => action.folder.id);
 
   const toInsertFolders = folderActions
-    .filter((action) => action.type === FolderActions.INSERT)
+    .filter((action) => action.type === FolderActions.SELECTED)
     .map((action) => action.folder);
 
-  return [...folders, ...toInsertFolders].filter(
+  return [...prevSelectedFolders, ...toInsertFolders].filter(
     (folder) => !toDeleteFoldersIds.includes(folder.id),
   );
 };

@@ -14,7 +14,7 @@ import {
   FolderAction,
   FolderActions,
   folderActionsToFolders,
-  handleFolderAction,
+  processAndReturnActions,
 } from '../../types/action';
 type StateDispatchArgs = { state: DashboardState; dispatch: Dispatch<Action> };
 
@@ -100,24 +100,23 @@ export const FolderSelect = ({ state, dispatch }: StateDispatchArgs) => {
   };
 
   const handleSelectFolder = (folder: Folders, isSelected: boolean) => {
-    setActions(
-      handleFolderAction(
-        {
-          type: isSelected ? FolderActions.INSERT : FolderActions.DELETE,
-          folder,
-        },
-        actions,
-      ),
+    const newActions = processAndReturnActions(
+      {
+        type: isSelected ? FolderActions.SELECTED : FolderActions.UNSELECTED,
+        folder,
+      },
+      actions,
     );
+    setActions(newActions);
   };
 
   const handleSelectAllFolders = () => {
     let currActions = actions;
     state.foldersResults.forEach(
       (folder) =>
-        (currActions = handleFolderAction(
+        (currActions = processAndReturnActions(
           {
-            type: FolderActions.INSERT,
+            type: FolderActions.SELECTED,
             folder,
           },
           currActions,
@@ -229,7 +228,7 @@ export const FolderSelect = ({ state, dispatch }: StateDispatchArgs) => {
                       <span className="-mt-5 -ml-12">
                         <ThemedCheckbox
                           checked={isSelected}
-                          onChange={(isChecked: boolean) =>
+                          onChange={(isChecked) =>
                             handleSelectFolder({ id, name }, isChecked)
                           }
                         />

@@ -102,14 +102,14 @@ export function reducer(state: DashboardState, action: Action): DashboardState {
           clusterMode: newClusterMode,
           currState: StateType.FOLDER_FETCH,
           folderPath: [...action.currentFolderPath],
-          foldersSelected: action.foldersSelected || validState.foldersSelected,
+          foldersSelected: action.foldersSelected ?? validState.foldersSelected,
         };
       }
       return {
         ...validState,
         clusterMode: newClusterMode,
         currState: StateType.FOLDER_FETCH,
-        foldersSelected: action.foldersSelected || validState.foldersSelected,
+        foldersSelected: action.foldersSelected ?? validState.foldersSelected,
       };
     case StateType.FOLDER_SELECT:
       return {

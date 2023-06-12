@@ -6,7 +6,7 @@ import {
   ClusterMode,
 } from '../../store/dashboard';
 import InfiniteSpinner from '../common/InfiniteSpinner';
-import { Cluster, Folders } from '../../types/api';
+import { Cluster } from '../../types/api';
 import { fetchImagesCluster } from '../../apiCalls/Drive';
 import Image from 'next/image';
 type StateDispatchArgs = { state: DashboardState; dispatch: Dispatch<Action> };
