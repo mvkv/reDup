@@ -16,6 +16,7 @@ router = APIRouter(
 USE_FAKE_DATA = os.environ.get('REDUP_FAKE_DATA', 'False').lower() == "true"
 ERROR_RESPONSE = JSONResponse(content={'ok': False})
 
+
 @router.get("/folders")
 async def get_folders(request: Request, folder_id: str = "root"):
 

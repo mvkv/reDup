@@ -64,7 +64,7 @@ class DriveHandler:
         files = self.get_files_from_parent_id(
             folder_id, DriveMimeType.IMAGE)
         logger.debug(f"{ctime()} - Downloading images")
-        with ThreadPoolExecutor(max_workers=len(files)) as pool:
+        with ThreadPoolExecutor(max_workers=max(len(files), 1)) as pool:
             images_bytes = list(pool.map(self.get_image_bytes_from_url, [image.thumbnailLink for image in files]))
         for image_idx in range(len(files)):
             images.append(

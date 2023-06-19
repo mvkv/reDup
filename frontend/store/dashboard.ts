@@ -48,7 +48,7 @@ export type DashboardState = {
   clusterMode: ClusterMode;
   folderPath: Folders[];
   foldersResults: Folders[];
-  foldersSelected: string[];
+  foldersSelected: Folders[];
   filesClusterResults: Cluster[];
   filesSelected: string[];
   finalSummary: DeletionStatus[];
@@ -70,9 +70,9 @@ export const DEFAULT_DAHSBOARD_STATE: DashboardState = {
 export type Action = {
   goTo: StateType;
   setClusterMode?: ClusterMode;
-  folderPathSelected?: Folders[];
+  currentFolderPath?: Folders[];
   fetchedFolders?: Folders[];
-  foldersSelected?: string[];
+  foldersSelected?: Folders[];
   fetchedFilesCluster?: Cluster[];
   filesSelected?: string[];
   fetchedSummary?: DeletionStatus[];
@@ -96,18 +96,20 @@ export function reducer(state: DashboardState, action: Action): DashboardState {
       return DEFAULT_DAHSBOARD_STATE;
     case StateType.FOLDER_FETCH:
       const newClusterMode = action.setClusterMode ?? state.clusterMode;
-      if (action.folderPathSelected) {
+      if (action.currentFolderPath) {
         return {
           ...validState,
           clusterMode: newClusterMode,
           currState: StateType.FOLDER_FETCH,
-          folderPath: [...action.folderPathSelected],
+          folderPath: [...action.currentFolderPath],
+          foldersSelected: action.foldersSelected ?? validState.foldersSelected,
         };
       }
       return {
         ...validState,
         clusterMode: newClusterMode,
         currState: StateType.FOLDER_FETCH,
+        foldersSelected: action.foldersSelected ?? validState.foldersSelected,
       };
     case StateType.FOLDER_SELECT:
       return {
@@ -116,13 +118,13 @@ export function reducer(state: DashboardState, action: Action): DashboardState {
         foldersResults: action.fetchedFolders ?? [],
       };
     case StateType.FILES_FETCH:
-      if (!action.foldersSelected?.length) {
+      if (!validState.foldersSelected.length && !action.foldersSelected) {
         return errorSameState;
       }
       return {
         ...validState,
+        foldersSelected: action.foldersSelected || validState.foldersSelected,
         currState: StateType.FILES_FETCH,
-        foldersSelected: action.foldersSelected,
       };
     case StateType.FILES_SELECT:
       return {

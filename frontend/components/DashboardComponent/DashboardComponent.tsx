@@ -105,7 +105,7 @@ const InitialState = ({
   return (
     <>
       <StateWrapper state={state}>
-        <p className="flex flex-col items-center gap-y-6 xl:gap-y-12 font-inter">
+        <div className="flex flex-col items-center gap-y-6 xl:gap-y-12 font-inter">
           <p className="text-xl xl:text-2xl">
             Hello{' '}
             <span className="text-spark-purple-500 font-bold">{email}!</span>
@@ -115,12 +115,12 @@ const InitialState = ({
           </p>
           <div className=" flex flex-col gap-y-3 xl:gap-y-6 items-start">
             {processPoints.map((point, idx) => (
-              <>
+              <span key={idx}>
                 <p className="flex gap-x-6 justify-center items-baseline">
                   <CircleBadge label={idx + 1} />{' '}
                   <span className="text-base xl:text-xl">{point}</span>
                 </p>
-              </>
+              </span>
             ))}
           </div>
           <div className="flex flex-col items-center gap-y-2">
@@ -169,7 +169,7 @@ const InitialState = ({
               label={"Let's get started"}
             />
           </div>
-        </p>
+        </div>
       </StateWrapper>
     </>
   );
