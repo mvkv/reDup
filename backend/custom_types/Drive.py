@@ -2,5 +2,5 @@ from enum import Enum
 
 
 class DriveMimeType(Enum):
-    IMAGE = "image/jpeg"
+    IMAGE = "image/"
     FOLDER = "application/vnd.google-apps.folder"

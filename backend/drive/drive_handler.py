@@ -4,7 +4,7 @@ from google.auth.credentials import Credentials
 from custom_types.Image import Image
 from custom_types.Drive import DriveMimeType
 from custom_types.File import File
-from typing import Dict, List
+from typing import Dict, List, Union
 import requests
 from concurrent.futures import ThreadPoolExecutor
 from time import ctime
@@ -17,14 +17,14 @@ class DriveHandler:
     def __init__(self, credentials: Credentials):
         self.drive = build('drive', 'v3', credentials=credentials)
 
-    def get_image_bytes_from_url(self, image_url: str) -> str:
+    def get_image_bytes_from_url(self, image_url: str) -> Union[str, None]:
         trials = 0
         try:
             r = requests.get(image_url)
             r.raise_for_status()
         except requests.exceptions.HTTPError:
             if trials >= 3:
-                raise SystemExit("Error in downloading images")
+                return None
 
             trials += 1
         return r.content
@@ -39,7 +39,7 @@ class DriveHandler:
             page_token = None
             while not request_done:
                 res = self.drive.files().list(
-                    q=f"'{parent_id}' in parents and mimeType = '{mime_type.value}' and trashed = false",
+                    q=f"'{parent_id}' in parents and mimeType contains '{mime_type.value}' and trashed = false",
                     pageSize=page_size,
                     corpora="user",
                     fields=f"nextPageToken, files(id, name {', thumbnailLink' if mime_type == DriveMimeType.IMAGE else ''})",
@@ -65,10 +65,12 @@ class DriveHandler:
             folder_id, DriveMimeType.IMAGE)
         logger.debug(f"{ctime()} - Downloading images")
         with ThreadPoolExecutor(max_workers=max(len(files), 1)) as pool:
-            images_bytes = list(pool.map(self.get_image_bytes_from_url, [image.thumbnailLink for image in files]))
+            images_bytes = list(pool.map(self.get_image_bytes_from_url, [
+                                image.thumbnailLink for image in files]))
         for image_idx in range(len(files)):
-            images.append(
-                Image(files[image_idx].id, files[image_idx].name, images_bytes[image_idx], files[image_idx].thumbnailLink))
+            if (images_bytes[image_idx]):
+                images.append(
+                    Image(files[image_idx].id, files[image_idx].name, images_bytes[image_idx], files[image_idx].thumbnailLink))
         logger.debug(f"{ctime()} - Images downloaded")
         return images
 
