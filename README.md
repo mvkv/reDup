@@ -6,6 +6,8 @@ It has two modes: similar images and exact images. It uses the CLIP library by O
 It also lets you select which images to delete and moves them to the trash bin.
 
 ## Demo video
+https://github.com/mvkv/reDup/assets/10170332/efb6afbb-02fd-4fa3-aff9-5f30ca4ba843
+
 
 ## Tech Stack
 * Backend: Python, FastAPI
