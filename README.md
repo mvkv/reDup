@@ -1,55 +1,50 @@
-# Remove duplicates and near-duplicates photos from Google Drive
+# reDup: A Web App to Find and Delete Duplicate Images in Google Drive
 
-## Tech stack
+reDup is a web app that helps you find and delete duplicate and similar images in your Google Drive. 
 
-**Frontend:** Typescript, NextJs, Tailwind
+It has two modes: similar images and exact images. It uses the CLIP library by OpenAI to compare images and identify those that are visually similar, and difference hash to identify exact duplicates.
+It also lets you select which images to delete and moves them to the trash bin.
 
-**Backend:** Python3, FastAPI
+## Demo video
 
-## Startup
+## Tech Stack
+* Backend: Python, FastAPI
+* Frontend: Typescript, NextJS, Tailwind
 
-### Run backend
+## Getting Started
 
-First install the required dependencies with
+To get started with reDup, you will need to:
 
-```
-cd backend &&  pip3 install -r requirements.txt
-```
-
-then
-
-```
-uvicorn server:app --reload
-```
-
-You will need to create a secrets/ directory under backend with :
-
-1. an `.env` file that will contain settings / hardcoded variables.
-2. `google_application_credentials.json` that will be used to authenticate with Google APIs.
-
-### Run frontend
-
-First install the required dependencies with
+1. Clone the repository.
+2. Install the dependencies.
+3. Create a folder in `backend` called `secrets`,
+4. Inside `secrets` put the `google_application_credentials.json` file containing the Google Cloud project service account informations
+5. Also, inside `secrets` create a `.env` file like the following:
 
 ```
-cd frontend && npm install
+ENVIRONMENT="dev"
+GOOGLE_CLIENT_ID=<put the Google Cloud project's client id>
+GOOGLE_CLIENT_SECRET=<put the Google Cloud project's client secret>
+GOOGLE_APPLICATION_ID=<put the Google Cloud project's application id>
+GOOGLE_REDIRECT_URI="http://127.0.0.1:3000/auth/google"
+FRONTEND_BASE_URL="http://localhost:3000/"
+BACKEND_BASE_URL="http://localhost/"
+BACKEND_PORT="8000"
 ```
 
-then
+6. Run the app using the following commands:
 
-```
+```bash
+cd reDup/backend
+uvicorn server:app
+cd ../frontend
 npm run dev
 ```
 
-## Test backend
+## Steps to Utilize the App
 
-From repo root directory launch:
-```
-python -m unittest discover -s ./backend -p '*_test.py'
-```
-
-## Addresses
-
-**Frontend:** http://127.0.0.1:3000
-
-**Backend:** http://127.0.0.1:8000
+1. Log in to your Google Drive account.
+2. Select the folders that you want to inspect.
+3. reDup will analyze the photos in the folders and find near duplicate and similar images.
+4. Select the images that you want to delete.
+5. Click the "Delete" button to confirm your deletion.
