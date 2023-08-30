@@ -42,7 +42,7 @@
 **/secrets
 
 # Backend ML models
-backend/models
+**/models
 
 # Docker
 **/Dockerfile
