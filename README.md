@@ -43,6 +43,20 @@ cd ../frontend
 npm run dev
 ```
 
+
+## Endpoints
+
+*Backend:* http://localhost:8000
+
+*Frontend:* http://localhost:3000
+
+## Test backend
+
+ From repo root directory launch:
+ ```
+ python -m unittest discover -s ./backend -p '*_test.py'
+ ```
+
 ## Steps to Utilize the App
 
 1. Log in to your Google Drive account.
